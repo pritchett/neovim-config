@@ -1,0 +1,33 @@
+[0m2021.12.20 09:42:42 INFO  Started: Metals version 0.10.9 in workspace '/Users/bpritchett/.config/nvim/ftplugin' for client Neovim 0.6.0.[0m
+[0m2021.12.20 09:42:43 INFO  time: initialize in 1.52s[0m
+[0m2021.12.20 09:42:44 WARN  Build server is not auto-connectable.[0m
+[0m2021.12.20 09:42:44 WARN  no build tool detected in workspace '/Users/bpritchett/.config/nvim/ftplugin'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. [0m
+[0m2021.12.20 09:43:03 INFO  no build target: using presentation compiler with only scala-library: 3.1.0[0m
+[0m2021.12.20 09:43:54 INFO  shutting down Metals[0m
+[0m2021.12.21 12:45:18 INFO  Started: Metals version 0.10.9 in workspace '/Users/bpritchett/.config/nvim/ftplugin' for client Neovim 0.6.0.[0m
+[0m2021.12.21 12:45:20 INFO  time: initialize in 1.82s[0m
+[0m2021.12.21 12:45:20 WARN  Build server is not auto-connectable.[0m
+[0m2021.12.21 12:45:20 WARN  no build tool detected in workspace '/Users/bpritchett/.config/nvim/ftplugin'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. [0m
+[0m2021.12.21 12:45:40 INFO  no build target: using presentation compiler with only scala-library: 3.1.0[0m
+[0m2021.12.22 14:45:50 INFO  shutting down Metals[0m
+[0m2021.12.23 08:20:35 INFO  Started: Metals version 0.10.9 in workspace '/Users/bpritchett/.config/nvim/ftplugin' for client Neovim 0.6.0.[0m
+[0m2021.12.23 08:20:38 INFO  time: initialize in 3.63s[0m
+[0m2021.12.23 08:20:39 WARN  Build server is not auto-connectable.[0m
+[0m2021.12.23 08:20:39 WARN  no build tool detected in workspace '/Users/bpritchett/.config/nvim/ftplugin'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. [0m
+[0m2021.12.23 10:27:19 INFO  no build target: using presentation compiler with only scala-library: 3.1.0[0m
+2022.01.19 14:33:36 INFO  Started: Metals version 0.11.1 in workspace '/Users/bpritchett/.config/nvim/ftplugin' for client Neovim 0.6.0.[0m
+2022.01.19 14:33:36 WARN  Can't instantiate JavaInteractiveSemanticdb (version: None, jdkHome: /usr/local/opt/openjdk, javac exists: true)[0m
+2022.01.28 08:11:12 INFO  Started: Metals version 0.11.1 in workspace '/Users/bpritchett/.config/nvim/ftplugin' for client Neovim 0.6.1.[0m
+2022.01.28 08:11:12 WARN  Can't instantiate JavaInteractiveSemanticdb (version: None, jdkHome: /usr/local/opt/openjdk, javac exists: true)[0m
+2022.01.28 08:11:13 INFO  time: initialize in 1.77s[0m
+2022.01.28 08:11:17 WARN  Build server is not auto-connectable.[0m
+2022.01.28 08:11:17 WARN  no build tool detected in workspace '/Users/bpritchett/.config/nvim/ftplugin'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. [0m
+2022.01.28 08:11:21 INFO  no build target found for /Users/bpritchett/.config/nvim/ftplugin/scala.lua. Using presentation compiler with project's scala-library version: 3.1.0[0m
+2022.01.28 08:25:41 INFO  shutting down Metals[0m
+2022.01.28 08:43:51 INFO  Started: Metals version 0.11.1 in workspace '/Users/bpritchett/.config/nvim/ftplugin' for client Neovim 0.6.1.[0m
+2022.01.28 08:43:51 WARN  Can't instantiate JavaInteractiveSemanticdb (version: None, jdkHome: /usr/local/opt/openjdk, javac exists: true)[0m
+2022.01.28 08:43:54 INFO  time: initialize in 3.02s[0m
+2022.01.28 08:43:55 WARN  Build server is not auto-connectable.[0m
+2022.01.28 08:43:55 WARN  no build tool detected in workspace '/Users/bpritchett/.config/nvim/ftplugin'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. [0m
+2022.01.28 08:56:58 INFO  no build target found for /Users/bpritchett/.config/nvim/ftplugin/scala.lua. Using presentation compiler with project's scala-library version: 3.1.0[0m
+2022.01.29 13:17:47 INFO  shutting down Metals[0m
