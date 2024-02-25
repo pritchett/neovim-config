@@ -12,7 +12,7 @@ local function setup_dap()
         runType = "run"
         -- again... example, don't leave these in here
         -- args = { "firstArg", "secondArg", "thirdArg" },
-      },
+      }
     },
     {
       type = "scala",

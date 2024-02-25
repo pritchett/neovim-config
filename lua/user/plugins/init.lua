@@ -337,19 +337,6 @@ return packer.startup(function(use)
     },
   })
 
-  local is_not_dbee_buf = function()
-    local bufname = vim.fn.bufname()
-    local bufnames = { "dbee-drawer", "dbee-call-log"}
-
-    for _, bname in ipairs(bufnames) do
-      if bname == bufname then
-        return false
-      end
-    end
-
-    return true
-  end
-
   local is_not_oil_buf = function()
     return vim.o.filetype ~= 'oil'
   end
@@ -413,9 +400,48 @@ return packer.startup(function(use)
         winbar = {
           lualine_a = {
             {
-              "mode",
-              cond = is_not_dbee_buf
-            }
+              'mode',
+              cond = function()
+                local is_not_dbee_buf = function()
+                  local bufname = vim.fn.bufname()
+                  local bufnames = { "dbee-drawer", "dbee-call-log"}
+
+                  for _, bname in ipairs(bufnames) do
+                    if bname == bufname then
+                      return false
+                    end
+                  end
+
+                  return true
+                end
+
+                local is_term = vim.bo.buftype and vim.bo.buftype == "terminal"
+
+                return not is_term and is_not_dbee_buf()
+              end
+            },
+            {
+              "b:terminal_mode",
+              cond = function()
+                return vim.bo.buftype and vim.bo.buftype == "terminal"
+              end,
+              color = function()
+                if(vim.b.terminal_mode == 'NORMAL') then
+                  return "lualine_a_normal"
+                end
+                if(vim.b.terminal_mode == 'INSERT') then
+                  return "lualine_a_insert"
+                end
+                if(vim.b.terminal_mode == 'VISUAL') then
+                  return "lualine_a_visual"
+                end
+                if(vim.b.terminal_mode == 'V-LINE') then
+                  return "lualine_a_v_line"
+                end
+
+                return { bg = "blue", fg = "black", gui = "bold" }
+              end
+            },
           },
           lualine_b = {
             {
@@ -682,12 +708,13 @@ return packer.startup(function(use)
 
   use 'luc-tielen/telescope_hoogle'
 
-  use({
+ use({
     "akinsho/toggleterm.nvim",
     tag = '*',
     config = function()
       require("toggleterm").setup({
-        open_mapping = [[<c-\>]],
+        -- open_mapping = [[<c-\>]],
+        open_mapping = [[<leader>t]],
         insert_mappings = false,
         terminal_mappings = false
       })

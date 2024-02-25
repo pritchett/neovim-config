@@ -33,6 +33,7 @@ vim.keymap.set('n', '[[a', '<CMD>TSTextobjectGotoPreviousStart @parameter.outer<
 --   local command = {"/usr/bin/open", word}
 --   vim.fn.system(command)
 -- end)
+vim.keymap.set('t', '<C-\\>', '<C-\\><C-n>')
 
 -- Neorg
 vim.keymap.set('n', '<Leader>oc', '<CMD>Neorg capture<CR>', { silent = true })
