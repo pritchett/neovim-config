@@ -5,6 +5,7 @@ require("user.autocmd.qf")
 require("user.autocmd.terminal")
 require("user.autocmd.debug")
 require("user.autocmd.haskell")
+require("user.autocmd.lsp")
 
 -- require("user.autocmd.deploy")
 

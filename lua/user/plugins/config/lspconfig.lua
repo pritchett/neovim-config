@@ -28,7 +28,7 @@ function M.config()
   -- end
 
   lspconfig.lua_ls.setup {
-    on_attach = require("user.lsp").on_attach,
+    --[[ on_attach = require("user.lsp").on_attach, ]]
     settings = {
       Lua = {
         runtime = {
@@ -86,18 +86,17 @@ function M.config()
   --   on_attach = require("user.lsp").on_attach
   -- }
 
-  lspconfig.graphql.setup {
-    on_attach = require("user.lsp").on_attach
-  }
+  lspconfig.graphql.setup { }
 
-  lspconfig.bufls.setup {
-    on_attach = require("user.lsp").on_attach
-  }
+  lspconfig.bufls.setup { }
 
-  lspconfig.tsserver.setup {
-    on_attach = require("user.lsp").on_attach
-  }
+  lspconfig.tsserver.setup { }
 
+  local capabilities = vim.lsp.protocol.make_client_capabilities()
+  capabilities.textDocument.completion.completionItem.snippetSupport = true
+  lspconfig.jsonls.setup {
+    capabilities = capabilities
+  }
 
 end
 

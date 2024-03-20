@@ -80,8 +80,6 @@ local function configure()
 
   metals_config.on_attach = function(client, bufnr)
     if(needs_dap_setup) then setup_dap() end
-    require("user.lsp").on_attach(client, bufnr)
-
     vim.keymap.set('v', 'K', metals.type_of_range, { noremap = true, silent = true, buffer = bufnr, desc = "Show Type Information"})
   end
   metals.initialize_or_attach(metals_config)
