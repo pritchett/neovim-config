@@ -40,3 +40,25 @@ vim.keymap.set('n', '<Leader>oc', '<CMD>Neorg capture<CR>', { silent = true })
 vim.keymap.set('n', '<Leader>ot', '<CMD>Neorg toggle-concealer<CR>')
 vim.keymap.set('n', '<a-TAB>', 'gt')
 vim.keymap.set('n', '<a-S-TAB>', 'gT')
+local function toggle_quickfix()
+  local windows = vim.fn.getwininfo() or {}
+  for _, win in pairs(windows) do
+    if win["quickfix"] == 1 then
+      vim.cmd.cclose()
+      return
+    end
+  end
+
+  local ok, err = pcall(vim.cmd.copen)
+  if ok then
+    vim.cmd.wincmd('J')
+  else
+    if err then
+      vim.notify(err)
+    else
+      vim.notify("There was an issue with opening the quickfix")
+    end
+  end
+end
+
+vim.keymap.set('n', '<Leader>q', toggle_quickfix)
