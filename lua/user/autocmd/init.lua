@@ -25,6 +25,27 @@ vim.api.nvim_create_autocmd("TabClosed", {
   group = gid
 })
 
+local wgid = vim.api.nvim_create_augroup("winresize", { clear = true})
+
+vim.api.nvim_create_autocmd("WinResized", {
+  callback = function()
+    for _, winid in ipairs(vim.v.event.windows) do
+      local bufid = vim.api.nvim_win_get_buf(winid)
+      vim.api.nvim_buf_call(bufid, function()
+        if(vim.bo.buftype == 'quickfix') then
+          local winheight = vim.api.nvim_win_get_height(winid)
+          if(winheight <= 10) then
+            return
+          end
+          vim.api.nvim_win_set_height(winid, 10)
+        end
+      end)
+
+    end
+  end,
+  group = wgid
+})
+
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
