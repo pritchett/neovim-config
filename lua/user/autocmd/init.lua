@@ -7,13 +7,19 @@ require("user.autocmd.debug")
 require("user.autocmd.haskell")
 require("user.autocmd.lsp")
 
+local gid = vim.api.nvim_create_augroup("tabs", {})
+vim.api.nvim_create_autocmd("TabEnter", {
+  callback = function()
+    vim.g.second_last_tab = vim.g.last_tab
+    vim.g.last_tab = vim.api.nvim_get_current_tabpage()
+  end,
+  group = gid
+})
 
-local gid = vim.api.nvim_create_augroup("tabs", { clear = true})
 vim.api.nvim_create_autocmd("TabClosed", {
   callback = function()
-    local tab = vim.fn.tabpagenr()
-    if(tab > 1) then
-      vim.cmd('tabprevious')
+    if(vim.g.second_last_tab) then
+      vim.api.nvim_set_current_tabpage(vim.g.second_last_tab)
     end
   end,
   group = gid
