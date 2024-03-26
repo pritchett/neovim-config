@@ -7,7 +7,6 @@ require("user.autocmd.debug")
 require("user.autocmd.haskell")
 require("user.autocmd.lsp")
 
--- require("user.autocmd.deploy")
 
 local gid = vim.api.nvim_create_augroup("tabs", { clear = true})
 vim.api.nvim_create_autocmd("TabClosed", {

@@ -3,13 +3,6 @@ require("user.keymaps")
 require("user.plugins")
 require("user.colorscheme")
 require("user.autocmd")
--- require('aria')
-
--- Add paths for luarocks installed by `luarocks --lua-version 5.1 install`
-
-package.path = package.path
-    .. ";/Users/bpritchett/.luarocks/share/lua/5.1/?.lua;/Users/bpritchett/.luarocks/share/lua/5.1/?/init.lua"
-package.cpath = package.cpath .. ";/Users/bpritchett/.luarocks/lib/lua/5.1/?.so"
 
 vim.diagnostic.config({
   virtual_text = false,
@@ -25,9 +18,6 @@ for type, icon in pairs(signs) do
   local hl = "DiagnosticSign" .. type
   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
 end
-
--- vim.cmd [[ highlight! Refactor guibg=Red ]]
--- vim.cmd [[ highlight! VertSplit guifg=grey ]]
 
 vim.api.nvim_create_user_command("Messages", function()
   local bufnr = vim.api.nvim_create_buf(false, true)
@@ -79,10 +69,6 @@ vim.api.nvim_create_user_command("UrlDecode", function()
 end, {
   range = true
 })
-
-vim.api.nvim_create_user_command("Dbee", function()
-  require('dbee').open()
-end, {})
 
 vim.api.nvim_create_user_command("FindFiles", function()
   vim.cmd("Telescope find_files theme=ivy")

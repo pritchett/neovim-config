@@ -1,3 +1,3 @@
-vim.keymap.set('n', '<F5>', function() require('dap').continue() end, { buffer = true })
+local dap = require('dap')
+vim.keymap.set('n', '<F5>', dap.continue, { buffer = true })
 vim.keymap.set('n', '<leader>m', '<CMD>Telescope metals commands theme=ivy<CR>', { buffer = true } )
-vim.keymap.set('n', '<leader>s', function() require('sbt'):toggle() end, { buffer = true })
