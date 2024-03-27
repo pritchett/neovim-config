@@ -114,7 +114,6 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 vim.api.nvim_create_autocmd("BufReadPost", {
   pattern =  {"*/.metals/readonly/*", ".metals/readonly/*"},
   callback = function()
-    vim.bo.bufhidden = "wipe"
     vim.bo.buflisted = false
   end,
   group = gid
