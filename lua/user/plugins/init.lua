@@ -115,7 +115,6 @@ return packer.startup(function(use)
   use({ "rcarriga/nvim-dap-ui", requires = { "mfussenegger/nvim-dap" } })
 
   -- Snippets
-  -- use { 'hrsh7th/cmp-vsnip' }
   use({ "L3MON4D3/LuaSnip" })
   use({ "saadparwaiz1/cmp_luasnip" })
 
@@ -123,19 +122,19 @@ return packer.startup(function(use)
     "rcarriga/nvim-notify",
     config = function()
       vim.notify = require("notify")
+
     end,
   })
 
   -- Completions
   use({
     "hrsh7th/nvim-cmp",
-    requires = { { "hrsh7th/vim-vsnip" } },
+    requires = { "hrsh7th/cmp-nvim-lsp-signature-help" },
     config = function()
       local cmp = require("cmp")
       cmp.setup({
         snippet = {
           expand = function(args)
-            -- vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
             require("luasnip").lsp_expand(args.body) -- For `luasnip` users.
           end,
         },
@@ -147,6 +146,7 @@ return packer.startup(function(use)
             i = cmp.mapping.scroll_docs(4), -- { 'i', 'c' },
             c = cmp.mapping.abort(),
           }),
+          ["<C-c>"] = cmp.mapping(cmp.mapping.abort()),
           ["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
           ["<C-y>"] = cmp.config.disable, -- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
           ["<C-e>"] = cmp.mapping({
@@ -170,8 +170,8 @@ return packer.startup(function(use)
           end),
         },
         sources = cmp.config.sources({
+          { name = "nvim_lsp_signature_help" },
           { name = "nvim_lsp" },
-          -- { name = 'vsnip' },
           { name = "luasnip" }, -- For luasnip users.
           { name = "buffer" },
           { name = "neorg" },
@@ -215,6 +215,10 @@ return packer.startup(function(use)
             })[entry.source.name]
             return item
           end,
+        },
+        window = {
+          completion = cmp.config.window.bordered(),
+          documentation = cmp.config.window.bordered(),
         },
         preselect = cmp.PreselectMode.None, --  Fixes super annoying behavior of auto selecting what appears to be a random item in the middle of the completion list
         experimental = { ghost_text = true },
