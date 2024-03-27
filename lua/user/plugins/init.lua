@@ -268,17 +268,6 @@ return packer.startup(function(use)
   use({ "hrsh7th/cmp-path" })
   use({ "hrsh7th/cmp-buffer" })
 
-  use({
-    "folke/which-key.nvim",
-    config = function()
-      require("which-key").setup({
-        -- your configuration comes here
-        -- or leave it empty to use the default settings
-        -- refer to the configuration section below
-      })
-    end,
-  })
-
   -- LSP UI
   use({ "RishabhRD/nvim-lsputils", requires = { { "RishabhRD/popfix" } } })
   use("ray-x/lsp_signature.nvim")
