@@ -345,14 +345,6 @@ return packer.startup(function(use)
     },
   })
 
-  local is_not_oil_buf = function()
-    return vim.o.filetype ~= 'oil'
-  end
-
-  local get_pwd = function()
-    local d, _ = vim.fn.execute('pwd'):gsub('\n', '')
-    return d
-  end
 
   use({
     "nvim-lualine/lualine.nvim",
@@ -380,8 +372,7 @@ return packer.startup(function(use)
             "git",
             "neo-tree",
             "packer",
-            "vim" --[[ , ]]
-            -- "oil"
+            "vim"
           },
           ignore_focus = { "neo-tree" },
           theme = "catppuccin",
@@ -389,15 +380,14 @@ return packer.startup(function(use)
           globalstatus = true,
         },
         sections = {
-          lualine_a = { "branch", "diff", "diagnostics" },
-          lualine_b = {}, -- {qfprogress}
-          lualine_c = {}, --[[ macro_recording ]]
-          lualine_x = {}, --{get_neorg_workspace}
-          lualine_y = { get_pwd },
-          -- lualine_y = {},
+          lualine_a = { "branch" },
+          lualine_b = { "diff" },
+          lualine_c = { "diagnostics" },
+          lualine_x = { '%S' },
+          lualine_y = {},
           lualine_z = {
             {
-              "g:metals_status",
+              "g:metals_bsp_status",
               cond = function()
                 local ft = vim.o.filetype
                 return ft == 'scala' or ft == "sbt"
