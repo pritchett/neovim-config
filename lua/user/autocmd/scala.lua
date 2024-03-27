@@ -56,7 +56,7 @@ end
 local function configure()
   local metals = require('metals')
   local metals_config = metals.bare_config()
-  metals_config.init_options.statusBarProvider = "on"
+  metals_config.init_options.statusBarProvider = "off"
   metals_config.tvp = {
     panel_width = 40,
     panel_alignment = "left",
