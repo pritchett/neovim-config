@@ -479,23 +479,43 @@ return packer.startup(function(use)
               end
             }
           },
-          lualine_c = { vim.fn.bufnr },
-          -- lualine_x = { "searchcount", "encoding", "fileformat", "filetype" },
+          lualine_c = {},
           lualine_x = { "searchcount", "encoding", "fileformat", "filetype" },
           lualine_y = {
             { "progress",
               disabled_buftypes = { "terminal" },
               -- cond = function() return is_not_dbee_buf() and is_not_oil_buf() end
-              cond = is_not_dbee_buf
+              cond = function()
+                local bufname = vim.fn.bufname()
+                local bufnames = { "dbee-drawer", "dbee-call-log"}
+
+                for _, bname in ipairs(bufnames) do
+                  if bname == bufname then
+                    return false
+                  end
+                end
+
+                return true
+              end
             }
           },
           lualine_z = {
             { "location",
               disabled_buftypes = { "terminal" },
-              cond = is_not_dbee_buf
+              cond = function()
+                local bufname = vim.fn.bufname()
+                local bufnames = { "dbee-drawer", "dbee-call-log"}
+
+                for _, bname in ipairs(bufnames) do
+                  if bname == bufname then
+                    return false
+                  end
+                end
+
+                return true
+              end
             },
-          }, --,
-          -- disabled_buftypes = { 'quickfix', 'prompt', 'terminal' }
+          },
         },
         inactive_winbar = {
           lualine_a = {},
