@@ -153,10 +153,17 @@ return packer.startup(function(use)
             i = cmp.mapping.abort(),
             c = cmp.mapping.close(),
           }),
-          ["<CR>"] = cmp.mapping.confirm({ select = false }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+          ["<CR>"] = cmp.mapping.confirm({
+            select = false,
+            behavior = cmp.ConfirmBehavior.Replace
+          }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
           ["<TAB>"] = cmp.mapping(function(fallback)
-            if cmp.visible() and not cmp.get_active_entry() then
-              cmp.confirm({ select = true })
+            local entry = cmp.get_active_entry()
+            if cmp.visible() and not entry then
+              cmp.confirm({
+                select = true,
+                behavior = cmp.ConfirmBehavior.Replace
+              })
             else
               fallback()
             end
