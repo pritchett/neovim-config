@@ -643,6 +643,7 @@ return packer.startup(function(use)
   })
 
   -- use { 'windwp/nvim-autopairs' }
+
   use({
     "windwp/nvim-autopairs",
     config = function()
@@ -704,7 +705,7 @@ return packer.startup(function(use)
   --   },
   -- })
 
-  -- use({ "kevinhwang91/nvim-bqf", ft = "qf" })
+  use({ "kevinhwang91/nvim-bqf", ft = "qf" })
 
   -- use { 'yioneko/nvim-type-fmt',
   --   config = function() require('type-fmt').setup() end
