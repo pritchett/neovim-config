@@ -100,12 +100,10 @@ vim.api.nvim_create_autocmd("FileType", {
 
 vim.api.nvim_create_autocmd("BufWritePost", {
   pattern =  {"*.scala", "*.sbt"},
-  callback = function(_, _, _, _, bufnr, _, _)
-    vim.schedule_wrap(function()
-      vim.api.nvim_buf_call(bufnr, function()
-        vim.lsp.buf.format()
-        vim.cmd.update()
-      end)
+  callback = function(tbl)
+    vim.api.nvim_buf_call(tbl.buf, function()
+      vim.lsp.buf.format()
+      vim.cmd.update()
     end)
   end,
   group = gid
