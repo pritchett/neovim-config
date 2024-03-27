@@ -126,6 +126,14 @@ return packer.startup(function(use)
     end,
   })
 
+  -- Neat idea, but buggy
+  -- use {
+  --   'mrded/nvim-lsp-notify',
+  --   config = function()
+  --     require('lsp-notify').setup({})
+  --   end
+  -- }
+
   -- Completions
   use({
     "hrsh7th/nvim-cmp",
