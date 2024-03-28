@@ -11,7 +11,7 @@ keymap('n', ']c', ':silent cnext<CR>', opts)
 keymap('n', '[c', ':silent cprevious<CR>', opts)
 
 keymap('n', '<Leader>bb', ':Telescope buffers theme=ivy<CR>', opts)
-keymap('n', '<leader>dr', ":lua require'dap'.repl.open()<CR>", opts)
+keymap('n', '<leader>dr', ":lua require'dap'.repl.toggle()<CR>", opts)
 keymap('n', '<leader>g', "<cmd>Neogit<cr>", opts)
 keymap('n', '<leader>e', "<cmd>Neotree toggle<cr>", opts)
 keymap('n', '<C-]>', "<C-]>zz", opts)
