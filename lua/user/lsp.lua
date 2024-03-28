@@ -14,6 +14,7 @@ vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers["
 })
 vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, {
   border = "rounded",
+  title = "Hover"
 })
 vim.lsp.handlers['workspace/symbol'] = require 'lsputil.symbols'.workspace_handler
 
@@ -54,12 +55,21 @@ function M.set_keymaps(client, bufnr)
   end
 end
 
+local lsp_id = vim.api.nvim_create_augroup("LSP", {})
+
 function M.on_attach(client, bufnr)
   bufnr = bufnr or 0
 
   local setlocal = vim.opt_local
   setlocal.foldmethod = 'expr'
   setlocal.foldexpr = 'nvim_treesitter#foldexpr()'
+
+  if client.server_capabilities.completionProvider then
+    vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
+  end
+  if client.server_capabilities.definitionProvider then
+    vim.bo[bufnr].tagfunc = "v:lua.vim.lsp.tagfunc"
+  end
 
   M.set_keymaps(client, bufnr)
 

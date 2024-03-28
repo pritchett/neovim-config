@@ -79,18 +79,18 @@ local function configure()
   metals_config.capabilities = cmp_extended_capabilities
 
   metals_config.on_attach = function(client, bufnr)
-    if(needs_dap_setup) then setup_dap() end
-    vim.keymap.set('v', 'K', metals.type_of_range, { noremap = true, silent = true, buffer = bufnr, desc = "Show Type Information"})
+    if (needs_dap_setup) then setup_dap() end
+    vim.keymap.set('v', 'K', metals.type_of_range,
+      { noremap = true, silent = true, buffer = bufnr, desc = "Show Type Information" })
   end
   metals.initialize_or_attach(metals_config)
   require("telescope").load_extension('metals')
-
 end
 
 local gid = vim.api.nvim_create_augroup("scala", { clear = true })
 
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "scala" , "sbt" },
+  pattern = { "scala", "sbt" },
   callback = function()
     configure()
     vim.wo.number = true
@@ -98,22 +98,10 @@ vim.api.nvim_create_autocmd("FileType", {
   group = gid
 })
 
-vim.api.nvim_create_autocmd("BufWritePost", {
-  pattern =  {"*.scala", "*.sbt"},
-  callback = function(tbl)
-    vim.api.nvim_buf_call(tbl.buf, function()
-      vim.lsp.buf.format()
-      vim.cmd.update()
-    end)
-  end,
-  group = gid
-})
-
 vim.api.nvim_create_autocmd("BufReadPost", {
-  pattern =  {"*/.metals/readonly/*", ".metals/readonly/*"},
+  pattern = { "*/.metals/readonly/*", ".metals/readonly/*" },
   callback = function()
     vim.bo.buflisted = false
   end,
   group = gid
 })
-
