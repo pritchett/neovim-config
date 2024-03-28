@@ -1,7 +1,6 @@
-local needs_dap_setup = true
-
 local function setup_dap()
   local dap = require('dap')
+  require('metals').setup_dap()
 
   dap.configurations.scala = {
     {
@@ -36,21 +35,24 @@ local function setup_dap()
   }
 
   local dapui = require("dapui")
-
   dapui.setup()
-  dap.listeners.after.event_initialized["dapui_config"] = function()
-    dapui.open()
-  end
-  dap.listeners.before.event_terminated["dapui_config"] = function()
-    dapui.close("sidebar")
-  end
-  dap.listeners.before.event_exited["dapui_config"] = function()
-    dapui.close("sidebar")
-  end
 
-  local metals = require('metals')
-  metals.setup_dap()
-  needs_dap_setup = false
+  dap.listeners.after.event_initialized["dapui_config"] = function(sesh, body)
+    dap.repl.open()
+  end
+  dap.listeners.before.event_terminated["dapui_config"] = function(sesh, body)
+  end
+  dap.listeners.before.event_exited["dapui_config"] = function(sesh, body)
+    dap.repl.open()
+  end
+  dap.listeners.before.event_cancel["dapui_config"] = function(sesh, body)
+  end
+  dap.listeners.before.event_stopped["dapui_config"] = function(sesh, body)
+  end
+  dap.listeners.after.event_output["dapui_config"] = function(sesh, body)
+  end
+  dap.listeners.after.event_progress_update["dapui_config"] = function(sesh, body)
+  end
 end
 
 local function configure()
@@ -66,7 +68,9 @@ local function configure()
     expanded_sign = "▾",
   }
   metals_config.settings = {
-    showImplicitArguments = true
+    testUserInterface = "Test Explorer", -- lets see
+    showImplicitArguments = true,
+    showInferredType = true,
   }
 
   local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -78,11 +82,6 @@ local function configure()
 
   metals_config.capabilities = cmp_extended_capabilities
 
-  metals_config.on_attach = function(client, bufnr)
-    if (needs_dap_setup) then setup_dap() end
-    vim.keymap.set('v', 'K', metals.type_of_range,
-      { noremap = true, silent = true, buffer = bufnr, desc = "Show Type Information" })
-  end
   metals.initialize_or_attach(metals_config)
   require("telescope").load_extension('metals')
 end
@@ -91,9 +90,20 @@ local gid = vim.api.nvim_create_augroup("scala", { clear = true })
 
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "scala", "sbt" },
-  callback = function()
+  callback = function(args)
     configure()
+    vim.keymap.set('v', 'K', require('metals').type_of_range,
+      { noremap = true, silent = true, buffer = args.buf, desc = "Show Type Information" })
     vim.wo.number = true
+  end,
+  group = gid
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "scala", "sbt" },
+  callback = function()
+    setup_dap()
+    return true
   end,
   group = gid
 })
