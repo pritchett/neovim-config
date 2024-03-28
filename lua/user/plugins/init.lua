@@ -14,39 +14,6 @@ if not status_ok then
   return
 end
 
-local get_neorg_workspace = function()
-  local loaded = package.loaded["neorg"].modules.loaded_modules["core.dirman"]
-  if not loaded then
-    return "Not loaded"
-  end
-
-  local neorg = require("neorg.core")
-  local workspace = neorg.modules.get_module("core.dirman").get_current_workspace()[1]
-  return workspace
-end
-
-local qfprogress = function()
-  local size = vim.fn.getqflist({ size = 1 }).size
-  if size <= 0 then
-    return ""
-  end
-  local title = vim.fn.getqflist({ title = 1 }).title
-  if title ~= "" then
-    title = title .. ": "
-  end
-  local index = vim.fn.getqflist({ idx = 0 }).idx
-  return title .. "[" .. index .. " / " .. size .. "]"
-end
-
--- local macro_recording = function()
---   local reg = vim.cmd.reg_recording()
---   if reg == "" then
---     return ""
---   else
---     return "Recording @" .. reg
---   end
--- end
-
 -- Plugins
 return packer.startup(function(use)
   -- Packer can manage itself https://github.com/wbthomason/packer.nvim
@@ -109,10 +76,19 @@ return packer.startup(function(use)
     end,
   })
 
-  use("folke/neodev.nvim")
+  use { "nvim-neotest/nvim-nio" }
 
   use("mfussenegger/nvim-dap")
-  use({ "rcarriga/nvim-dap-ui", requires = { "mfussenegger/nvim-dap" } })
+  use({ "rcarriga/nvim-dap-ui", requires = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" } })
+
+  use({
+    "folke/neodev.nvim",
+    config = function()
+      require('neodev').setup({
+        library = { plugins = { "nvim-dap-ui" }, types = true },
+      })
+    end
+  })
 
   -- Snippets
   use({ "L3MON4D3/LuaSnip" })
@@ -402,7 +378,7 @@ return packer.startup(function(use)
               cond = function()
                 local is_not_dbee_buf = function()
                   local bufname = vim.fn.bufname()
-                  local bufnames = { "dbee-drawer", "dbee-call-log"}
+                  local bufnames = { "dbee-drawer", "dbee-call-log" }
 
                   for _, bname in ipairs(bufnames) do
                     if bname == bufname then
@@ -424,16 +400,16 @@ return packer.startup(function(use)
                 return vim.bo.buftype and vim.bo.buftype == "terminal"
               end,
               color = function()
-                if(vim.b.terminal_mode == 'NORMAL') then
+                if (vim.b.terminal_mode == 'NORMAL') then
                   return "lualine_a_normal"
                 end
-                if(vim.b.terminal_mode == 'INSERT') then
+                if (vim.b.terminal_mode == 'INSERT') then
                   return "lualine_a_insert"
                 end
-                if(vim.b.terminal_mode == 'VISUAL') then
+                if (vim.b.terminal_mode == 'VISUAL') then
                   return "lualine_a_visual"
                 end
-                if(vim.b.terminal_mode == 'V-LINE') then
+                if (vim.b.terminal_mode == 'V-LINE') then
                   return "lualine_a_v_line"
                 end
 
@@ -461,12 +437,13 @@ return packer.startup(function(use)
           lualine_c = {},
           lualine_x = { "searchcount", "encoding", "fileformat", "filetype" },
           lualine_y = {
-            { "progress",
+            {
+              "progress",
               disabled_buftypes = { "terminal" },
               -- cond = function() return is_not_dbee_buf() and is_not_oil_buf() end
               cond = function()
                 local bufname = vim.fn.bufname()
-                local bufnames = { "dbee-drawer", "dbee-call-log"}
+                local bufnames = { "dbee-drawer", "dbee-call-log" }
 
                 for _, bname in ipairs(bufnames) do
                   if bname == bufname then
@@ -479,11 +456,12 @@ return packer.startup(function(use)
             }
           },
           lualine_z = {
-            { "location",
+            {
+              "location",
               disabled_buftypes = { "terminal" },
               cond = function()
                 local bufname = vim.fn.bufname()
-                local bufnames = { "dbee-drawer", "dbee-call-log"}
+                local bufnames = { "dbee-drawer", "dbee-call-log" }
 
                 for _, bname in ipairs(bufnames) do
                   if bname == bufname then
@@ -653,10 +631,10 @@ return packer.startup(function(use)
     requires = "nvim-lua/plenary.nvim",
     config = function()
       require("neogit").setup({
-        integrations = {
-          telescope = true,
-          diffview = true,
-        },
+        -- integrations = {
+        -- telescope = , -- If these are set to true, it disables the integration. Great api.
+        -- diffview = true,
+        -- },
       })
     end,
   })
@@ -729,7 +707,7 @@ return packer.startup(function(use)
 
   use 'luc-tielen/telescope_hoogle'
 
- use({
+  use({
     "akinsho/toggleterm.nvim",
     tag = '*',
     config = function()
