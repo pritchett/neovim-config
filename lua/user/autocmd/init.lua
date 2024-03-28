@@ -16,9 +16,18 @@ vim.api.nvim_create_autocmd("TabEnter", {
   group = gid
 })
 
+local table_contains = function(tbl, elem)
+  for _, value in pairs(tbl) do
+    if (value == elem) then
+      return true
+    end
+  end
+  return false
+end
+
 vim.api.nvim_create_autocmd("TabClosed", {
   callback = function()
-    if(vim.g.second_last_tab) then
+    if(vim.g.second_last_tab and table_contains(vim.api.nvim_list_tabpages(), vim.g.second_last_tab)) then
       vim.api.nvim_set_current_tabpage(vim.g.second_last_tab)
     end
   end,
