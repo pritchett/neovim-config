@@ -1,262 +1,262 @@
-local fn = vim.fn
-local execute = vim.cmd
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
-local install_path = fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
-
-local packer_bootstrap = nil
-if fn.empty(fn.glob(install_path)) > 0 then
-  packer_bootstrap = fn.system({ "git", "clone", "https://github.com/wbthomason/packer.nvim", install_path })
-  execute("packadd packer.nvim")
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", -- latest stable release
+    lazypath,
+  })
 end
-
-local status_ok, packer = pcall(require, "packer")
-if not status_ok then
-  return
-end
+vim.opt.rtp:prepend(lazypath)
 
 -- Plugins
-return packer.startup(function(use)
-  -- Packer can manage itself https://github.com/wbthomason/packer.nvim
-  use("wbthomason/packer.nvim")
+require("lazy").setup({
 
-  use("tpope/vim-fugitive")
+    "tpope/vim-fugitive",
 
-  use("nvim-lua/plenary.nvim")
+    "nvim-lua/plenary.nvim",
 
-  use("nvim-telescope/telescope-fzy-native.nvim")
-  -- https://github.com/nvim-telescope/telescope.nvim
-  use({ "nvim-telescope/telescope-ui-select.nvim" })
-  use({
-    "nvim-telescope/telescope.nvim",
-    requires = { { "nvim-lua/popup.nvim" }, { "nvim-lua/plenary.nvim" } },
-    config = function()
-      local telescope = require("telescope")
-      telescope.setup({
-        extensions = {
-          ["fzy_native"] = {
-            override_generic_sorter = false,
-            override_file_sorter = true,
+    "nvim-telescope/telescope-fzy-native.nvim",
+    -- https://github.com/nvim-telescope/telescope.nvim
+    "nvim-telescope/telescope-ui-select.nvim",
+    {
+      "nvim-telescope/telescope.nvim",
+      dependencies = { { "nvim-lua/popup.nvim" }, { "nvim-lua/plenary.nvim" } },
+      config = function()
+        local telescope = require("telescope")
+        telescope.setup({
+          extensions = {
+            ["fzy_native"] = {
+              override_generic_sorter = false,
+              override_file_sorter = true,
+            },
+            ["ui-select"] = {
+              require("telescope.themes").get_cursor({}),
+            },
           },
-          ["ui-select"] = {
-            require("telescope.themes").get_cursor({}),
-          },
-        },
-      })
-      telescope.load_extension("fzy_native")
-      telescope.load_extension("ui-select")
-      telescope.load_extension('hoogle')
-    end,
-  })
+        })
+        telescope.load_extension("fzy_native")
+        telescope.load_extension("ui-select")
+        telescope.load_extension('hoogle')
+      end,
+    },
 
-  use({
-    "scalameta/nvim-metals",
-    requires = "nvim-lua/plenary.nvim",
-  })
+    {
+      "scalameta/nvim-metals",
+      dependencies = "nvim-lua/plenary.nvim",
+    },
 
-  use({
-    "williamboman/mason.nvim",
-    config = function()
-      require("mason").setup()
-    end,
-  })
+    {
+      "williamboman/mason.nvim",
+      opts = {}
+    },
 
-  use({
-    "williamboman/mason-lspconfig.nvim",
-    requires = "williamboman/mason.nvim",
-    config = function()
-      require("mason-lspconfig").setup()
-    end,
-  })
+    {
+      "williamboman/mason-lspconfig.nvim",
+      dependencies = "williamboman/mason.nvim",
+      opts = {}
+    },
 
-  use({
-    "neovim/nvim-lspconfig",
-    requires = "williamboman/mason-lspconfig.nvim",
-    config = function()
-      require("user.plugins.config.lspconfig").config()
-    end,
-  })
+    {
+      "neovim/nvim-lspconfig",
+      dependencies = "williamboman/mason-lspconfig.nvim",
+      config = function()
+        require("user.plugins.config.lspconfig").config()
+      end,
+    },
 
-  use { "nvim-neotest/nvim-nio" }
+    "nvim-neotest/nvim-nio",
 
-  use("mfussenegger/nvim-dap")
-  use({ "rcarriga/nvim-dap-ui", requires = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" } })
+    "mfussenegger/nvim-dap",
 
-  use({
-    "folke/neodev.nvim",
-    config = function()
-      require('neodev').setup({
+    { "rcarriga/nvim-dap-ui",    dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" } },
+
+    {
+      "folke/neodev.nvim",
+      opts = {
         library = { plugins = { "nvim-dap-ui" }, types = true },
-      })
-    end
-  })
+      }
+    },
 
-  -- Snippets
-  use({ "L3MON4D3/LuaSnip" })
-  use({ "saadparwaiz1/cmp_luasnip" })
+    -- Snippets
+    "L3MON4D3/LuaSnip",
+    "saadparwaiz1/cmp_luasnip",
 
-  use({
-    "rcarriga/nvim-notify",
-    config = function()
-      vim.notify = require("notify")
+    {
+      "rcarriga/nvim-notify",
+      config = function()
+        vim.notify = require("notify")
+      end
+    },
 
-    end,
-  })
+    -- Neat idea, but buggy
+    -- use {
+    --   'mrded/nvim-lsp-notify',
+    --   config = function()
+    --     require('lsp-notify').setup({})
+    --   end
+    -- }
 
-  -- Neat idea, but buggy
-  -- use {
-  --   'mrded/nvim-lsp-notify',
-  --   config = function()
-  --     require('lsp-notify').setup({})
-  --   end
-  -- }
-
-  -- Completions
-  use({
-    "hrsh7th/nvim-cmp",
-    requires = { "hrsh7th/cmp-nvim-lsp-signature-help" },
-    config = function()
-      local cmp = require("cmp")
-      cmp.setup({
-        snippet = {
-          expand = function(args)
-            require("luasnip").lsp_expand(args.body) -- For `luasnip` users.
-          end,
-        },
-        mapping = {
-          ["<C-n>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "c" }),
-          ["<C-p>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "c" }),
-          ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), { "i", "c" }),
-          ["<C-f>"] = cmp.mapping({
-            i = cmp.mapping.scroll_docs(4), -- { 'i', 'c' },
-            c = cmp.mapping.abort(),
+    "hrsh7th/cmp-nvim-lsp-signature-help",
+    -- Completions
+    {
+      "hrsh7th/nvim-cmp",
+      config = function()
+        local cmp = require("cmp")
+        cmp.setup({
+          snippet = {
+            expand = function(args)
+              require("luasnip").lsp_expand(args.body) -- For `luasnip` users.
+            end,
+          },
+          mapping = {
+            ["<C-n>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "c" }),
+            ["<C-p>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "c" }),
+            ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), { "i", "c" }),
+            ["<C-f>"] = cmp.mapping({
+              i = cmp.mapping.scroll_docs(4), -- { 'i', 'c' },
+              c = cmp.mapping.abort(),
+            }),
+            ["<C-c>"] = cmp.mapping(cmp.mapping.abort()),
+            ["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
+            ["<C-y>"] = cmp.config.disable, -- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
+            ["<C-e>"] = cmp.mapping({
+              i = cmp.mapping.abort(),
+              c = cmp.mapping.close(),
+            }),
+            ["<CR>"] = cmp.mapping.confirm({
+              select = false,
+              behavior = cmp.ConfirmBehavior.Replace
+            }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+            ["<TAB>"] = cmp.mapping(function(fallback)
+              local entry = cmp.get_active_entry()
+              if cmp.visible() and not entry then
+                cmp.confirm({
+                  select = true,
+                  behavior = cmp.ConfirmBehavior.Replace
+                })
+              else
+                fallback()
+              end
+            end),
+          },
+          sources = cmp.config.sources({
+            { name = "nvim_lsp_signature_help" },
+            { name = "nvim_lsp" },
+            { name = "luasnip" }, -- For luasnip users.
+            { name = "buffer" },
+            { name = "neorg" },
           }),
-          ["<C-c>"] = cmp.mapping(cmp.mapping.abort()),
-          ["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
-          ["<C-y>"] = cmp.config.disable, -- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
-          ["<C-e>"] = cmp.mapping({
-            i = cmp.mapping.abort(),
-            c = cmp.mapping.close(),
-          }),
-          ["<CR>"] = cmp.mapping.confirm({
-            select = false,
-            behavior = cmp.ConfirmBehavior.Replace
-          }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-          ["<TAB>"] = cmp.mapping(function(fallback)
-            local entry = cmp.get_active_entry()
-            if cmp.visible() and not entry then
-              cmp.confirm({
-                select = true,
-                behavior = cmp.ConfirmBehavior.Replace
-              })
-            else
-              fallback()
-            end
-          end),
-        },
-        sources = cmp.config.sources({
-          { name = "nvim_lsp_signature_help" },
-          { name = "nvim_lsp" },
-          { name = "luasnip" }, -- For luasnip users.
-          { name = "buffer" },
-          { name = "neorg" },
-        }),
-        formatting = {
-          fields = { "kind", "abbr", "menu" },
-          format = function(entry, item)
-            local kind_icons = {
-              Text = "",
-              Method = "󰆧",
-              Function = "󰊕",
-              Constructor = "",
-              Field = "󰇽",
-              Variable = "󰂡",
-              Class = "󰠱",
-              Interface = "",
-              Module = "",
-              Property = "󰜢",
-              Unit = "",
-              Value = "󰎠",
-              Enum = "",
-              Keyword = "󰌋",
-              Snippet = "",
-              Color = "󰏘",
-              File = "󰈙",
-              Reference = "",
-              Folder = "󰉋",
-              EnumMember = "",
-              Constant = "󰏿",
-              Struct = "",
-              Event = "",
-              Operator = "󰆕",
-              TypeParameter = "󰅲",
-            }
-            item.kind = string.format("%s", kind_icons[item.kind])
-            item.menu = ({
-              nvim_lsp = "[LSP]",
-              vsnip = "[Snip]",
-              buffer = "[Buffer]",
-              neorg = "[Neorg]",
-            })[entry.source.name]
-            return item
-          end,
-        },
-        window = {
-          completion = cmp.config.window.bordered(),
-          documentation = cmp.config.window.bordered(),
-        },
-        preselect = cmp.PreselectMode.None, --  Fixes super annoying behavior of auto selecting what appears to be a random item in the middle of the completion list
-        experimental = { ghost_text = true },
-        native_menu = true,
-      })
+          formatting = {
+            fields = { "kind", "abbr", "menu" },
+            format = function(entry, item)
+              local kind_icons = {
+                Text = "",
+                Method = "󰆧",
+                Function = "󰊕",
+                Constructor = "",
+                Field = "󰇽",
+                Variable = "󰂡",
+                Class = "󰠱",
+                Interface = "",
+                Module = "",
+                Property = "󰜢",
+                Unit = "",
+                Value = "󰎠",
+                Enum = "",
+                Keyword = "󰌋",
+                Snippet = "",
+                Color = "󰏘",
+                File = "󰈙",
+                Reference = "",
+                Folder = "󰉋",
+                EnumMember = "",
+                Constant = "󰏿",
+                Struct = "",
+                Event = "",
+                Operator = "󰆕",
+                TypeParameter = "󰅲",
+              }
+              item.kind = string.format("%s", kind_icons[item.kind])
+              item.menu = ({
+                nvim_lsp = "[LSP]",
+                vsnip = "[Snip]",
+                buffer = "[Buffer]",
+                neorg = "[Neorg]",
+              })[entry.source.name]
+              return item
+            end,
+          },
+          window = {
+            completion = cmp.config.window.bordered(),
+            documentation = cmp.config.window.bordered(),
+          },
+          preselect = cmp.PreselectMode.None, --  Fixes super annoying behavior of auto selecting what appears to be a random item in the middle of the completion list
+          experimental = { ghost_text = true },
+          native_menu = true,
+        })
 
-      --    cmp.setup.cmdline(':', {
-      --      sources = {
-      --        { name = 'cmdline' },
-      --        { name = 'path' }
-      --      },
-      --      formatting = {
-      --          fields = { "abbr" }
-      --        }
-      --      })
+        --    cmp.setup.cmdline(':', {
+        --      sources = {
+        --        { name = 'cmdline' },
+        --        { name = 'path' }
+        --      },
+        --      formatting = {
+        --          fields = { "abbr" }
+        --        }
+        --      })
 
-      -- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
-      --    cmp.setup.cmdline('/', {
-      --      sources = {
-      --        { name = 'buffer' }
-      --      },
-      --      formatting = {
-      --          fields = { "abbr" }
-      --        }
-      --    })
+        -- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
+        --    cmp.setup.cmdline('/', {
+        --      sources = {
+        --        { name = 'buffer' }
+        --      },
+        --      formatting = {
+        --          fields = { "abbr" }
+        --        }
+        --    })
 
-      --cmp.setup.cmdline('?', {
-      --  sources = {
-      --    { name = 'buffer' }
-      --  },
-      --  formatting = {
-      --      fields = { "abbr" }
-      --    }
-      --})
-    end,
-  })
-  use({ "hrsh7th/cmp-nvim-lsp" })
-  --  use { 'hrsh7th/cmp-cmdline' }
-  use({ "hrsh7th/cmp-path" })
-  use({ "hrsh7th/cmp-buffer" })
+        --cmp.setup.cmdline('?', {
+        --  sources = {
+        --    { name = 'buffer' }
+        --  },
+        --  formatting = {
+        --      fields = { "abbr" }
+        --    }
+        --})
+      end,
+    },
+    "hrsh7th/cmp-nvim-lsp",
+    --  use { 'hrsh7th/cmp-cmdline' }
+    "hrsh7th/cmp-path",
+    "hrsh7th/cmp-buffer",
 
-  -- LSP UI
-  use({ "RishabhRD/nvim-lsputils", requires = { { "RishabhRD/popfix" } } })
-  use("ray-x/lsp_signature.nvim")
+    -- LSP UI
+    { "RishabhRD/nvim-lsputils", dependencies = { { "RishabhRD/popfix" } } },
+    "ray-x/lsp_signature.nvim",
 
-  --Colors
-  use("catppuccin/nvim")
+    --Colors
+    "catppuccin/nvim",
 
-  use("kyazdani42/nvim-web-devicons")
+    "nvim-tree/nvim-web-devicons",
 
-  use({
-    "nvim-neorg/neorg",
-    config = function()
-      require("neorg").setup({
+    {
+      "vhyrro/luarocks.nvim",
+      priority = 1000,
+      config = true,
+    },
+
+    { dir = "~/Development/neorg-templates" },
+
+    "pritchett/neorg-capture",
+
+    {
+      "nvim-neorg/neorg",
+      dependencies = { "luarocks.nvim" },
+      opts = {
         load = {
           ["core.defaults"] = {},  -- Loads default behaviour
           ["core.concealer"] = {}, -- Adds pretty icons to your documents
@@ -310,23 +310,15 @@ return packer.startup(function(use)
             },
           },
         },
-      })
-    end,
-    run = ":Neorg sync-parsers",
-    requires = {
-      "nvim-lua/plenary.nvim",
-      -- "pysan3/neorg-templates",
-      "~/Development/neorg-templates",
-      "~/Development/neorg-capture"
+      },
+      run = ":Neorg sync-parsers",
     },
-  })
 
 
-  use({
-    "nvim-lualine/lualine.nvim",
-    requires = { "kyazdani42/nvim-web-devicons" },
-    config = function()
-      require("lualine").setup({
+    {
+      "nvim-lualine/lualine.nvim",
+      dependencies = { "kyazdani42/nvim-web-devicons" },
+      opts = {
         extensions = { "quickfix", "fugitive", "nvim-dap-ui", "neo-tree" },
         options = {
           disabled_filetypes = {
@@ -482,82 +474,74 @@ return packer.startup(function(use)
           lualine_y = {},
           lualine_z = {},
         },
-      })
-    end,
-  })
+      }
+    },
 
-  use({ "mrjones2014/nvim-ts-rainbow" })
+    "mrjones2014/nvim-ts-rainbow",
 
-  use({
-    "nvim-treesitter/nvim-treesitter",
-    run = ":TSUpdate",
-    config = function()
-      require("nvim-treesitter.configs").setup({
-        -- One of "all", "maintained" (parsers with maintainers), or a list of languages
-        ensure_installed = "all",
+    {
+      "nvim-treesitter/nvim-treesitter",
+      build = ":TSUpdate",
+      config = function()
+        require("nvim-treesitter.configs").setup({
+          -- One of "all", "maintained" (parsers with maintainers), or a list of languages
+          ensure_installed = "all",
+          modules = {},
+          ignore_install = {},
+          auto_install = false,
 
-        -- Install languages synchronously (only applied to `ensure_installed`)
-        sync_install = false,
+          -- Install languages synchronously (only applied to `ensure_installed`)
+          sync_install = false,
 
-        -- List of parsers to ignore installing
-        -- ignore_install = { "javascript" },
+          -- List of parsers to ignore installing
+          -- ignore_install = { "javascript" },
 
-        highlight = {
-          -- `false` will disable the whole extension
-          enable = true,
-          custom_captures = {
-            ["refactor"] = "Refactor",
+          highlight = {
+            -- `false` will disable the whole extension
+            enable = true,
+
+            -- list of language that will be disabled
+            -- disable = { "c", "rust" },
+
+            -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+            -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+            -- Using this option may slow down your editor, and you may see some duplicate highlights.
+            -- Instead of true it can also be a list of languages
+            -- additional_vim_regex_highlighting = true,
+            additional_vim_regex_highlighting = false,
           },
+          rainbow = {
+            enable = true,
+          },
+          indent = {
+            enable = true,
+          },
+          incremental_selection = {
+            enable = true,
+            keymaps = {
+              node_incremental = "v",
+              node_decremental = "V",
+            }
+          },
+        })
+      end
+    },
 
-          -- list of language that will be disabled
-          -- disable = { "c", "rust" },
+    {
+      "nvim-treesitter/playground",
+      build = ":TSUpdate",
+    },
 
-          -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-          -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-          -- Using this option may slow down your editor, and you may see some duplicate highlights.
-          -- Instead of true it can also be a list of languages
-          -- additional_vim_regex_highlighting = true,
-          additional_vim_regex_highlighting = false,
-        },
-        rainbow = {
-          enable = true,
-        },
-        indent = {
-          enable = true,
-        },
-        incremental_selection = {
-          enable = true,
-          keymaps = {
-            node_incremental = "v",
-            node_decremental = "V",
-          }
-        },
-      })
-    end,
-  })
-  use({ "nvim-treesitter/playground", run = ":TSUpdate" })
-
-  use({
     "nvim-treesitter/nvim-treesitter-textobjects",
-    config = function()
-      require("nvim-treesitter.configs").setup({})
-    end,
-  })
 
-  use { 'j-hui/fidget.nvim',
-    config = function()
-      require "fidget".setup({
-        -- window = {
-        --   blend = 0
-        -- }
-      })
-    end
-  }
+    {
+      'j-hui/fidget.nvim',
+      opts = {}
+    },
 
-  use({
-    "kosayoda/nvim-lightbulb",
-    config = function()
-      require("nvim-lightbulb").setup({
+    {
+      "kosayoda/nvim-lightbulb",
+      opts = {
         autocmd = {
           enabled = true,
         },
@@ -565,217 +549,159 @@ return packer.startup(function(use)
           -- Ignore code actions without a `kind` like refactor.rewrite, quickfix.
           actions_without_kind = false,
         },
-      })
-    end,
-  })
+      }
+    },
 
-  use({
-    "lukas-reineke/indent-blankline.nvim",
-    config = function()
-      require("ibl").setup({
-        -- use_treesitter = true,
-        -- use_treesitter_scope = true
+    {
+      "lukas-reineke/indent-blankline.nvim",
+      main = "ibl",
+      opts = {
         scope = {
           show_start = false,
           show_end = false,
         },
-      })
-    end,
-    -- config = function() require('indent_blankline').setup({
-    --   use_treesitter = true,
-    --   use_treesitter_scope = true
-    -- }) end
-  })
+      }
+    },
 
-  use("tpope/vim-dadbod")
+    "milisims/nvim-luaref",
 
-  use("milisims/nvim-luaref")
+    {
+      "lewis6991/gitsigns.nvim",
+      dependencies = { "nvim-lua/plenary.nvim" },
+      opts = {}
+    },
 
-  use({
-    "lewis6991/gitsigns.nvim",
-    requires = { "nvim-lua/plenary.nvim" },
-    config = function()
-      require("gitsigns").setup()
-    end,
-  })
-
-  -- use { 'windwp/nvim-autopairs' }
-
-  use({
-    "windwp/nvim-autopairs",
-    config = function()
-      require("nvim-autopairs").setup({
+    {
+      "windwp/nvim-autopairs",
+      opts = {
         disable_filetype = { "TelescopePrompt", "vim" },
         fast_wrap = {},
-      })
-    end,
-  })
-
-  use({
-    "numToStr/Comment.nvim",
-    config = function()
-      require("Comment").setup()
-    end,
-  })
-
-  use({
-    "sindrets/diffview.nvim",
-    requires = "nvim-lua/plenary.nvim",
-    config = function()
-      require("diffview").setup({})
-    end,
-  })
-
-  use({
-    "NeogitOrg/neogit",
-    requires = "nvim-lua/plenary.nvim",
-    config = function()
-      require("neogit").setup({
-        -- integrations = {
-        -- telescope = , -- If these are set to true, it disables the integration. Great api.
-        -- diffview = true,
-        -- },
-      })
-    end,
-  })
-
-  -- use {
-  --   '/Users/bpritchett/Development/neogit/',
-  --   requires = 'nvim-lua/plenary.nvim',
-  --   config = function()
-  --     require("neogit").setup {
-  --       disable_builtin_notifications = true,
-  --       integrations = {
-  --         diffview = true
-  --       }
-  --     }
-  --   end
-  -- }
-
-  -- use({
-  --   "nvim-neo-tree/neo-tree.nvim",
-  --   -- branch = "v2.x",
-  --   requires = {
-  --     "nvim-lua/plenary.nvim",
-  --     "kyazdani42/nvim-web-devicons", -- not strictly required, but recommended
-  --     "MunifTanjim/nui.nvim",
-  --   },
-  -- })
-
-  use({ "kevinhwang91/nvim-bqf", ft = "qf" })
-
-  -- use { 'yioneko/nvim-type-fmt',
-  --   config = function() require('type-fmt').setup() end
-  -- }
-
-  use("rafcamlet/nvim-luapad")
-
-  use({
-    "stevearc/oil.nvim",
-    config = function()
-      require("oil").setup()
-    end,
-  })
-
-  use('camilledejoye/nvim-lsp-selection-range')
-
-  -- Haskell
-  use({
-    'MrcJkb/haskell-tools.nvim',
-    config = function()
-      vim.g.haskell_tools = {
-        -- @type ToolsOpts
-        tools = {
-          repl = {
-            handler = "toggleterm"
-          }
-        },
-        -- @type HaskellLspClientOpts
-        hls = {
-          -- on_attach = function(client, bufnr)
-          --   require("user.lsp").on_attach(client.id, bufnr)
-          -- end
-          on_attach = require("user.lsp").on_attach
-        },
-        -- @type HTDapOpts
-        -- dap = {
-        --   -- ...
-        -- },
       }
-    end
-  })
+    },
 
-  use 'luc-tielen/telescope_hoogle'
+    {
+      "numToStr/Comment.nvim",
+      opts = {}
+    },
 
-  use({
-    "akinsho/toggleterm.nvim",
-    tag = '*',
-    config = function()
-      require("toggleterm").setup({
-        -- open_mapping = [[<c-\>]],
+    {
+      "sindrets/diffview.nvim",
+      dependencies = "nvim-lua/plenary.nvim",
+      opts = {}
+    },
+
+    {
+      "NeogitOrg/neogit",
+      dependencies = "nvim-lua/plenary.nvim",
+      opts = {}
+      -- config = function()
+      --   require("neogit").setup({
+      --     -- integrations = {
+      --     -- telescope = , -- If these are set to true, it disables the integration. Great api.
+      --     -- diffview = true,
+      --     -- },
+      --   })
+      -- end,
+    },
+
+    { "kevinhwang91/nvim-bqf",              ft = "qf" },
+
+    "rafcamlet/nvim-luapad",
+
+    {
+      "stevearc/oil.nvim",
+      opts = {},
+      dependencies = { "nvim-tree/nvim-web-devicons" }
+    },
+
+    'camilledejoye/nvim-lsp-selection-range',
+
+    -- Haskell
+    {
+      'MrcJkb/haskell-tools.nvim',
+      config = function()
+        vim.g.haskell_tools = {
+          -- @type ToolsOpts
+          tools = {
+            repl = {
+              handler = "toggleterm"
+            }
+          },
+          hls = {
+            on_attach = require("user.lsp").on_attach
+          },
+        }
+      end
+    },
+
+    'luc-tielen/telescope_hoogle',
+
+    {
+      "akinsho/toggleterm.nvim",
+      opts = {
         open_mapping = [[<leader>t]],
         insert_mappings = false,
         terminal_mappings = false
-      })
-    end
-  })
-
-  use {
-    "kndndrj/nvim-dbee",
-    requires = {
-      "MunifTanjim/nui.nvim",
+      }
     },
-    run = function()
-      -- Install tries to automatically detect the install method.
-      -- if it fails, try calling it with one of these parameters:
-      --    "curl", "wget", "bitsadmin", "go"
-      require("dbee").install()
-    end,
-    config = function()
-      require("dbee").setup(
-        {
-          lazy = true,
-          sources = {
-            require("dbee.sources").MemorySource:new({
-              {
-                -- id = "optional_identifier" -- only mandatory if you edit a file by hand. IT'S YOUR JOB TO KEEP THESE UNIQUE!
-                name = "cdev mysql",
-                type = "mysql", -- type of database driver
-                url = "travel:travel@tcp(nodes.nonprod.kube.tstllc.net:32114)/"
-              },
-              {
-                -- id = "optional_identifier" -- only mandatory if you edit a file by hand. IT'S YOUR JOB TO KEEP THESE UNIQUE!
-                name = "local mysql",
-                type = "mysql", -- type of database driver
-                url = "root@tcp(localhost:3306)/"
-              },
-              {
-                -- id = "optional_identifier" -- only mandatory if you edit a file by hand. IT'S YOUR JOB TO KEEP THESE UNIQUE!
-                name = "production mysql",
-                type = "mysql", -- type of database driver
-                url = "v-ldap-Brian-prod-aws-d-LSWTNoOM:mPZSJQe1-I6Yt6XmLekF@tcp(mysqlread.prod.infra.tstllc.net:3306)/"
-              },
-              {
-                -- id = "optional_identifier" -- only mandatory if you edit a file by hand. IT'S YOUR JOB TO KEEP THESE UNIQUE!
-                name = "local redis",
-                type = "redis", -- type of database driver
-                url = "localhost:6379"
-              },
-              {
-                -- id = "optional_identifier" -- only mandatory if you edit a file by hand. IT'S YOUR JOB TO KEEP THESE UNIQUE!
-                name = "cstaging mongo",
-                type = "mongo", -- type of database driver
-                url = "mongodb://nodes.nonprod.kube.tstllc.net:32117/?tls=true"
-              },
-            })
 
-          }
+    {
+      "kndndrj/nvim-dbee",
+      dependencies = { "MunifTanjim/nui.nvim", },
+      build = function()
+        -- Install tries to automatically detect the install method.
+        -- if it fails, try calling it with one of these parameters:
+        --    "curl", "wget", "bitsadmin", "go"
+        require("dbee").install()
+      end,
+      -- config = function()
+      --   require("dbee").setup(
+      opts = {
+        lazy = true,
+        sources = {
+          require("dbee.sources").MemorySource:new({
+            {
+              -- id = "optional_identifier" -- only mandatory if you edit a file by hand. IT'S YOUR JOB TO KEEP THESE UNIQUE!
+              name = "cdev mysql",
+              type = "mysql", -- type of database driver
+              url = "travel:travel@tcp(nodes.nonprod.kube.tstllc.net:32114)/"
+            },
+            {
+              -- id = "optional_identifier" -- only mandatory if you edit a file by hand. IT'S YOUR JOB TO KEEP THESE UNIQUE!
+              name = "local mysql",
+              type = "mysql", -- type of database driver
+              url = "root@tcp(localhost:3306)/"
+            },
+            {
+              -- id = "optional_identifier" -- only mandatory if you edit a file by hand. IT'S YOUR JOB TO KEEP THESE UNIQUE!
+              name = "production mysql",
+              type = "mysql", -- type of database driver
+              url = "v-ldap-Brian-prod-aws-d-LSWTNoOM:mPZSJQe1-I6Yt6XmLekF@tcp(mysqlread.prod.infra.tstllc.net:3306)/"
+            },
+            {
+              -- id = "optional_identifier" -- only mandatory if you edit a file by hand. IT'S YOUR JOB TO KEEP THESE UNIQUE!
+              name = "local redis",
+              type = "redis", -- type of database driver
+              url = "localhost:6379"
+            },
+            {
+              -- id = "optional_identifier" -- only mandatory if you edit a file by hand. IT'S YOUR JOB TO KEEP THESE UNIQUE!
+              name = "cstaging mongo",
+              type = "mongo", -- type of database driver
+              url = "mongodb://nodes.nonprod.kube.tstllc.net:32117/?tls=true"
+            },
+          })
+
         }
-      )
-    end
-  }
-
-  if packer_bootstrap then
-    require("packer").sync()
-  end
-end)
+      }
+    }
+  },
+  {
+    dev = {
+      path = "~/Development/",
+      patterns = { "pritchett" }
+    },
+    diff = {
+      cmd = "diffview.nvim"
+    }
+  })
