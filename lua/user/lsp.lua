@@ -24,10 +24,11 @@ function M.set_keymaps(client, bufnr)
   local opts = { noremap = true, silent = true, buffer = bufnr }
   local function with_defaults(new_opts) return vim.tbl_extend("error", opts, new_opts) end
   keymap('n', '<leader>lcl', vim.lsp.codelens.run, with_defaults({ desc = "Run Code Lens" }))
-  keymap('n', 'K', vim.lsp.buf.hover, with_defaults({ desc = "Show Type Information" }))
+  -- keymap('n', 'K', vim.lsp.buf.hover, with_defaults({ desc = "Show Type Information" }))
   keymap('n', 'gK', vim.lsp.buf.signature_help, with_defaults({ desc = "Show Signature Help" }))
   keymap('n', 'gd', '<CMD>lua vim.lsp.buf.definition()<CR>zz', with_defaults({ desc = "Go To Definition" }))
   keymap('n', 'gD', '<CMD>lua vim.lsp.buf.declaration()<CR>zz', with_defaults({ desc = "Go To Declaration" }))
+  keymap('n', 'gO', '<CMD>Telescope lsp_document_symbols theme=ivy<CR>', with_defaults({ desc = "Document Symbols" }))
 
   -- keymap(bufnr, 'n', '<C-G>i', '<CMD>lua vim.lsp.buf.implementation()<CR>zz', opts)
   keymap('n', 'gI', '<CMD>Telescope lsp_implementations theme=ivy<CR>zz',
@@ -77,7 +78,7 @@ function M.on_attach(client, bufnr)
     -- local capabilities = client.server_capabilities
     -- if vim.lsp.protocol.resolve_capabilities(capabilities).code_lens then
     if client.server_capabilities.code_lens or client.server_capabilities.codeLensProvider then
-      vim.lsp.codelens.refresh()
+      pcall(vim.lsp.codelens.refresh)
     end
   end
 

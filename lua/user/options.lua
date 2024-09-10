@@ -10,6 +10,9 @@ g.loaded_netrw = 1
 g.loaded_netrwPlugin = 1
 g.neo_tree_remove_legacy_commands = 1
 
+g.mapleader = ' '
+g.localmapleader = ' '
+
 opt.tabstop = 2
 opt.number = true
 opt.shiftwidth = 2
@@ -19,6 +22,9 @@ opt.expandtab = true
 opt.completeopt = { "menuone", "longest", "noinsert", "noselect" }
 opt.inccommand = 'nosplit'
 opt.cmdheight = 0
+
+opt.grepprg = "rg --vimgrep"
+opt.grepformat = "%f:%l:%c:%m"
 
 -- --Global
 o.swapfile = true
@@ -49,11 +55,12 @@ o.virtualedit = 'block'
 -- o.gdefault = true -- use the 'g' flag for ":substitute"
 o.signcolumn = 'yes'
 o.foldlevel = 2
+o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
 vim.opt_global.shortmess:remove('F') -- don't give the file info when editing a file, like `:silent`
-                                     -- was used for the command; note that this also affects messages
-                                     -- from autocommands
-                                     -- for nvim-metals
-vim.opt_global.fillchars:append({ fold = ' ' })
+-- was used for the command; note that this also affects messages
+-- from autocommands
+-- for nvim-metals
+vim.opt_global.fillchars:append({ fold = ' ', foldopen = '', foldsep = ' ', foldclose = '' })
 
 -- -- Window
 wo.number = true

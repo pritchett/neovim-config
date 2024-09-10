@@ -1,4 +1,5 @@
 -- Filetypes
+require("user.autocmd.dap-float")
 require("user.autocmd.scala")
 require("user.autocmd.lua")
 require("user.autocmd.qf")
@@ -27,29 +28,28 @@ end
 
 vim.api.nvim_create_autocmd("TabClosed", {
   callback = function()
-    if(vim.g.second_last_tab and table_contains(vim.api.nvim_list_tabpages(), vim.g.second_last_tab)) then
+    if (vim.g.second_last_tab and table_contains(vim.api.nvim_list_tabpages(), vim.g.second_last_tab)) then
       vim.api.nvim_set_current_tabpage(vim.g.second_last_tab)
     end
   end,
   group = gid
 })
 
-local wgid = vim.api.nvim_create_augroup("winresize", { clear = true})
+local wgid = vim.api.nvim_create_augroup("winresize", { clear = true })
 
 vim.api.nvim_create_autocmd("WinResized", {
   callback = function()
     for _, winid in ipairs(vim.v.event.windows) do
       local bufid = vim.api.nvim_win_get_buf(winid)
       vim.api.nvim_buf_call(bufid, function()
-        if(vim.bo.buftype == 'quickfix') then
+        if (vim.bo.buftype == 'quickfix') then
           local winheight = vim.api.nvim_win_get_height(winid)
-          if(winheight <= 10) then
+          if (winheight <= 10) then
             return
           end
           vim.api.nvim_win_set_height(winid, 10)
         end
       end)
-
     end
   end,
   group = wgid

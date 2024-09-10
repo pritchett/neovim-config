@@ -9,6 +9,22 @@ function M.config()
   table.insert(runtime_path, "lua/?.lua")
   table.insert(runtime_path, "lua/?/init.lua")
 
+  lspconfig.util.default_config = vim.tbl_extend(
+    'force',
+    lspconfig.util.default_config,
+    {
+      capabilities = vim.tbl_deep_extend(
+        "force",
+        vim.lsp.protocol.make_client_capabilities(),
+        -- returns configured operations if setup() was already called
+        -- or default operations if not
+        require 'lsp-file-operations'.default_capabilities()
+      )
+    }
+  )
+
+  lspconfig.lemminx.setup({})
+
   lspconfig.lua_ls.setup {
     settings = {
       Lua = {
@@ -37,13 +53,23 @@ function M.config()
   }
 
 
-  lspconfig.hls.setup {}
+  -- lspconfig.hls.setup {
+  --   filetypes = { 'haskell', 'lhaskell', 'cabal' },
+  -- }
 
-  lspconfig.graphql.setup {}
+  -- lspconfig.graphql.setup {}
 
-  lspconfig.bufls.setup {}
+  -- lspconfig.bufls.setup {}
 
-  lspconfig.tsserver.setup {}
+  lspconfig.ts_ls.setup {
+    filetypes = { "javascript", "typescript", "typescriptreact", "typescript.tsx" },
+  }
+
+  -- require("lspconfig.configs").vtsls = require("vtsls").lspconfig -- set default server config, optional but recommended
+  --
+  -- lspconfig.vtsls.setup({})
+
+  lspconfig.clangd.setup {}
 
   local capabilities = vim.lsp.protocol.make_client_capabilities()
   capabilities.textDocument.completion.completionItem.snippetSupport = true
