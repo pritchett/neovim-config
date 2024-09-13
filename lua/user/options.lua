@@ -56,6 +56,7 @@ o.virtualedit = 'block'
 o.signcolumn = 'yes'
 o.foldlevel = 2
 o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
+o.exrc = true
 vim.opt_global.shortmess:remove('F') -- don't give the file info when editing a file, like `:silent`
 -- was used for the command; note that this also affects messages
 -- from autocommands

@@ -115,3 +115,41 @@ end, {})
 vim.api.nvim_create_user_command('ToggleDiagnosticVirtualText', function()
   vim.diagnostic.config({ virtual_text = not vim.diagnostic.config().virtual_text })
 end, { desc = "Toggle diagnostic virtual text display" })
+local Project = require('user.projects')
+vim.api.nvim_create_user_command('Projects', function()
+  Project.find_projects_async(function(projects)
+    local titles = {}
+    local ids = {}
+    for _, project in ipairs(projects) do
+      if (not (project.project_name == vim.g.project_name)) then
+        table.insert(titles, project.project_name)
+        table.insert(ids, project.window_id)
+      end
+    end
+
+    local newstart = "Start up a non-running project"
+    table.insert(titles, newstart)
+
+    local start_new_project = function()
+      vim.ui.input({
+        prompt = "Project Name: ",
+        -- completion = function() return { "trip", "activity" } end, cancelreturn = nil
+      }, function(project)
+        if (project and project ~= "") then
+          Project.project_remote_start_async(project, true)
+        end
+      end)
+    end
+
+    local start_or_switch_project = function(choice, idx)
+      if (choice == newstart) then
+        vim.schedule(start_new_project)
+      elseif (idx) then
+        vim.system({ "kitten", "@focus-tab", "--match", "window_id:" .. ids[idx] })
+      end
+    end
+
+    vim.schedule(function() vim.ui.select(titles, { prompt = "Select project" }, start_or_switch_project) end)
+  end)
+end, { desc = "List Projects" })
+
