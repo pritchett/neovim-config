@@ -146,7 +146,8 @@ local function configure()
       -- 'io.github.ghostbuster91::scalafix-unified:0.0.9', -- ThisBuild /  scalafixDependencies += "io.github.ghostbuster91.scalafix-unified" %% "unified" % "<version>"
       "org.typelevel::typelevel-scalafix:0.2.0" -- ThisBuild / scalafixDependencies += "org.typelevel" %% "typelevel-scalafix" % "0.2.0"
       -- "com.nequissimus::sort-imports:0.6.1"
-    }
+    },
+    autoImportBuild = "all"
   }
 
   -- local capabilities = vim.lsp.protocol.make_client_capabilities()
