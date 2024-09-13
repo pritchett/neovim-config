@@ -5,7 +5,6 @@ require("user.colorscheme")
 require("user.autocmd")
 require("user.commands")
 
-
 vim.diagnostic.config({
   virtual_text = true,
   signs = true,
