@@ -1,4 +1,4 @@
-local gid = vim.api.nvim_create_augroup("terminal", { clear = true})
+local gid = vim.api.nvim_create_augroup("terminal", { clear = true })
 
 vim.api.nvim_create_autocmd("ModeChanged", {
   pattern = "c:nt",
@@ -18,7 +18,7 @@ vim.api.nvim_create_autocmd("ModeChanged", {
   callback = function()
     vim.b.terminal_mode = "COMMAND"
     local cmdtype = vim.fn.getcmdtype()
-    if(cmdtype == "/" or cmdtype == "?") then
+    if (cmdtype == "/" or cmdtype == "?") then
       vim.b.last_command_mode_is_search = true
     else
       vim.b.last_command_mode_is_search = false
@@ -34,7 +34,7 @@ end
 local zsh_normal_mode = function()
   vim.b.terminal_mode = "NORMAL"
   if vim.b.last_command_mode_is_search then
-    vim.b.last_command_mode_is_search  = false
+    vim.b.last_command_mode_is_search = false
     return
   end
   vim.cmd.startinsert()
@@ -43,8 +43,8 @@ local zsh_normal_mode = function()
 end
 
 vim.api.nvim_create_autocmd("TermOpen", {
-  callback = function()
-    vim.keymap.set('n', '<ESC>', zsh_normal_mode, { buffer = true, desc = "Change to normal mode in zsh"})
+  callback = function(args)
+    vim.keymap.set('n', '<ESC>', zsh_normal_mode, { buffer = true, desc = "Change to normal mode in zsh" })
     vim.keymap.set('n', 'a', char_esc_char('a'), { buffer = true })
     vim.keymap.set('n', 'i', char_esc_char('i'), { buffer = true })
     vim.keymap.set('n', 'I', char_esc_char('I'), { buffer = true })
@@ -55,12 +55,33 @@ vim.api.nvim_create_autocmd("TermOpen", {
     vim.keymap.set('n', 'gI', char_esc_char('gI'), { buffer = true })
     vim.keymap.set('n', 'gi', char_esc_char('gi'), { buffer = true })
     vim.b.terminal_mode = "INSERT"
+    vim.opt.statuscolumn = ""
+
+    vim.api.nvim_create_autocmd("BufEnter", {
+      buffer = args.buf,
+      callback = function()
+        -- Enter insert mode if zsh is the foreground task
+        -- Putting the buffer into insert mode will put it into zsh's normal mode
+        vim.system({ "ps", "-v", "-p", vim.b.terminal_job_pid }, { text = true }, function(out)
+          vim.system({ "awk", "{ print $2 }" }, { text = true, stdin = out.stdout }, function(out)
+            vim.system({ "tail", "-n", "1" }, { text = true, stdin = out.stdout }, function(out)
+              vim.schedule(function()
+                if out.stdout:find('+') and vim.fn.mode() == 'n' then
+                  vim.schedule(vim.cmd.startinsert)
+                end
+              end)
+            end)
+          end)
+        end)
+      end,
+      group = gid
+    })
   end,
   group = gid,
   desc = "Keymaps and mode setting for terminal passthrough"
 })
 
-vim.api.nvim_create_autocmd("TermEnter", {
+vim.api.nvim_create_autocmd("TermOpen", {
   pattern = "*",
   callback = function()
     vim.o.number = false

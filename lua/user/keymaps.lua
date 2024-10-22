@@ -6,8 +6,9 @@ keymap('n', ']c', ':silent cnext<CR>', opts)
 keymap('n', '[c', ':silent cprevious<CR>', opts)
 
 keymap('n', '<Leader>bb', '<CMD>Telescope buffers theme=ivy<CR>', opts)
-keymap('n', '<Leader><Space>', '<CMD>Telescope commands theme=ivy<CR>', opts)
-
+vim.keymap.set({ 'n', 'v' }, '<Leader><Space>', '<CMD>Telescope commands theme=ivy<CR>', opts)
+vim.keymap.set('n', 'L', 'zL')
+vim.keymap.set('n', 'H', 'zH')
 local dap = require('dap')
 vim.keymap.set('n', '<F5>', function() require('dap').continue() end, { desc = "Continue" })
 vim.keymap.set('n', '<F6>', function() require('dap').step_into() end, { desc = "Step Into" })
@@ -45,6 +46,7 @@ end)
 keymap('n', '<leader>dr', "<CMD>lua require'dap'.repl.toggle()<CR>", opts)
 keymap('n', '<leader>db', "<CMD>lua require'dap'.toggle_breakpoint()<CR>", opts)
 
+vim.keymap.set('n', '<leader>p', '<CMD>Projects<CR>')
 
 keymap('n', '<leader>g', "<CMD>Neogit<cr>", opts)
 -- keymap('n', '<leader>e', "<CMD>new<BAR>e.<cr>", opts)
