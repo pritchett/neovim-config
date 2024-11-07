@@ -131,13 +131,28 @@ vim.api.nvim_create_user_command('Projects', function()
     table.insert(titles, newstart)
 
     local start_new_project = function()
-      vim.ui.input({
-        prompt = "Project Name: ",
-        -- completion = function() return { "trip", "activity" } end, cancelreturn = nil
-      }, function(project)
-        if (project and project ~= "") then
-          Project.project_remote_start_async(project, true)
+      vim.system({ 'ls', '/Users/brian/Development' }, { text = true }, function(out)
+        local start_projects = {}
+        for proj in out.stdout:gmatch("[^\r\n]+") do
+          local should_insert = true
+          for _, check_project in ipairs(projects) do
+            if proj == check_project.project_name then
+              should_insert = false
+              break
+            end
+          end
+          if should_insert then
+            table.insert(start_projects, proj)
+          end
         end
+
+        vim.schedule(function()
+          vim.ui.select(start_projects, { prompt = "Project Name" }, function(project)
+            if (project and project ~= "") then
+              Project.project_remote_start_async(project, true)
+            end
+          end)
+        end)
       end)
     end
 
