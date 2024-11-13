@@ -33,30 +33,6 @@ M.find_projects_async = function(cb)
   end)
 end
 
-
--- --- @return Project[]
--- M.find_projects2 = function()
---   local projects = {}
---   M.find_projects_async(function(ps)
---     projects = ps
---   end):wait()
---   return projects
--- end
-
--- --- @param cb function
--- --- @return Project | nil
--- M.find_projects = function(cb)
---   local data = vim.system({ "kitten", "@ls", }, { text = true }):wait()
---   local cmd = {
---     "jq",
---     '[.[] | .tabs[] | .windows[] | select(.user_vars.NVIM_PROJECT_NAME != null) | { window_id: .id, project_name: .user_vars.NVIM_PROJECT_NAME, server: .user_vars.NVIM_SERVER_NAME }]'
---   }
---   local json = vim.system(cmd, { text = true, stdin = data.stdout }):wait()
---   if (not json) then return nil end
---
---   return vim.json.decode(json.stdout, { luanil = { object = true, array = true } })
--- end
-
 --- @param query string a jq query
 --- @param cb fun(objs?: table[])
 --- @return nil
@@ -113,25 +89,6 @@ M.find_project = function(project_name)
   while not needs_return do end
   return results
 end
-
--- M.find_project = function(project_name)
---   local data = vim.system({ "kitten", "@ls", }, { text = true }):wait()
---   local cmd = {
---     "jq",
---     '.[] | .tabs[] | .windows[] | select(.user_vars.NVIM_PROJECT_NAME == "' ..
---     project_name ..
---     '") | { window_id: .id, project_name: .user_vars.NVIM_PROJECT_NAME, server: .user_vars.NVIM_SERVER_NAME }'
---   }
---   local json = vim.system(cmd, { text = true, stdin = data.stdout }):wait()
---   if (not json) then return nil end
---
---   local ok, project = pcall(vim.json.decode, json.stdout)
---   if ok then
---     return project
---   else
---     return nil
---   end
--- end
 
 ---@param project_name string
 ---@param switch boolean if it should switch to the project
@@ -220,52 +177,5 @@ end
 M.project_exec = function(project_name, command)
   return M.project_exec_async(project_name, command)
 end
-
-
--- ---@param project_name string the project name
--- ---@param switch boolean to the project after starting it
--- ---@param cb? fun() function to run after it starts
--- M.project_remote_start_async = function(project_name, switch, cb)
---   local cmd = { "kitten",
---     "@launch",
---     "--type",
---     "tab",
---     "--cwd",
---     "~/Development/" .. project_name,
---     "--copy-env",
---     "--no-response",
---     "--dont-take-focus",
---     "--tab-title",
---     project_name,
---     "nvim",
---     "-c",
---     "ProjectStart " .. project_name
---   }
---
---   local run_if_cb = function()
---     if (cb) then
---       cb()
---     end
---   end
---
---   local switchfn = function()
---     local switch_cmd = {
---       "kitten",
---       "@focus-tab",
---       "--match",
---       "title:" .. project_name
---     }
---     vim.system(switch_cmd, {}, function(out) run_if_cb() end)
---   end
---
---   vim.system(cmd, {}, function(out)
---     if (switch) then
---       switchfn()
---     else
---       run_if_cb()
---     end
---   end)
--- end
---
 
 return M
