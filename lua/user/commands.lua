@@ -77,7 +77,6 @@ end, {
 })
 
 vim.api.nvim_create_user_command("UrlEncode", function(args)
-  vim.notify(vim.inspect(args))
   if args.args ~= "" then
     local cmd = "execute('!~/Development/scripts/url_encode.py " .. args.args .. "')"
     vim.cmd.echo(cmd)
@@ -108,13 +107,14 @@ vim.api.nvim_create_user_command('Deployments',
     vim.cmd.startinsert()
   end, {})
 
-vim.api.nvim_create_user_command('TelescopeResume', function()
-  vim.cmd("Telescope resule")
-end, {})
-
 vim.api.nvim_create_user_command('ToggleDiagnosticVirtualText', function()
   vim.diagnostic.config({ virtual_text = not vim.diagnostic.config().virtual_text })
 end, { desc = "Toggle diagnostic virtual text display" })
+
+vim.api.nvim_create_user_command('Help', function()
+  vim.cmd("Telescope help_tags theme=ivy")
+end, { desc = "Help tags" })
+
 local Project = require('user.projects')
 vim.api.nvim_create_user_command('Projects', function()
   Project.find_projects_async(function(projects)
@@ -167,4 +167,3 @@ vim.api.nvim_create_user_command('Projects', function()
     vim.schedule(function() vim.ui.select(titles, { prompt = "Select project" }, start_or_switch_project) end)
   end)
 end, { desc = "List Projects" })
-
