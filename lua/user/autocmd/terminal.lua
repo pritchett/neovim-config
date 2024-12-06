@@ -62,17 +62,19 @@ vim.api.nvim_create_autocmd("TermOpen", {
       callback = function()
         -- Enter insert mode if zsh is the foreground task
         -- Putting the buffer into insert mode will put it into zsh's normal mode
-        vim.system({ "ps", "-v", "-p", vim.b.terminal_job_pid }, { text = true }, function(out)
-          vim.system({ "awk", "{ print $2 }" }, { text = true, stdin = out.stdout }, function(out)
-            vim.system({ "tail", "-n", "1" }, { text = true, stdin = out.stdout }, function(out)
-              vim.schedule(function()
-                if out.stdout:find('+') and vim.fn.mode() == 'n' then
-                  vim.schedule(vim.cmd.startinsert)
-                end
+        if vim.fn.mode() == 'n' then
+          vim.system({ "ps", "-v", "-p", vim.b.terminal_job_pid }, { text = true }, function(out)
+            vim.system({ "awk", "{ print $2 ' ' $13}" }, { text = true, stdin = out.stdout }, function(out)
+              vim.system({ "tail", "-n", "1" }, { text = true, stdin = out.stdout }, function(out)
+                vim.schedule(function()
+                  if out.stdout:find('+') and out.stdout:find('zsh') then
+                    vim.schedule(vim.cmd.startinsert)
+                  end
+                end)
               end)
             end)
           end)
-        end)
+        end
       end,
       group = gid
     })
