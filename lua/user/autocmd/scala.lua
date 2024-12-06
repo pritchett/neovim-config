@@ -38,7 +38,6 @@ local function setup_dap()
   dapui.setup()
 
   dap.listeners.before.event_initialized["dapui_config"] = function(session, body)
-    print(vim.inspect(session))
     if (session.config.name == "Launch debugger") then
       local bufnr = vim.api.nvim_get_current_buf()
       vim.cmd.tabnew()
@@ -50,7 +49,6 @@ local function setup_dap()
     end
   end
   dap.listeners.before.event_terminated["dapui_config"] = function()
-    vim.notify("BEFORE EVENT TERMINATED")
     dapui.close()
     -- print(vim.inspect(session))
     -- if (session.config.name == "Launch debugger") then
@@ -66,7 +64,6 @@ local function setup_dap()
     -- end
   end
   dap.listeners.after.event_terminated["dapui_config"] = function()
-    vim.notify("AFTER EVENT TERMINATED")
     dapui.close()
     -- print(vim.inspect(session))
     -- if (session.config.name == "Launch debugger") then
@@ -82,7 +79,6 @@ local function setup_dap()
     -- end
   end
   dap.listeners.before.event_exited["dapui_config"] = function(session, body)
-    vim.notify("BEFORE EVENT EXITED")
     dapui.close()
     -- print(vim.inspect(session))
     -- if (session.config.name == "Launch debugger") then
@@ -98,7 +94,6 @@ local function setup_dap()
     -- end
   end
   dap.listeners.after.event_exited["dapui_config"] = function(session, body)
-    vim.notify("AFTER EVENT EXITED")
     dapui.close()
     -- print(vim.inspect(session))
     -- if (session.config.name == "Launch debugger") then
@@ -114,7 +109,6 @@ local function setup_dap()
     -- end
   end
   dap.listeners.before.event_cancel["dapui_config"] = function(sesh, body)
-    vim.notify("BEFORE EVENT CANCEL")
     dapui.close()
   end
   dap.listeners.before.event_stopped["dapui_config"] = function(sesh, body)
