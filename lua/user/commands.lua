@@ -26,7 +26,6 @@ vim.api.nvim_create_user_command("TelescopeResume", function()
   require('telescope.builtin').resume({ cache_index = 2 })
 end, {})
 
-
 vim.api.nvim_create_user_command("UrlDecode", function()
   vim.cmd('!~/Development/scripts/url_decode.py')
 end, {
@@ -46,7 +45,12 @@ end, {
 })
 
 vim.api.nvim_create_user_command("FindFiles", function()
-  vim.cmd("Telescope find_files theme=ivy")
+  require('telescope.builtin').find_files(require('telescope.themes').get_ivy(
+    {
+      -- cwd = vim.fn.stdpath('config'),
+      -- search_dirs = { vim.fn.stdpath('config') },
+      -- search_file = vim.fn.getcwd() .. "/.nvim.lua"
+    }))
 end, {})
 
 vim.api.nvim_create_user_command("LiveGrep", function()
