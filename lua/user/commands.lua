@@ -9,6 +9,9 @@ vim.api.nvim_create_user_command("Messages", function()
   vim.api.nvim_win_set_buf(winnr, bufnr)
 end, {})
 
+vim.api.nvim_create_user_command("Diagnotics", function()
+  require('telescope.builtin').diagnostics(require('telescope.themes').get_ivy({}))
+end, {})
 
 vim.api.nvim_create_user_command("Config", function()
   require('telescope.builtin').find_files(require('telescope.themes').get_ivy(
