@@ -19,6 +19,9 @@ vim.api.nvim_create_user_command("Config", function()
     }))
 end, {})
 
+vim.api.nvim_create_user_command("TelescopeResume", function()
+  require('telescope.builtin').resume({ cache_index = 2 })
+end, {})
 
 
 vim.api.nvim_create_user_command("UrlDecode", function()
