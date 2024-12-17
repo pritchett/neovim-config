@@ -51,7 +51,7 @@ local query_kitten_ls_with_jq_async = function(query, cb)
 end
 
 ---@alias Projects.Project { window_id: integer, server: string, project_name: string }
----@alias Projects.FindResultsCallback {found: fun(project: Projects.Project) -> any, not_found: fun() -> any }
+---@alias Projects.FindResultsCallback {found: fun(project: Projects.Project) }
 
 --- @param project_name string
 --- @param cbs Projects.FindResultsCallback
@@ -115,7 +115,7 @@ M.project_remote_start_async = function(project_name, switch, cb)
     table.insert(cmd, do_not_switch)
   end
 
-  local nvim_cmd = { "nvim", "-c", "lua require('user.projects').project_start('" .. project_name .. "')" }
+  local nvim_cmd = { "nvim", "-V1", "-c", "lua require('user.projects').project_start('" .. project_name .. "')" }
 
   for _, ins in ipairs(nvim_cmd) do
     table.insert(cmd, ins)
