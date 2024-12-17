@@ -54,6 +54,8 @@ vim.api.nvim_create_autocmd("TermOpen", {
     vim.keymap.set('n', 'O', char_esc_char('O'), { buffer = true })
     vim.keymap.set('n', 'gI', char_esc_char('gI'), { buffer = true })
     vim.keymap.set('n', 'gi', char_esc_char('gi'), { buffer = true })
+    vim.keymap.set('n', '<C-w>1', 'z12<CR>', { buffer = true })
+    vim.keymap.set('n', '<C-w>2', 'z50<CR>', { buffer = true })
     vim.b.terminal_mode = "INSERT"
     vim.opt.statuscolumn = ""
 
