@@ -9,66 +9,17 @@ vim.api.nvim_create_user_command("Messages", function()
   vim.api.nvim_win_set_buf(winnr, bufnr)
 end, {})
 
-local sections = { "main", "plugins", "keymaps", "autocmds", "commands", "options", "project" }
-vim.api.nvim_create_user_command("Config", function(args)
-  local tabnr = vim.fn.tabpagenr()
-  local open_file = function(reset_pwd, file)
-    vim.cmd.tabnew()
-    if (reset_pwd) then
-      vim.cmd.tcd("~/.config/nvim/")
-    end
-    local ok, _ = pcall(vim.cmd.edit, file)
-    if not ok then
-      vim.cmd.tabclose()
-      vim.cmd.tabnext(tabnr)
-    end
-  end
 
-  local open_config = function(section)
-    if section == 'main' then
-      open_file(true, "~/.config/nvim/init.lua")
-    elseif section == 'plugins' then
-      open_file(true, "~/.config/nvim/lua/user/plugins/init.lua")
-    elseif section == 'keymaps' then
-      open_file(true, "~/.config/nvim/lua/user/keymaps.lua")
-    elseif section == 'autocmds' then
-      open_file(true, "~/.config/nvim/lua/user/autocmd/init.lua")
-    elseif section == 'commands' then
-      open_file(true, "~/.config/nvim/lua/user/commands.lua")
-    elseif section == 'options' then
-      open_file(true, "~/.config/nvim/lua/user/options.lua")
-    elseif section == 'project' then
-      open_file(false, vim.fn.getcwd() .. "/.nvim.lua")
-    else
-      vim.notify("Could not find configuration secion: " .. section, vim.diagnostic.severity.ERROR)
-    end
-  end
+vim.api.nvim_create_user_command("Config", function()
+  require('telescope.builtin').find_files(require('telescope.themes').get_ivy(
+    {
+      -- cwd = vim.fn.stdpath('config'),
+      search_dirs = { vim.fn.stdpath('config') },
+      -- search_file = vim.fn.getcwd() .. "/.nvim.lua"
+    }))
+end, {})
 
-  if args and args['args'] ~= "" then
-    local opt = args['args']
-    open_config(opt)
-  else
-    vim.ui.select(sections, { prompt = "Config" },
-      function(choice)
-        if (not choice or choice == "") then
-          return
-        end
-        open_config(choice)
-      end)
-  end
-end, {
-  nargs = "?",
-  complete = function(argLead)
-    local res = {}
-    for _, opt in ipairs(sections) do
-      if opt:sub(1, argLead:len()) == argLead then
-        table.insert(res, opt)
-      end
-    end
 
-    return res
-  end
-})
 
 vim.api.nvim_create_user_command("UrlDecode", function()
   vim.cmd('!~/Development/scripts/url_decode.py')
