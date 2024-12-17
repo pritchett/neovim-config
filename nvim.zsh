@@ -1,25 +1,60 @@
+function nvim-execute-lua {
+  nvim --clean --headless --server $NVIM --remote-expr "execute('lua $NVIM_LUA')" 1>/dev/null
+}
+
+function nvim-send-keys {
+  nvim --clean --headless --server $NVIM --remote-send $NVIM_KEYS
+}
+
+function nvim-execute {
+  nvim --clean --headless --server $NVIM --remote-expr "execute('$NVIM_VIMSCRIPT')" 1>/dev/null
+}
+
+# function nvim-z-key {
+#   NVIM_KEYS="z" nvim-send-keys
+# }
+# zle -N nvim-z-key
+# bindkey -M vicmd 'z' nvim-z-key
 
 function nvim-toggleterm {
-  (nvr -c ":${NUMERIC}ToggleTerm" &)
+  NVIM_VIMSCRIPT=":${NUMERIC}ToggleTerm" nvim-execute
 }
 zle -N nvim-toggleterm
 bindkey -M vicmd ' t' nvim-toggleterm
 
+function nvim-neogit {
+  NVIM_VIMSCRIPT=":Neogit" nvim-execute
+}
+zle -N nvim-neogit
+bindkey -M vicmd ' g' nvim-neogit
+
+function nvim-command-palette {
+  NVIM_VIMSCRIPT="Telescope commands theme=ivy" nvim-execute
+}
+zle -N nvim-command-palette
+bindkey -M vicmd '  ' nvim-command-palette
+
 function nvim-wincmd {
   read -k key
-  nvr -c ":${NUMERIC}wincmd $key"
+  NVIM_VIMSCRIPT=":${NUMERIC}wincmd $key" nvim-execute
 }
 zle -N nvim-wincmd
 bindkey -M vicmd "^w" nvim-wincmd
 
+function set-mode {
+  NVIM_LUA="vim.b[$BUFNR].terminal_mode = \"$NVIM_MODE\"" nvim-execute-lua
+  update-lualine-winbar
+}
+
 ### INSERT
 function nvim-set-terminal-insert-mode {
-(nvr -c "lua vim.b[$BUFNR].terminal_mode = 'INSERT'" & nvr -c "lua require('lualine').refresh( { place = { 'winbar' }})" &)
+  NVIM_MODE="INSERT" set-mode
 }
-zle -N nvim-set-terminal-insert-mode 
+zle -N nvim-set-terminal-insert-mode
+
 
 function nvim-set-insert-mode {
-  zle nvim-set-terminal-insert-mode
+  NVIM_MODE="INSERT" set-mode
   case $KEYS in
     (a)
         zle vi-add-next
@@ -62,9 +97,30 @@ bindkey -M vicmd 'o' nvim-set-insert-mode
 bindkey -M vicmd 'S' nvim-set-insert-mode
 bindkey -M vicmd 's' nvim-set-insert-mode
 
+function nvim-normal-g-key {
+  read -k key
+  case $key in
+    (t)
+      NVIM_VIMSCRIPT=":stopinsert!" nvim-execute
+      NVIM_VIMSCRIPT=":normal ${numeric}g$key" nvim-execute
+      NVIM_VIMSCRIPT=":if bufnr() == $BUFNR | execute(\"lua vim.schedule(vim.cmd.startinsert)\") | endif" nvim-execute
+      ;;
+    (T)
+      NVIM_VIMSCRIPT=":stopinsert!" nvim-execute
+      NVIM_VIMSCRIPT=":normal ${numeric}g$key" nvim-execute
+      NVIM_VIMSCRIPT=":if bufnr() == $BUFNR | execute(\"lua vim.schedule(vim.cmd.startinsert)\") | endif" nvim-execute
+      ;;
+  esac
+}
+zle -N nvim-normal-g-key
+bindkey -M vicmd 'g' nvim-normal-g-key
+
+function update-lualine-winbar {
+  NVIM_LUA="require(\"lualine\").refresh( { place = { \"winbar\" } } )" nvim-execute-lua
+}
 #### VISUAL
 function nvim-set-terminal-visual-mode {
-(nvr -c "lua vim.b[$BUFNR].terminal_mode = 'VISUAL'" & nvr -c "lua require('lualine').refresh( { place = { 'winbar' }})" &)
+  NVIM_MODE="VISUAL" set-mode
 }
 zle -N nvim-set-terminal-visual-mode
 
@@ -84,7 +140,7 @@ bindkey -M visual '^[' nvim-deactivate-region
 
 #### V-LINE (VISUAL-LINE)
 function nvim-set-terminal-v-line-mode {
-(nvr -c "lua vim.b[$BUFNR].terminal_mode = 'V-LINE'" & nvr -c "lua require('lualine').refresh( { place = { 'winbar' }})" &)
+  NVIM_MODE="V-LINE" set-mode
 }
 zle -N nvim-set-terminal-v-line-mode
 
@@ -97,7 +153,7 @@ bindkey -M vicmd 'V' nvim-set-v-line-mode
 
 #### O-PENDING
 function nvim-set-terminal-o-pending-mode {
-(nvr -c "lua vim.b[$BUFNR].terminal_mode = 'O-PENDING'" & nvr -c "lua require('lualine').refresh( { place = { 'winbar' }})" &)
+  NVIM_MODE="O-PENDING" set-mode
 }
 zle -N nvim-set-terminal-o-pending-mode
 
@@ -108,6 +164,7 @@ function nvim-set-o-pending-mode {
         then
           zle nvim-set-terminal-o-pending-mode
           zle vi-change
+          zle nvim-set-terminal-insert-mode
         else
           zle nvim-set-terminal-insert-mode
           zle vi-change
@@ -118,6 +175,7 @@ function nvim-set-o-pending-mode {
         then
           zle nvim-set-terminal-o-pending-mode
           zle vi-delete
+          zle nvim-set-terminal-normal-mode
         else
           zle nvim-set-terminal-insert-mode
           zle vi-delete
@@ -132,7 +190,7 @@ bindkey -M vicmd 'd' nvim-set-o-pending-mode
 ### NORMAL
 
 function nvim_set_buffer_terminal_mode_normal {
-  (nvr -c "lua vim.b[$BUFNR].terminal_mode = 'NORMAL'" & nvr -c "lua require('lualine').refresh( { place = { 'winbar' }})" &)
+  NVIM_MODE="NORMAL" set-mode
 }
 zle -N nvim_set_buffer_terminal_mode_normal
 
@@ -144,32 +202,19 @@ zle -N nvim-set-terminal-normal-mode
 bindkey -M viins '^[' nvim-set-terminal-normal-mode
 bindkey -M viopp '^[' nvim-set-terminal-normal-mode
 
-function nvim-edit-with-oil {
-  case $KEYS in
-    (\ o)
-        nvr -c "e $PWD"
-        ;;
-    (\ e)
-        nvr -c "wincmd k | belowright split | e $PWD"
-        ;;
-    esac
-}
-zle -N nvim-edit-with-oil 
-bindkey -M vicmd ' o' nvim-edit-with-oil
-bindkey -M vicmd ' e' nvim-edit-with-oil
-
 bindkey -M vicmd " x" execute-named-cmd
 
 bindkey -M vicmd -r ":"
 
 function nvim-cmd-mode {
-  nvr --remote-send "<C-\><C-n>:"
+  #nvr --remote-send "<C-\><C-n>:"
+  NVIM_KEYS="<C-\><C-n>:" nvim-send-keys
 }
 zle -N nvim-cmd-mode
 bindkey -M vicmd ":" nvim-cmd-mode
 
-export BUFNR=`nvr --remote-expr "bufnr()"`
-# nvr -c "lua vim.b[$BUFNR].terminal_mode = 'INSERT'"
+export BUFNR=`nvim --clean --headless --server $NVIM --remote-expr "bufnr()"`
+NVIM_MODE='INSERT' set-mode
 
 bindkey -rpM vicmd "^["
 bindkey -rpM viins "^["
@@ -181,3 +226,64 @@ bindkey -M viopp -r "^[OA"
 bindkey -M viopp -r "^[OB"
 bindkey -M viopp -r "^[[A"
 bindkey -M viopp -r "^[[B"
+
+# :set backspace=start
+bindkey -M viins '^?' backward-delete-char
+
+# Has to be at the bottom of the file for some reason
+function alt-k {
+  NVIM_VIMSCRIPT=":${NUMERIC}wincmd k" nvim-execute
+}
+zle -N alt-k
+bindkey -M vicmd "^[k" alt-k
+
+function alt-j {
+  NVIM_VIMSCRIPT=":${NUMERIC}wincmd j" nvim-execute
+}
+zle -N alt-j
+bindkey -M vicmd "^[j" alt-j
+
+function alt-h {
+  NVIM_VIMSCRIPT=":${NUMERIC}wincmd h" nvim-execute
+}
+zle -N alt-h
+bindkey -M vicmd "^[h" alt-h
+
+function alt-l {
+  NVIM_VIMSCRIPT=":${NUMERIC}wincmd l" nvim-execute
+}
+zle -N alt-l
+bindkey -M vicmd "^[l" alt-l
+
+function projects {
+  NVIM_VIMSCRIPT=":Projects" nvim-execute
+}
+zle -N projects
+bindkey -M vicmd " p" projects
+
+bindkey -M viins "^p" up-line-or-history
+bindkey -M viins "^n" down-line-or-history
+
+function vi-paste {
+  LBUFFER=`pbpaste`
+}
+zle -N vi-paste
+bindkey -M viins '^v' vi-paste
+
+function telescope-history {
+  HLIST=`history 0 | sort -r | sed -r "s/'/''/g" | sed -r 's/\[\[/\\\\[\\\\[/g' | sed -r 's/\]\]/\\\\]\\\\]/g' | sed -r 's/^(.*)$/[[\n\1]],/'`
+  NVIM_LUA='vim.ui.select({'$HLIST'}, { prompt = "Choose From History", kind = "history" },
+  function(choice, idx)
+    if not choice or choice == "" then
+      return
+    else
+      vim.schedule(function()
+        choice = string.gsub(choice, "^%s+%d+%s+", "")
+        vim.api.nvim_chan_send(vim.bo['$BUFNR'].channel, vim.keycode("<C-c>") .. choice)
+      end)
+    end
+  end)'
+  nvim-execute-lua
+}
+zle -N telescope-history
+bindkey -M vicmd "?" telescope-history
