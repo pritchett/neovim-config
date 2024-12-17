@@ -1,9 +1,21 @@
 local opts = { noremap = true, silent = true }
 
-vim.keymap.set('n', ']q', ':silent cnext<CR>', opts)
-vim.keymap.set('n', '[q', ':silent cprevious<CR>', opts)
-vim.keymap.set('n', '<Leader>bb', '<CMD>Telescope buffers theme=ivy<CR>', opts)
-vim.keymap.set({ 'n', 'v' }, '<Leader><Space>', '<CMD>Telescope commands theme=ivy<CR>', opts)
+local with_opts = function(opts)
+  local return_opts = { noremap = true, silent = true }
+  for k, v in pairs(opts) do
+    return_opts[k] = v
+  end
+  return return_opts
+end
+
+local with_desc = function(desc)
+  return with_opts({ desc = desc })
+end
+
+vim.keymap.set('n', ']q', ':silent cnext<CR>', with_desc("Next quickfix item"))
+vim.keymap.set('n', '[q', ':silent cprevious<CR>', with_desc("Previous quickfix item"))
+vim.keymap.set('n', '<Leader>bb', '<CMD>Telescope buffers theme=ivy<CR>', with_desc("List Buffers"))
+vim.keymap.set({ 'n', 'v' }, '<Leader><Space>', '<CMD>Telescope commands theme=ivy<CR>', with_desc("Command pallete"))
 vim.keymap.set('n', 'L', 'zL')
 vim.keymap.set('n', 'H', 'zH')
 local dap = require('dap')
@@ -43,10 +55,10 @@ end)
 vim.keymap.set('n', '<leader>dr', "<CMD>lua require'dap'.repl.toggle()<CR>", opts)
 vim.keymap.set('n', '<leader>db', "<CMD>lua require'dap'.toggle_breakpoint()<CR>", opts)
 
-vim.keymap.set('n', '<leader>p', '<CMD>Projects<CR>')
+vim.keymap.set('n', '<leader>p', '<CMD>Projects<CR>', with_desc("Projects"))
 
-vim.keymap.set('n', '<leader>n', "<CMD>Neorg<CR>", opts)
-vim.keymap.set('n', '<leader>g', "<CMD>Neogit<CR>", opts)
+vim.keymap.set('n', '<leader>n', "<CMD>Neorg<CR>", with_desc("Neorg"))
+vim.keymap.set('n', '<leader>g', "<CMD>Neogit<CR>", with_desc("Neogit"))
 -- keymap('n', '<leader>e', "<CMD>new<BAR>e.<cr>", opts)
 vim.keymap.set('n', '<leader>e', function()
   -- if vim.api.nvim_buf_get_name(0) == "" then
@@ -57,9 +69,7 @@ vim.keymap.set('n', '<leader>e', function()
   -- end
 end, { desc = "Browse directory" })
 -- keymap('n', '<leader>E', "<CMD>execute 'new | e ' . expand('%:h')<CR>", opts)
-vim.keymap.set('n', '<leader>E', "<CMD>execute 'e ' . expand('%:h')<CR>", opts)
-vim.keymap.set('n', '<leader>h',
-  function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = 0 }), { bufnr = 0 }) end, opts)
+vim.keymap.set('n', '<leader>E', "<CMD>execute 'e ' . expand('%:h')<CR>", with_desc("Open current of buffer"))
 
 vim.keymap.set('n', '<C-]>', "<C-]>zz", opts)
 vim.keymap.set('n', '<C-W>m', "<C-W>_<C-W>|", opts)
@@ -75,10 +85,12 @@ vim.keymap.set('n', '[a', '<CMD>TSTextobjectGotoPreviousStart @parameter.inner<C
 vim.keymap.set('n', '[[a', '<CMD>TSTextobjectGotoPreviousStart @parameter.outer<CR>')
 
 vim.keymap.set('t', '<C-\\>', '<C-\\><C-n>')
+vim.keymap.set('t', '<C-;>', '<C-\\><C-n>')
 
 -- Neorg
 vim.keymap.set('n', '<Leader>oc', '<CMD>Neorg capture<CR>', { silent = true })
 vim.keymap.set('n', '<Leader>ot', '<CMD>Neorg toggle-concealer<CR>')
+
 vim.keymap.set('n', '<a-TAB>', 'gt')
 vim.keymap.set('n', '<a-S-TAB>', 'gT')
 
@@ -121,14 +133,6 @@ vim.keymap.set('n', '<a-L>', '<CMD>wincmd L<CR>')
 vim.keymap.set('n', '<a-H>', '<CMD>wincmd H<CR>')
 vim.keymap.set('n', '<a-J>', '<CMD>wincmd J<CR>')
 vim.keymap.set('n', '<a-K>', '<CMD>wincmd K<CR>')
-
-local Terminal = require('toggleterm.terminal').Terminal
-
-local control = Terminal:new({ cmd = "w3m http://127.0.0.1/control", direction = "float" })
-
-function _Control_toggle()
-  control:toggle()
-end
 
 ---- luasnip
 local ls = require("luasnip")
