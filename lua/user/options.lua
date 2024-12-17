@@ -14,7 +14,7 @@ g.db_ui_show_database_icon = 1
 g.db_ui_use_nerd_fonts = 1
 g.db_ui_use_nvim_notify = 1
 g.mapleader = ' '
-g.localmapleader = ' '
+g.maplocalleader = '\\'
 
 opt.tabstop = 2
 opt.number = true
@@ -60,10 +60,12 @@ o.signcolumn = 'yes'
 o.foldlevel = 2
 o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
 o.exrc = true
-vim.opt_global.shortmess:remove('F') -- don't give the file info when editing a file, like `:silent`
+-- vim.opt_global.shortmess:remove('F') -- don't give the file info when editing a file, like `:silent`
+-- vim.opt_global.shortmess:append({'F', 'W'})
 -- was used for the command; note that this also affects messages
 -- from autocommands
 -- for nvim-metals
+-- vim.opt_global.fillchars:append({ fold = ' ', foldopen = '', foldsep = '│', foldclose = '' })
 vim.opt_global.fillchars:append({ fold = ' ', foldopen = '', foldsep = ' ', foldclose = '' })
 
 -- -- Window
