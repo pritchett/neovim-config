@@ -5,6 +5,7 @@ local command_overrides = {
   ['Lazy'] = true,
   ['Telescope'] = true,
   ['DBUIToggle'] = true,
+  ['WhichKey'] = true,
   ['Autosession'] = function()
     vim.ui.select({ 'search', 'delete' }, { prompt = 'Autosession' }, function(choice)
       if not choice or choice == '' then
@@ -85,6 +86,8 @@ return {
     })
     telescope.load_extension("fzy_native")
     telescope.load_extension("ui-select")
+    telescope.load_extension('dap')
+    telescope.load_extension('gh')
   end,
   event = "VeryLazy"
 }

@@ -10,7 +10,9 @@ vim.api.nvim_create_user_command("Messages", function()
 end, {})
 
 vim.api.nvim_create_user_command("Diagnotics", function()
-  require('telescope.builtin').diagnostics(require('telescope.themes').get_ivy({}))
+  require('telescope.builtin').diagnostics(require('telescope.themes').get_ivy({
+    root_dir = vim.fn.getcwd()
+  }))
 end, {})
 
 vim.api.nvim_create_user_command("Config", function()
@@ -108,7 +110,7 @@ vim.api.nvim_create_user_command('Projects', function()
         end
 
         vim.schedule(function()
-          vim.ui.select(start_projects, { prompt = "Project Name" }, function(project)
+          vim.ui.select(start_projects, { prompt = "Project Name:" }, function(project)
             if (project and project ~= "") then
               Project.project_remote_start_async(project, true)
             end
@@ -125,6 +127,6 @@ vim.api.nvim_create_user_command('Projects', function()
       end
     end
 
-    vim.schedule(function() vim.ui.select(titles, { prompt = "Select project" }, start_or_switch_project) end)
+    vim.schedule(function() vim.ui.select(titles, { prompt = "Select project:" }, start_or_switch_project) end)
   end)
 end, { desc = "List Projects" })

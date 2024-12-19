@@ -84,7 +84,7 @@ vim.keymap.set('n', ']]a', '<CMD>TSTextobjectGotoNextStart @parameter.outer<CR>'
 vim.keymap.set('n', '[a', '<CMD>TSTextobjectGotoPreviousStart @parameter.inner<CR>')
 vim.keymap.set('n', '[[a', '<CMD>TSTextobjectGotoPreviousStart @parameter.outer<CR>')
 
-vim.keymap.set('t', '<C-\\>', '<C-\\><C-n>')
+-- vim.keymap.set('t', '<C-\\>', '<C-\\><C-n>')
 vim.keymap.set('t', '<C-;>', '<C-\\><C-n>')
 
 -- Neorg
@@ -115,7 +115,7 @@ local function toggle_quickfix()
   end
 end
 
-vim.keymap.set('n', '<Leader>q', toggle_quickfix)
+vim.keymap.set('n', '<Leader>q', toggle_quickfix, { desc = "Toggle quickfix" })
 
 -- Window management
 vim.keymap.set('n', '<a-l>', '<CMD>wincmd l<CR>')
