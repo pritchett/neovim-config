@@ -98,7 +98,9 @@ function M.on_attach(client, bufnr)
   --   }
   -- }, bufnr)
 
-  vim.opt_local.statuscolumn = require('user.customizations').lsp_statuscolumn
+  vim.api.nvim_buf_call(bufnr, function()
+    vim.opt_local.statuscolumn = require('user.customizations').lsp_statuscolumn
+  end)
 
   function set_up_autoformatting()
     vim.api.nvim_create_autocmd("BufWritePre", {
