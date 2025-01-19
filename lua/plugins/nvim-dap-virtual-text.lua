@@ -1,1 +1,4 @@
-return { "theHamsta/nvim-dap-virtual-text", event = "VeryLazy" }
+return {
+  "theHamsta/nvim-dap-virtual-text",
+  event = "VeryLazy"
+}

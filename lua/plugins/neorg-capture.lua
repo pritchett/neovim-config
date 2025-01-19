@@ -1,1 +1,4 @@
-return { "pritchett/neorg-capture", event = "VeryLazy" }
+return {
+  "pritchett/neorg-capture",
+  event = "VeryLazy"
+}

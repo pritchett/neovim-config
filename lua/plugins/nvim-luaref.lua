@@ -1,1 +1,4 @@
-return { "milisims/nvim-luaref" }
+return {
+  "milisims/nvim-luaref",
+  event = "VeryLazy"
+}

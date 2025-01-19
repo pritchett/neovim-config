@@ -1,1 +1,4 @@
-return { "nvim-treesitter/nvim-treesitter-textobjects", event = "VeryLazy" }
+return {
+  "nvim-treesitter/nvim-treesitter-textobjects",
+  event = "VeryLazy"
+}

@@ -1,1 +1,4 @@
-return { dir = "~/Development/neorg-templates", event = "VeryLazy" }
+return {
+  dir = "~/Development/neorg-templates",
+  event = "VeryLazy"
+}

@@ -1,1 +1,4 @@
-return { 'neovimhaskell/nvim-hs.vim', lazy = true }
+return {
+  "neovimhaskell/nvim-hs.vim",
+  lazy = true
+}

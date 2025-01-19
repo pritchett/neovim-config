@@ -1,4 +1,4 @@
 return {
-  "mfussenegger/nvim-dap", event = "VeryLazy"
-
+  "mfussenegger/nvim-dap",
+  event = "VeryLazy"
 }

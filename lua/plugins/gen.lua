@@ -1,1 +1,4 @@
-return { "David-Kunz/gen.nvim" }
+return {
+  "David-Kunz/gen.nvim",
+  event = "VeryLazy"
+}
