@@ -61,6 +61,12 @@ return {
         { name = "luasnip" },
         { name = "buffer" },
         { name = "neorg" },
+        {
+          name = 'omni',
+          option = {
+            disable_omnifuncs = { 'v:lua.vim.lsp.omnifunc' }
+          }
+        }
       }),
       formatting = {
         fields = { "kind", "abbr", "menu" },
