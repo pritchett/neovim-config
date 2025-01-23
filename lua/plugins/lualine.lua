@@ -110,16 +110,16 @@ return {
         end
       },
       lualine_y = {
-        function()
-          ---@var clients { name: string}[]
-          local clients = vim.lsp.get_clients({ bufnr = 0 })
-          if (#clients > 0) then
-            return clients[1].name or ""
+        {
+          function()
+            ---@var clients { name: string}[]
+            local clients = vim.lsp.get_clients({ bufnr = 0 })
+            if (#clients > 0) then
+              return clients[1].name or ""
+            end
+            return ""
           end
-          return ""
-        end
-      },
-      lualine_z = {
+        },
         {
           "g:metals_bsp_status",
           cond = function()
@@ -127,6 +127,9 @@ return {
             return ft == 'scala' or ft == "sbt"
           end
         }
+      },
+      lualine_z = {
+        "tabs"
       }
     },
     winbar = {

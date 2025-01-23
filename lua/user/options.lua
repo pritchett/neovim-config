@@ -28,6 +28,7 @@ opt.cmdheight = 0
 
 opt.grepprg = "rg --vimgrep"
 opt.grepformat = "%f:%l:%c:%m"
+opt.showtabline = 0
 
 -- --Global
 o.swapfile = true
