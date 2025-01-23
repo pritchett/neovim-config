@@ -46,11 +46,12 @@ require("user.autocmd")
 require("user.commands")
 
 vim.diagnostic.config({
-  virtual_text = true,
+  virtual_text = false,
   signs = true,
   underline = true,
   update_in_insert = true,
   severity_sort = true,
+  virtual_lines = true
 })
 
 -- local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
