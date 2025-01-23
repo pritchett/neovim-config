@@ -14,8 +14,22 @@ end
 
 vim.keymap.set('n', ']q', ':silent cnext<CR>', with_desc("Next quickfix item"))
 vim.keymap.set('n', '[q', ':silent cprevious<CR>', with_desc("Previous quickfix item"))
-vim.keymap.set('n', '<Leader>bb', '<CMD>Telescope buffers theme=ivy<CR>', with_desc("List Buffers"))
-vim.keymap.set({ 'n', 'v' }, '<Leader><Space>', '<CMD>Telescope commands theme=ivy<CR>', with_desc("Command pallete"))
+vim.keymap.set('n', '<Leader>bb', '<CMD>FzfLua buffers<CR>', with_desc("List Buffers"))
+vim.keymap.set('n', '<C-b>', '<CMD>FzfLua buffers<CR>', with_desc("List Buffers"))
+vim.keymap.set({ 'n', 'v' }, '<Leader><Space>', function()
+  local fzf = require('fzf-lua')
+  fzf.commands({
+    actions = {
+      ["enter"] = {
+        fn = function(cmd)
+          vim.notify(table.concat(cmd))
+          vim.schedule(function() vim.cmd(table.concat(cmd)) end)
+        end,
+        -- exec_silent = true
+      }
+    }
+  })
+end, with_desc("Command pallete"))
 vim.keymap.set('n', 'L', 'zL')
 vim.keymap.set('n', 'H', 'zH')
 local dap = require('dap')

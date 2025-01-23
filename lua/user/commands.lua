@@ -10,18 +10,17 @@ vim.api.nvim_create_user_command("Messages", function()
 end, {})
 
 vim.api.nvim_create_user_command("Diagnotics", function()
-  require('telescope.builtin').diagnostics(require('telescope.themes').get_ivy({
-    root_dir = vim.fn.getcwd()
-  }))
+  require('fzf-lua').diagnostics_workspace()
 end, {})
 
 vim.api.nvim_create_user_command("Config", function()
-  require('telescope.builtin').find_files(require('telescope.themes').get_ivy(
-    {
-      -- cwd = vim.fn.stdpath('config'),
-      search_dirs = { vim.fn.stdpath('config') },
-      -- search_file = vim.fn.getcwd() .. "/.nvim.lua"
-    }))
+  require('fzf-lua').files({ cwd = vim.fn.stdpath('config') })
+  -- require('telescope.builtin').find_files(require('telescope.themes').get_ivy(
+  --   {
+  --     -- cwd = vim.fn.stdpath('config'),
+  --     search_dirs = { vim.fn.stdpath('config') },
+  --     -- search_file = vim.fn.getcwd() .. "/.nvim.lua"
+  --   }))
 end, {})
 
 vim.api.nvim_create_user_command("TelescopeResume", function()
@@ -47,16 +46,34 @@ end, {
 })
 
 vim.api.nvim_create_user_command("FindFiles", function()
-  require('telescope.builtin').find_files(require('telescope.themes').get_ivy(
-    {
-      -- cwd = vim.fn.stdpath('config'),
-      -- search_dirs = { vim.fn.stdpath('config') },
-      -- search_file = vim.fn.getcwd() .. "/.nvim.lua"
-    }))
+  local ok, telescopebuiltin = pcall(require, 'telescope.builtin')
+
+  if ok then
+    telescopebuiltin.find_files(require('telescope.themes').get_ivy(
+      {
+        -- cwd = vim.fn.stdpath('config'),
+        -- search_dirs = { vim.fn.stdpath('config') },
+        -- search_file = vim.fn.getcwd() .. "/.nvim.lua"
+      }))
+  else
+    local ok, fzf = pcall(require, 'fzf-lua')
+    if ok then
+      fzf.files()
+    end
+  end
 end, {})
 
 vim.api.nvim_create_user_command("LiveGrep", function()
-  vim.cmd("Telescope live_grep theme=ivy")
+  local ok, telescopebuiltin = pcall(require, 'telescope.builtin')
+
+  if ok then
+    telescopebuiltin.live_grep(require('telescope.themes').get_ivy({}))
+  else
+    local ok, fzf = pcall(require, 'fzf-lua')
+    if ok then
+      fzf.live_grep()
+    end
+  end
 end, {})
 
 vim.api.nvim_create_user_command('Browse', function(args)
@@ -75,7 +92,7 @@ vim.api.nvim_create_user_command('ToggleDiagnosticVirtualText', function()
 end, { desc = "Toggle diagnostic virtual text display" })
 
 vim.api.nvim_create_user_command('Help', function()
-  vim.cmd("Telescope help_tags theme=ivy")
+  vim.cmd("FzfLua helptags")
 end, { desc = "Help tags" })
 
 local Project = require('user.projects')

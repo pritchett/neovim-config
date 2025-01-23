@@ -150,6 +150,7 @@ local function configure()
     expanded_sign = "▾",
   }
   metals_config.settings = {
+    -- icons = "unicode",                   -- hmm
     testUserInterface = "Test Explorer", -- lets see
     showImplicitArguments = true,
     showInferredType = true,
@@ -180,7 +181,10 @@ local function configure()
   metals_config.capabilities = capabilities
 
   metals.initialize_or_attach(metals_config)
-  require("telescope").load_extension('metals')
+  local ok, telescope = pcall(require, "telescope")
+  if ok then
+    telescope.load_extension('metals')
+  end
 end
 
 local gid = vim.api.nvim_create_augroup("scala", { clear = true })

@@ -29,7 +29,8 @@ zle -N nvim-neogit
 bindkey -M vicmd ' g' nvim-neogit
 
 function nvim-command-palette {
-  NVIM_VIMSCRIPT="Telescope commands theme=ivy" nvim-execute
+  # NVIM_VIMSCRIPT="Telescope commands theme=ivy" nvim-execute
+  NVIM_VIMSCRIPT="FzfLua commands" nvim-execute
 }
 zle -N nvim-command-palette
 bindkey -M vicmd '  ' nvim-command-palette
@@ -270,7 +271,7 @@ function vi-paste {
 zle -N vi-paste
 bindkey -M viins '^v' vi-paste
 
-function telescope-history {
+function command-history {
   HLIST=`history 0 | sort -r | sed -r "s/'/''/g" | sed -r 's/\[\[/\\\\[\\\\[/g' | sed -r 's/\]\]/\\\\]\\\\]/g' | sed -r 's/^(.*)$/[[\n\1]],/'`
   NVIM_LUA='vim.ui.select({'$HLIST'}, { prompt = "Choose From History", kind = "history" },
   function(choice, idx)
@@ -283,7 +284,8 @@ function telescope-history {
       end)
     end
   end)'
+  echo $HLIST
   nvim-execute-lua
 }
-zle -N telescope-history
-bindkey -M vicmd "?" telescope-history
+zle -N command-history
+bindkey -M vicmd "?" command-history

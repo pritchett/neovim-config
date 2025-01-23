@@ -3,7 +3,7 @@ local gid = vim.api.nvim_create_augroup("terminal", { clear = true })
 vim.api.nvim_create_autocmd("ModeChanged", {
   pattern = "c:nt",
   callback = function()
-    if not vim.b.last_command_mode_is_search then
+    if not vim.b.last_command_mode_is_search and not vim.o.filetype == "fzf" then
       vim.cmd.startinsert()
       local esc = vim.api.nvim_replace_termcodes('<ESC>', true, false, true)
       vim.api.nvim_feedkeys(esc, 'n', false)
@@ -16,6 +16,7 @@ vim.api.nvim_create_autocmd("ModeChanged", {
 vim.api.nvim_create_autocmd("ModeChanged", {
   pattern = "*t:c",
   callback = function()
+    ---@diagnostic disable-next-line: inject-field
     vim.b.terminal_mode = "COMMAND"
     local cmdtype = vim.fn.getcmdtype()
     if (cmdtype == "/" or cmdtype == "?") then
@@ -66,7 +67,9 @@ vim.api.nvim_create_autocmd("TermOpen", {
         -- Putting the buffer into insert mode will put it into zsh's normal mode
         if vim.fn.mode() == 'n' then
           vim.system({ "ps", "-v", "-p", vim.b.terminal_job_pid }, { text = true }, function(out)
-            vim.system({ "awk", "{ print $2 ' ' $13}" }, { text = true, stdin = out.stdout }, function(out)
+            ---@diagnostic disable-next-line: redefined-local
+            vim.system({ "awk", "{ print $2 $13}" }, { text = true, stdin = out.stdout }, function(out)
+              ---@diagnostic disable-next-line: redefined-local
               vim.system({ "tail", "-n", "1" }, { text = true, stdin = out.stdout }, function(out)
                 vim.schedule(function()
                   if out.stdout:find('+') and out.stdout:find('zsh') then

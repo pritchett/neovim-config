@@ -20,19 +20,35 @@ function M.set_keymaps(client, bufnr)
   keymap('n', 'gra', vim.lsp.buf.code_action, with_defaults({ desc = "Run Code Action" }))
   keymap('n', 'grn', vim.lsp.buf.rename, with_defaults({ desc = "Rename Symbol" }))
   -- keymap('n', '<Leader>lr', vim.lsp.buf.rename, with_defaults({ desc = "Rename Symbol" }))
-  keymap('n', 'gri', vim.lsp.buf.implementation, opts)
+  keymap('n', 'gri', function() require('fzf-lua').lsp_implementations({ jump_to_single_result = true }) end,
+    with_defaults({ desc = "Implementations" }))
+  keymap('n', 'grl', vim.lsp.codelens.run, with_defaults({ desc = "Run Code Lens" }))
 
-  keymap('n', 'gO', '<CMD>Telescope lsp_document_symbols theme=ivy<CR>', with_defaults({ desc = "Document Symbols" }))
+  -- keymap('n', 'gO', '<CMD>Telescope lsp_document_symbols theme=ivy<CR>', with_defaults({ desc = "Document Symbols" }))
+  keymap('n', 'gO', function() require('fzf-lua').lsp_document_symbols() end,
+    with_defaults({ desc = "Document Symbols" }))
 
   keymap('n', '<leader>lcl', vim.lsp.codelens.run, with_defaults({ desc = "Run Code Lens" }))
   keymap('n', 'gd', '<CMD>lua vim.lsp.buf.definition()<CR>zz', with_defaults({ desc = "Go To Definition" }))
   keymap('n', 'gD', '<CMD>lua vim.lsp.buf.declaration()<CR>zz', with_defaults({ desc = "Go To Declaration" }))
 
   -----
-  keymap('n', 'gI', '<CMD>Telescope lsp_implementations theme=ivy<CR>zz',
-    with_defaults({ desc = "Go To Implementation" }))
-  keymap('n', '<Leader>ls', '<CMD>Telescope lsp_dynamic_workspace_symbols theme=ivy<CR>',
+  keymap('n', 'gI', function()
+    local ok, telescope = pcall(require, "telescope.builtin")
+    if ok then
+      local themes = require("telescope.themes")
+      telescope.builtin.lsp_implementations(themes.get_ivy())
+    else
+      local fzf = require("fzf-lua")
+      fzf.lsp_implementations()
+    end
+  end, with_defaults({ desc = "Go To Implementation" }))
+  -- keymap('n', 'gI', '<CMD>Telescope lsp_implementations theme=ivy<CR>zz',
+  --   with_defaults({ desc = "Go To Implementation" }))
+  keymap('n', '<Leader>ls', '<CMD>FzfLua lsp_live_workspace_symbols<CR>',
     with_defaults({ desc = "Search Workspace Symbols" }))
+  -- keymap('n', '<Leader>ls', '<CMD>Telescope lsp_dynamic_workspace_symbols theme=ivy<CR>',
+  --   with_defaults({ desc = "Search Workspace Symbols" }))
   keymap('n', '<leader>ld',
     function() vim.diagnostic.open_float({ border = "rounded" }, { focus = false, scope = "cursor" }) end,
     with_defaults({ desc = "Show Diagnostics" }))

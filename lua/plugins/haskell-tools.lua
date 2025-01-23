@@ -9,7 +9,7 @@ return {
         },
         hoogle = {
           -- "auto"|"telescope-local"|"telescope-web"|"browser"
-          mode = "telescope-web"
+          mode = "browser"
         }
 
       },

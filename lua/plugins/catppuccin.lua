@@ -23,7 +23,6 @@ return {
           transparent_background = false,
           term_colors = true,
           compile = {
-            enabled = false,
             path = vim.fn.stdpath "cache" .. "/catppuccin",
           },
           styles = {
@@ -62,6 +61,7 @@ return {
                 background = true,
               },
             },
+            fzf = true,
             coc_nvim = false,
             diffview = true,
             lsp_trouble = false,
@@ -75,7 +75,6 @@ return {
             },
             dadbod_ui = true,
             nvimtree = {
-              enabled = false,
               show_root = false,
               transparent_panel = false,
             },
