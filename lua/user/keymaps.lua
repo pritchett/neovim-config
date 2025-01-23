@@ -89,10 +89,9 @@ vim.keymap.set('t', '<C-;>', '<C-\\><C-n>')
 
 -- Neorg
 vim.keymap.set('n', '<Leader>oc', '<CMD>Neorg capture<CR>', { silent = true })
-vim.keymap.set('n', '<Leader>ot', '<CMD>Neorg toggle-concealer<CR>')
 
-vim.keymap.set('n', '<a-TAB>', 'gt')
-vim.keymap.set('n', '<a-S-TAB>', 'gT')
+vim.keymap.set('n', '<a-n>', 'gt')
+vim.keymap.set('n', '<a-p>', 'gT')
 
 local function toggle_quickfix()
   local windows = vim.fn.getwininfo() or {}
