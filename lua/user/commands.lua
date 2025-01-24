@@ -28,17 +28,17 @@ vim.api.nvim_create_user_command("TelescopeResume", function()
 end, {})
 
 vim.api.nvim_create_user_command("UrlDecode", function()
-  vim.cmd('!~/Development/scripts/url_decode.py')
+  vim.cmd('!' .. vim.fn.stdpath("config") .. '/scripts/url_decode.py')
 end, {
   range = true
 })
 
 vim.api.nvim_create_user_command("UrlEncode", function(args)
   if args.args ~= "" then
-    local cmd = "execute('!~/Development/scripts/url_encode.py " .. args.args .. "')"
+    local cmd = "execute('!" .. vim.fn.stdpath("config") .. "/scripts/url_encode.py " .. args.args .. "')"
     vim.cmd.echo(cmd)
   else
-    vim.cmd(args.line1 .. ',' .. args.line2 .. '!~/Development/scripts/url_encode.py')
+    vim.cmd(args.line1 .. ',' .. args.line2 .. '!' .. vim.fn.stdpath("config") .. '/scripts/url_encode.py')
   end
 end, {
   range = true,
