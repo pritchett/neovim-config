@@ -1,8 +1,11 @@
 return {
   "NeogitOrg/neogit",
   dependencies = "nvim-lua/plenary.nvim",
-  opts = {},
-  cmd = "Neogit"
+  cmd = "Neogit",
+  opts = {
+    graph_style = "kitty"
+  }
+
   -- config = function()
   --   require("neogit").setup({
   --     -- integrations = {
