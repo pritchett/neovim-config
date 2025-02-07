@@ -62,7 +62,8 @@ return {
         {
           function()
             local multiline = vim.v.statusmsg:find("\n")
-            if not multiline then
+            local length = string.len(vim.v.statusmsg)
+            if not multiline and length < 10 then
               return require('lualine.utils.utils').stl_escape(vim.v.statusmsg)
             else
               vim.notify(vim.v.statusmsg, vim.diagnostics.severity.INFO)

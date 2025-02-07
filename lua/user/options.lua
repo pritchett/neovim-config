@@ -30,6 +30,7 @@ opt.grepprg = "rg --vimgrep"
 opt.grepformat = "%f:%l:%c:%m"
 opt.showtabline = 0
 
+opt.diffopt = "filler,internal,closeoff,algorithm:histogram,context:5,linematch:60"
 -- --Global
 o.swapfile = true
 o.dir = '/tmp'
