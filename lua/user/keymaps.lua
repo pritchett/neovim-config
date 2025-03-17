@@ -19,13 +19,12 @@ vim.keymap.set('n', '<C-b>', '<CMD>FzfLua buffers<CR>', with_desc("List Buffers"
 vim.keymap.set({ 'n', 'v' }, '<Leader><Space>', function()
   local fzf = require('fzf-lua')
   fzf.commands({
+    sort_lastused = true,
     actions = {
-      ["enter"] = {
+      ["default"] = {
         fn = function(cmd)
-          vim.notify(table.concat(cmd))
           vim.schedule(function() vim.cmd(table.concat(cmd)) end)
-        end,
-        -- exec_silent = true
+        end
       }
     }
   })
