@@ -3,7 +3,7 @@ return {
   -- optional for icon support
   dependencies = { "nvim-tree/nvim-web-devicons" },
   opts = {
-    "hide",
+    -- "hide",
     fzf_opts = { ['--cycle'] = true },
     winopts = {
       split = "botright new",
