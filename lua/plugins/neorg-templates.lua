@@ -1,4 +1,4 @@
 return {
-  dir = "~/Development/neorg-templates",
+  "pysan3/neorg-templates",
   event = "VeryLazy"
 }
