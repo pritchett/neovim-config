@@ -177,7 +177,6 @@ local function configure()
     require 'lsp-file-operations'.default_capabilities()
   )
 
-
   metals_config.capabilities = capabilities
 
   metals.initialize_or_attach(metals_config)

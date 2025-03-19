@@ -51,7 +51,7 @@ local query_kitten_ls_with_jq_async = function(query, cb)
 end
 
 ---@alias Projects.Project { window_id: integer, server: string, project_name: string }
----@alias Projects.FindResultsCallback {found: fun(project: Projects.Project) }
+---@alias Projects.FindResultsCallback {found: fun(project: Projects.Project), not_found: fun() }
 
 --- @param project_name string
 --- @param cbs Projects.FindResultsCallback

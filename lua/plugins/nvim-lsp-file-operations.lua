@@ -3,8 +3,5 @@ return {
   dependencies = {
     "nvim-lua/plenary.nvim",
   },
-  config = function()
-    require("lsp-file-operations").setup()
-  end,
-  lazy = true
+  event = "VeryLazy"
 }

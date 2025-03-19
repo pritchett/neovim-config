@@ -86,11 +86,13 @@ return {
 
     -- lspconfig.clangd.setup {}
 
-    -- local capabilities = vim.lsp.protocol.make_client_capabilities()
-    -- capabilities.textDocument.completion.completionItem.snippetSupport = true
-    lspconfig.jsonls.setup {
-      capabilities = capabilities
-    }
+    local capabilities = vim.lsp.protocol.make_client_capabilities()
+    capabilities.textDocument.completion.completionItem.snippetSupport = true
+    -- lspconfig.jsonls.setup {
+    --   capabilities = capabilities
+    -- }
+    -- lspconfig.jq.setup {
+    -- }
 
     -- lspconfig.vimls.setup {}
   end,

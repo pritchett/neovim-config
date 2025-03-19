@@ -2,7 +2,7 @@ return {
   "nvim-lualine/lualine.nvim",
   dependencies = { "kyazdani42/nvim-web-devicons" },
   opts = {
-    extensions = { "quickfix", "fugitive", "nvim-dap-ui", "lazy", "mason", "oil" },
+    extensions = { "quickfix", "fugitive", "nvim-dap-ui", "lazy", "mason", "oil", "fzf", "toggleterm" },
     options = {
       disabled_filetypes = {
         "netrw",
@@ -111,16 +111,17 @@ return {
         end
       },
       lualine_y = {
-        {
-          function()
-            ---@var clients { name: string}[]
-            local clients = vim.lsp.get_clients({ bufnr = 0 })
-            if (#clients > 0) then
-              return clients[1].name or ""
-            end
-            return ""
-          end
-        },
+        { "lsp_status" },
+        -- {
+        --   function()
+        --     ---@var clients { name: string}[]
+        --     local clients = vim.lsp.get_clients({ bufnr = 0 })
+        --     if (#clients > 0) then
+        --       return clients[1].name or ""
+        --     end
+        --     return ""
+        --   end
+        -- },
         {
           "g:metals_bsp_status",
           cond = function()
@@ -174,6 +175,8 @@ return {
             modified = '●', -- Text to show when the buffer is modified
             -- readonly = '[-]', -- Text to show to identify the alternate file
             directory = '', -- Text to show when the buffer is a directory
+            unnamed = '[No Name]',
+            newfile = '[New]'
           },
           cond = function()
             return vim.o.filetype ~= 'oil'
@@ -204,6 +207,7 @@ return {
         --     alternate_file = '#', -- Text to show to identify the alternate file
         --     directory = '', -- Text to show when the buffer is a directory
         --   },
+        --   mode = 4
         -- }
       },
       lualine_c = {},

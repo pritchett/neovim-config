@@ -20,7 +20,7 @@ function M.set_keymaps(client, bufnr)
   keymap('n', 'gra', vim.lsp.buf.code_action, with_defaults({ desc = "Run Code Action" }))
   keymap('n', 'grn', vim.lsp.buf.rename, with_defaults({ desc = "Rename Symbol" }))
   -- keymap('n', '<Leader>lr', vim.lsp.buf.rename, with_defaults({ desc = "Rename Symbol" }))
-  keymap('n', 'gri', function() require('fzf-lua').lsp_implementations({ jump_to_single_result = true }) end,
+  keymap('n', 'gri', function() require('fzf-lua').lsp_implementations({ jump1 = true }) end,
     with_defaults({ desc = "Implementations" }))
   keymap('n', 'grl', vim.lsp.codelens.run, with_defaults({ desc = "Run Code Lens" }))
 
