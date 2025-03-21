@@ -76,5 +76,3 @@ sign("DapLogPoint", { text = "◆", texthl = "DapLogPoint", linehl = "", numhl =
 vim.fn.sign_define('DapStopped', { text = '👉', texthl = 'SignColumn', linehl = 'DebugBreakpointLine', numhl = '' })
 
 vim.cmd.packadd("cfilter")
-
-vim.g.db_ui_foreign_table_overrides = { ["mysql://root@127.0.0.1:3306/"] = { travel_booking_id = { "TRAVEL_BOOKING", "id", "book" } } }
