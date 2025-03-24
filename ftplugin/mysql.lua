@@ -1,7 +1,7 @@
 local ns = vim.api.nvim_create_namespace('sql highlights')
 vim.api.nvim_create_autocmd({ 'BufWinEnter', 'TextChanged', 'TextChangedI', 'CursorHold' }, {
   buffer = 0,
-  callback = function(opts)
+  callback = function(_)
     local ext_marks = vim.api.nvim_buf_get_extmarks(0, ns, 0, -1, {
       type = 'virt_text',
       details = false
@@ -33,3 +33,20 @@ vim.cmd.inoreabbrev('<buffer> select SELECT')
 vim.cmd.inoreabbrev('<buffer> from FROM')
 vim.cmd.inoreabbrev('<buffer> where WHERE')
 vim.cmd.inoreabbrev('<buffer> join JOIN')
+
+vim.keymap.set({ 'x', 'o' }, 'iu', function()
+  local linenr = vim.fn.line('.')
+  local line = vim.fn.getline(linenr)
+  local pattern = "[a-z0-9]\\{8\\}-[a-z0-9]\\{4\\}-[a-z0-9]\\{4\\}-[a-z0-9]\\{4\\}-[a-z0-9]\\{12\\}"
+  local cur_pos = vim.fn.getcurpos()[3]
+  local results = vim.fn.matchstrpos(line, pattern)
+  while results[1] ~= "" do
+    if (cur_pos >= results[2] and cur_pos <= results[3]) then
+      vim.fn.setpos("'<", { 0, linenr, results[2] + 1, 0 })
+      vim.fn.setpos("'>", { 0, linenr, results[3], 0 })
+      vim.cmd.normal({ args = { "gv" }, bang = true })
+      return
+    end
+    results = vim.fn.matchstrpos(line, pattern, results[3])
+  end
+end, { buffer = true, desc = "Inner UUID" })
