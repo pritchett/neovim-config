@@ -38,7 +38,6 @@ return {
     -- )
 
     -- lspconfig.lemminx.setup({})
-
     lspconfig.lua_ls.setup({})
     -- lspconfig.lua_ls.setup {
     --   settings = {
@@ -96,5 +95,6 @@ return {
 
     -- lspconfig.vimls.setup {}
   end,
-  event = "VeryLazy"
+  event = "VeryLazy",
+  enable = false
 }

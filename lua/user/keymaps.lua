@@ -12,8 +12,9 @@ local with_desc = function(desc)
   return with_opts({ desc = desc })
 end
 
-vim.keymap.set('n', ']q', ':silent cnext<CR>', with_desc("Next quickfix item"))
-vim.keymap.set('n', '[q', ':silent cprevious<CR>', with_desc("Previous quickfix item"))
+vim.keymap.set('n', '<leader>L', function()
+  vim.diagnostic.config({ virtual_lines = not vim.diagnostic.config().virtual_lines })
+end)
 vim.keymap.set('n', '<Leader>bb', '<CMD>FzfLua buffers<CR>', with_desc("List Buffers"))
 vim.keymap.set('n', '<C-b>', '<CMD>FzfLua buffers<CR>', with_desc("List Buffers"))
 vim.keymap.set({ 'n', 'v' }, '<Leader><Space>', function()
@@ -90,14 +91,10 @@ vim.keymap.set('n', '<C-]>', "<C-]>zz", opts)
 vim.keymap.set('n', '<C-W>m', "<C-W>_<C-W>|", opts)
 
 vim.keymap.set('n', ']f', '<CMD>TSTextobjectGotoNextStart @function.outer<CR>')
-vim.keymap.set('n', ']]f', '<CMD>TSTextobjectGotoNextStart @function.inner<CR>')
 vim.keymap.set('n', '[f', '<CMD>TSTextobjectGotoPreviousStart @function.outer<CR>')
-vim.keymap.set('n', '[[f', '<CMD>TSTextobjectGotoPreviousStart @function.inner<CR>')
 
 vim.keymap.set('n', ']a', '<CMD>TSTextobjectGotoNextStart @parameter.inner<CR>')
-vim.keymap.set('n', ']]a', '<CMD>TSTextobjectGotoNextStart @parameter.outer<CR>')
 vim.keymap.set('n', '[a', '<CMD>TSTextobjectGotoPreviousStart @parameter.inner<CR>')
-vim.keymap.set('n', '[[a', '<CMD>TSTextobjectGotoPreviousStart @parameter.outer<CR>')
 
 -- vim.keymap.set('t', '<C-\\>', '<C-\\><C-n>')
 vim.keymap.set('t', '<C-;>', '<C-\\><C-n>')

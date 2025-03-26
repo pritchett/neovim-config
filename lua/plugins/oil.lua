@@ -17,5 +17,5 @@ return {
   },
   dependencies = { "nvim-tree/nvim-web-devicons" },
   event = "VeryLazy",
-  enabled = false
+  enabled = true
 }
