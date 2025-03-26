@@ -15,8 +15,7 @@ end
 vim.keymap.set('n', '<leader>L', function()
   vim.diagnostic.config({ virtual_lines = not vim.diagnostic.config().virtual_lines })
 end)
-vim.keymap.set('n', '<Leader>bb', '<CMD>FzfLua buffers<CR>', with_desc("List Buffers"))
-vim.keymap.set('n', '<C-b>', '<CMD>FzfLua buffers<CR>', with_desc("List Buffers"))
+vim.keymap.set('n', '<D-b>', '<CMD>FzfLua buffers<CR>', with_desc("List Buffers"))
 vim.keymap.set({ 'n', 'v' }, '<Leader><Space>', function()
   local fzf = require('fzf-lua')
   fzf.commands({
