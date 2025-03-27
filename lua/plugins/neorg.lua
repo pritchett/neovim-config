@@ -59,4 +59,12 @@ return {
     },
   },
   run = ":Neorg sync-parsers",
+  keys = {
+    {
+      '<leader>n',
+      mode = { 'n' },
+      "<CMD>Neorg<CR>",
+      desc = "Neorg"
+    }
+  }
 }

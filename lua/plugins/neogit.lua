@@ -9,13 +9,20 @@ return {
       "https://gitlab.idine.com/${owner}/${repository}/merge_requests/new?merge_request[source_branch]=${branch_name}",
     },
   },
-
-  -- config = function()
-  --   require("neogit").setup({
-  --     -- integrations = {
-  --     -- telescope = , -- If these are set to true, it disables the integration. Great api.
-  --     -- diffview = true,
-  --     -- },
-  --   })
-  -- end,
+  keys = {
+    {
+      '<leader>g',
+      mode = { 'n' },
+      "<CMD>Neogit<CR>",
+      desc = "Neogit"
+    }
+    -- config = function()
+    --   require("neogit").setup({
+    --     -- integrations = {
+    --     -- telescope = , -- If these are set to true, it disables the integration. Great api.
+    --     -- diffview = true,
+    --     -- },
+    --   })
+    -- end,
+  }
 }

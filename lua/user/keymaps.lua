@@ -15,27 +15,11 @@ end
 vim.keymap.set('n', '<leader>L', function()
   vim.diagnostic.config({ virtual_lines = not vim.diagnostic.config().virtual_lines })
 end)
-vim.keymap.set('n', '<D-b>', '<CMD>FzfLua buffers<CR>', with_desc("List Buffers"))
-vim.keymap.set({ 'n', 'v' }, '<Leader><Space>', function()
-  local fzf = require('fzf-lua')
-  fzf.commands({
-    sort_lastused = true,
-    actions = {
-      ["default"] = {
-        fn = function(cmd)
-          vim.schedule(function() vim.cmd(table.concat(cmd)) end)
-        end
-      }
-    }
-  })
-end, with_desc("Command pallete"))
 vim.keymap.set('n', 'L', 'zL')
 vim.keymap.set('n', 'H', 'zH')
 
-vim.keymap.set('n', '<leader>p', '<CMD>Projects<CR>', with_desc("Projects"))
+vim.keymap.set('n', '<leader>p', '<CMD>Projects<CR>', { desc = "Projects" })
 
-vim.keymap.set('n', '<leader>n', "<CMD>Neorg<CR>", with_desc("Neorg"))
-vim.keymap.set('n', '<leader>g', "<CMD>Neogit<CR>", with_desc("Neogit"))
 -- keymap('n', '<leader>e', "<CMD>new<BAR>e.<cr>", opts)
 vim.keymap.set('n', '<leader>e', function()
   -- if vim.api.nvim_buf_get_name(0) == "" then
@@ -45,8 +29,7 @@ vim.keymap.set('n', '<leader>e', function()
   --   vim.cmd.edit('.')
   -- end
 end, { desc = "Browse directory" })
--- keymap('n', '<leader>E', "<CMD>execute 'new | e ' . expand('%:h')<CR>", opts)
-vim.keymap.set('n', '<leader>E', "<CMD>execute 'e ' . expand('%:h')<CR>", with_desc("Open current of buffer"))
+vim.keymap.set('n', '<leader>E', "<CMD>execute 'e ' . expand('%:h')<CR>", { desc = "Open current of buffer" })
 
 vim.keymap.set('n', '<C-]>', "<C-]>zz", opts)
 vim.keymap.set('n', '<C-W>m', "<C-W>_<C-W>|", opts)

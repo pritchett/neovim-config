@@ -22,5 +22,31 @@ return {
     fzf.setup(opts)
     fzf.register_ui_select()
   end,
-  event = "VeryLazy"
+  event = "VeryLazy",
+  keys = {
+    {
+      '<D-b>',
+      mode = { 'n' },
+      '<CMD>FzfLua buffers<CR>',
+      desc = "List Buffers"
+    },
+    {
+      '<Leader><Space>',
+      mode = { 'n', 'v' },
+      function()
+        local fzf = require('fzf-lua')
+        fzf.commands({
+          sort_lastused = true,
+          actions = {
+            ["default"] = {
+              fn = function(cmd)
+                vim.schedule(function() vim.cmd(table.concat(cmd)) end)
+              end
+            }
+          }
+        })
+      end,
+      desc = "Command Pallete"
+    }
+  }
 }
