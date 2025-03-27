@@ -28,5 +28,36 @@ return {
     -- vim.keymap.set({"i", "s"}, "<S-Tab>", function() ls.jump(-1) end, {silent = true})
     -- vim.keymap.set({"i", "s"}, "<C-E>", function() if ls.choice_active() then ls.change_choice(1) end end, {silent = true})
   end,
+  keys = {
+    {
+      '<C-L>',
+      mode = { 'n' },
+      function() require('luasnip').expand() end,
+      silent = true
+    },
+    {
+      '<C-J>',
+      mode = { "i", "s" },
+      function() require('luasnip').jump(1) end,
+      silent = true
+    },
+    {
+      '<C-K>',
+      mode = { "i", "s" },
+      function() require('luasnip').jump(-1) end,
+      silent = true
+    },
+    {
+      '<C-E>',
+      mode = { "i", "s" },
+      function()
+        local ls = require('luasnip')
+        if ls.choice_active() then
+          ls.change_choice(1)
+        end
+      end,
+      silent = true
+    }
+  },
   event = "InsertEnter"
 }
