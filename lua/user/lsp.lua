@@ -1,13 +1,5 @@
 local M = {}
 
-vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers["textDocument/signatureHelp"], {
-  border = "rounded"
-})
-vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, {
-  border = "rounded",
-  title = "Hover"
-})
-
 function M.set_keymaps(client, bufnr)
   bufnr = bufnr or 0
   local keymap = vim.keymap.set
@@ -79,18 +71,6 @@ local lsp_id = vim.api.nvim_create_augroup("LSP", {})
 function M.on_attach(client, bufnr)
   bufnr = bufnr or 0
 
-
-  -- This is done automatically?
-  -- local setlocal = vim.opt_local
-  -- setlocal.foldmethod = 'expr'
-  -- setlocal.foldexpr = 'nvim_treesitter#foldexpr()'
-  -- if client.server_capabilities.completionProvider then
-  --   vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
-  -- end
-  -- if client.server_capabilities.definitionProvider then
-  --   vim.bo[bufnr].tagfunc = "v:lua.vim.lsp.tagfunc"
-  -- end
-
   M.set_keymaps(client, bufnr)
 
   local refresh_code_lens = function()
@@ -106,13 +86,6 @@ function M.on_attach(client, bufnr)
     callback = refresh_code_lens,
     group = lsp_id
   })
-
-  -- require "lsp_signature".on_attach({
-  --   bind = true,
-  --   handler_opts = {
-  --     border = "rounded"
-  --   }
-  -- }, bufnr)
 
   vim.api.nvim_buf_call(bufnr, function()
     vim.opt_local.statuscolumn = require('user.customizations').lsp_statuscolumn
