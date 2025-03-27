@@ -53,13 +53,11 @@ M.get_fold_column = function()
   return fillchars.fold
 end
 
--- M.lsp_statuscolumn2 =
--- [[%=%04(%{%v:lua.get_signs_minus_gitsigns()%}%)%(%{%v:lnum==line('.')?'%#CursorLineNR#':'%#LineNR#'%}%-l%)%02(%=%{%v:lua.get_gitsigns_sign_column()%}%)%01(%{%v:lnum==line('.')?'%#CursorLineNR#':'%#LineNR#'%}%{%v:lua.get_fold_column()%}%)]]
-
 M.lsp_statuscolumn = table.concat({
   "%=",
   "%04{%v:lua.require('user.customizations').get_signs_minus_gitsigns()%}",
-  "%(%{%v:lnum==line('.')?'%#CursorLineNR#':'%#LineNR#'%}%-l%)",
+  "%l",
+  --"%(%{%v:lnum==line('.')?'%#CursorLineNR#':'%#LineNR#'%}%-l%)",
   "%02(%=%{%v:lua.require('user.customizations').get_gitsigns_sign_column()%}%)",
   "%01(%{%v:lnum==line('.')?'%#CursorLineNR#':'%#LineNR#'%}%{%v:lua.require('user.customizations').get_fold_column()%}%)"
 })
