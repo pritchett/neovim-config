@@ -47,6 +47,12 @@ return {
         })
       end,
       desc = "Command Pallete"
+    },
+    {
+      '<Leader>r',
+      mode = { 'n' },
+      function() require('fzf-lua').resume() end,
+      desc = 'Resume last picker'
     }
   }
 }
