@@ -16,6 +16,7 @@ g.db_ui_use_nvim_notify = 1
 g.mapleader = ' '
 g.maplocalleader = '\\'
 
+g.uselast = "uselast"
 opt.tabstop = 2
 opt.number = true
 opt.shiftwidth = 2
