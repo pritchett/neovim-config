@@ -80,13 +80,6 @@ vim.api.nvim_create_user_command('Browse', function(args)
   vim.ui.open(args.fargs[1])
 end, { nargs = 1 })
 
-vim.api.nvim_create_user_command('Deployments',
-  function(args)
-    vim.cmd.split()
-    vim.cmd.term("w3m https://deploy.infra.tstllc.net/deploy/")
-    vim.cmd.startinsert()
-  end, {})
-
 vim.api.nvim_create_user_command('ToggleDiagnosticVirtualText', function()
   vim.diagnostic.config({ virtual_text = not vim.diagnostic.config().virtual_text })
 end, { desc = "Toggle diagnostic virtual text display" })
