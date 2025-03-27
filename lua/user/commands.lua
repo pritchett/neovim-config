@@ -15,12 +15,6 @@ end, {})
 
 vim.api.nvim_create_user_command("Config", function()
   require('fzf-lua').files({ cwd = vim.fn.stdpath('config') })
-  -- require('telescope.builtin').find_files(require('telescope.themes').get_ivy(
-  --   {
-  --     -- cwd = vim.fn.stdpath('config'),
-  --     search_dirs = { vim.fn.stdpath('config') },
-  --     -- search_file = vim.fn.getcwd() .. "/.nvim.lua"
-  --   }))
 end, {})
 
 vim.api.nvim_create_user_command("TelescopeResume", function()
@@ -46,33 +40,16 @@ end, {
 })
 
 vim.api.nvim_create_user_command("FindFiles", function()
-  local ok, telescopebuiltin = pcall(require, 'telescope.builtin')
-
+  local ok, fzf = pcall(require, 'fzf-lua')
   if ok then
-    telescopebuiltin.find_files(require('telescope.themes').get_ivy(
-      {
-        -- cwd = vim.fn.stdpath('config'),
-        -- search_dirs = { vim.fn.stdpath('config') },
-        -- search_file = vim.fn.getcwd() .. "/.nvim.lua"
-      }))
-  else
-    local ok, fzf = pcall(require, 'fzf-lua')
-    if ok then
-      fzf.files()
-    end
+    fzf.files()
   end
 end, {})
 
 vim.api.nvim_create_user_command("LiveGrep", function()
-  local ok, telescopebuiltin = pcall(require, 'telescope.builtin')
-
+  local ok, fzf = pcall(require, 'fzf-lua')
   if ok then
-    telescopebuiltin.live_grep(require('telescope.themes').get_ivy({}))
-  else
-    local ok, fzf = pcall(require, 'fzf-lua')
-    if ok then
-      fzf.live_grep()
-    end
+    fzf.live_grep()
   end
 end, {})
 
@@ -104,7 +81,7 @@ vim.api.nvim_create_user_command('Projects', function()
     table.insert(titles, newstart)
 
     local start_new_project = function()
-      vim.system({ 'ls', '/Users/brian/Development' }, { text = true }, function(out)
+      vim.system({ 'ls', '/Users/' .. vim.env.USER .. '/Development' }, { text = true }, function(out)
         local start_projects = {}
         for proj in out.stdout:gmatch("[^\r\n]+") do
           local should_insert = true
