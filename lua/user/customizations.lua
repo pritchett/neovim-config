@@ -1,6 +1,7 @@
 local M = {}
 
 M.get_signs_minus_gitsigns = function()
+  if vim.v.virtnum < 0 then return "" end
   local line = ""
   for k, ns in pairs(vim.api.nvim_get_namespaces()) do
     if k ~= "gitsigns_signs_" then
@@ -24,6 +25,7 @@ M.get_signs_minus_gitsigns = function()
 end
 
 M.get_gitsigns_sign_column = function()
+  if vim.v.virtnum < 0 then return "" end
   local ns = vim.api.nvim_get_namespaces().gitsigns_signs_
   if not ns then
     return ""
@@ -33,7 +35,7 @@ M.get_gitsigns_sign_column = function()
   for _, sign in ipairs(gitsigns) do
     local sign_id = sign[1]
     local details = vim.api.nvim_buf_get_extmark_by_id(0, ns, sign_id, { details = true })[3]
-    return '%#' .. details.sign_hl_group .. '#' .. details.sign_text
+    return details and '%#' .. details.sign_hl_group .. '#' .. details.sign_text
   end
   return ""
 end
