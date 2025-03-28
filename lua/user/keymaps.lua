@@ -1,17 +1,5 @@
 local opts = { noremap = true, silent = true }
 
-local with_opts = function(opts)
-  local return_opts = { noremap = true, silent = true }
-  for k, v in pairs(opts) do
-    return_opts[k] = v
-  end
-  return return_opts
-end
-
-local with_desc = function(desc)
-  return with_opts({ desc = desc })
-end
-
 vim.keymap.set('n', '<leader>L', function()
   vim.diagnostic.config({ virtual_lines = not vim.diagnostic.config().virtual_lines })
 end)
