@@ -57,6 +57,7 @@ o.undofile = true
 o.undodir = '/tmp'
 o.autoread = true
 o.wildmode = 'noselect,full:longest'
+o.pumheight = 12
 o.virtualedit = 'block'
 -- o.gdefault = true -- use the 'g' flag for ":substitute"
 o.signcolumn = 'yes'
