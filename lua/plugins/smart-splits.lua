@@ -20,7 +20,7 @@ return {
     { '<D-C-b>',  mode = { 'n' }, '<CMD>wincmd b<CR>' },
     { '<D-C-p>',  mode = { 'n' }, '<CMD>wincmd p<CR>' },
     { '<D-C-t>',  mode = { 'n' }, '<CMD>wincmd t<CR>' },
-    { '<D-C-[>',  mode = { 'n' }, '<CMD>tabprev' },
+    { '<D-C-[>',  mode = { 'n' }, '<CMD>tabprev<CR>' },
     { '<D-C-]>',  mode = { 'n' }, '<CMD>tabnext<CR>' },
 
     { '<D-S-h>',  mode = { 'n' }, function() require('smart-splits').resize_left() end },
