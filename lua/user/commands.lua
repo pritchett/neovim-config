@@ -117,3 +117,10 @@ vim.api.nvim_create_user_command('Projects', function()
     vim.schedule(function() vim.ui.select(titles, { prompt = "Select project:" }, start_or_switch_project) end)
   end)
 end, { desc = "List Projects" })
+
+
+vim.api.nvim_create_user_command('ClearWarningAndErrorMessages', function()
+  vim.v.warningmsg = ""
+  vim.v.errmsg = ""
+end, { desc = "Clears warning and error messages" })
+
