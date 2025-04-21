@@ -31,6 +31,12 @@ return {
       desc = "List Buffers"
     },
     {
+      '<D-b>',
+      mode = { 'n' },
+      '<CMD>FindFiles<CR>',
+      desc = "Find Files"
+    },
+    {
       '<Leader><Space>',
       mode = { 'n', 'v' },
       function()
