@@ -31,7 +31,7 @@ return {
       desc = "List Buffers"
     },
     {
-      '<D-b>',
+      '<D-f>',
       mode = { 'n' },
       '<CMD>FindFiles<CR>',
       desc = "Find Files"
