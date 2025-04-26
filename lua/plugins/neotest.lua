@@ -6,6 +6,7 @@ return {
     "antoinemadec/FixCursorHold.nvim",
     "nvim-treesitter/nvim-treesitter",
     "stevanmilic/neotest-scala",
+    "mrcjkb/neotest-haskell"
   },
   -- opts = {
   --   adapters = {
@@ -16,10 +17,14 @@ return {
   -- },
   config = function()
     require("neotest").setup({
+      consumers = {
+        overseer = require("neotest.consumers.overseer"),
+      },
       adapters = {
         require("neotest-scala")({
           framework = "scalatest"
         }),
+        require('rustaceanvim.neotest')
       }
     })
   end,

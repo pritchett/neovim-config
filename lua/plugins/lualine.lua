@@ -19,6 +19,7 @@ return {
         "NeogitCommitMessage",
         "NeogitBranchSelectView",
         "NeogitCommitView",
+        "OverseerList",
         "qf",
         "git",
         "neo-tree",
@@ -42,7 +43,7 @@ return {
           cond = function()
             return vim.o.filetype ~= "help"
           end
-        }
+        },
       },
       lualine_b = { "diff" },
       lualine_c = {
@@ -101,6 +102,7 @@ return {
         }
       },
       lualine_x = {
+        { "overseer" },
         function()
           return vim.fn["db_ui#statusline"]({
             show = { 'db_name', 'schema', 'table' },
