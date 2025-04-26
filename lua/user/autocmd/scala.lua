@@ -180,10 +180,6 @@ local function configure()
   metals_config.capabilities = capabilities
 
   metals.initialize_or_attach(metals_config)
-  local ok, telescope = pcall(require, "telescope")
-  if ok then
-    telescope.load_extension('metals')
-  end
 end
 
 local gid = vim.api.nvim_create_augroup("scala", { clear = true })
