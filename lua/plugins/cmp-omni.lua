@@ -1,4 +1,5 @@
 return {
   "hrsh7th/cmp-omni",
-  event = "VeryLazy"
+  event = "VeryLazy",
+  enabled = false
 }

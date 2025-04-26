@@ -1,4 +1,5 @@
 return {
   "hrsh7th/cmp-buffer",
-  event = "VeryLazy"
+  event = "VeryLazy",
+  enabled = false
 }

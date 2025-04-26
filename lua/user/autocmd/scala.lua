@@ -163,12 +163,13 @@ local function configure()
     autoImportBuild = "all"
   }
 
+  local capabilities = require('blink.cmp').get_lsp_capabilities()
   -- local capabilities = vim.lsp.protocol.make_client_capabilities()
-  local lsp_selection_range = require('lsp-selection-range')
+  -- local lsp_selection_range = require('lsp-selection-range')
   -- Update existing capabilities
-  local capabilities = require('cmp_nvim_lsp').default_capabilities()
-  capabilities = lsp_selection_range.update_capabilities(capabilities)
-  capabilities.textDocument.completion.completionItem.snippetSupport = true
+  -- local capabilities = require('cmp_nvim_lsp').default_capabilities()
+  -- capabilities = lsp_selection_range.update_capabilities(capabilities)
+  -- capabilities.textDocument.completion.completionItem.snippetSupport = true
   capabilities = vim.tbl_deep_extend(
     "force",
     capabilities,
@@ -176,7 +177,7 @@ local function configure()
     -- or default operations if not
     require 'lsp-file-operations'.default_capabilities()
   )
-
+  -- --
   metals_config.capabilities = capabilities
 
   metals.initialize_or_attach(metals_config)

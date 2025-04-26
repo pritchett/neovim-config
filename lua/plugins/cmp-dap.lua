@@ -1,4 +1,5 @@
 return {
   "rcarriga/cmp-dap",
-  event = "VeryLazy"
+  event = "VeryLazy",
+  enabled = false
 }
