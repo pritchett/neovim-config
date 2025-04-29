@@ -1,4 +1,5 @@
 return {
   "hrsh7th/cmp-nvim-lsp",
-  event = "VeryLazy"
+  event = "VeryLazy",
+  enabled = false
 }
