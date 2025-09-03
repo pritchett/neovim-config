@@ -13,8 +13,8 @@ g.neo_tree_remove_legacy_commands = 1
 g.db_ui_show_database_icon = 1
 g.db_ui_use_nerd_fonts = 1
 g.db_ui_use_nvim_notify = 1
-g.mapleader = ' '
-g.maplocalleader = '\\'
+g.mapleader = vim.keycode("<space>")
+g.maplocalleader = "\\"
 
 opt.tabclose = "uselast"
 opt.tabstop = 2
