@@ -45,6 +45,7 @@ require("user.keymaps")
 require("user.autocmd")
 require("user.commands")
 vim.opt_local.statuscolumn = require('user.customizations').lsp_statuscolumn
+require("user.filetype")
 
 vim.diagnostic.config({
   virtual_text = false,
