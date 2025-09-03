@@ -12,6 +12,8 @@ return {
         function() gs.nav_hunk("next", { preview = true }) end, { desc = "Next hunk with preview" })
       vim.keymap.set('n', '<D-g>p', function() gs.preview_hunk() end, { desc = "Preview hunk" })
       vim.keymap.set('n', '<D-g>b', function() gs.blame_line() end, { desc = "Blame hunk" })
+      vim.keymap.set('n', '<D-g>s', function() gs.stage_hunk() end, { desc = "Stage hunk" })
+      vim.keymap.set('n', '<D-g>r', function() gs.reset_hunk() end, { desc = "Reset hunk" })
     end
   },
   event = "VeryLazy"
