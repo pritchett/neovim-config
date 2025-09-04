@@ -101,7 +101,7 @@ function M.on_attach(client, bufnr)
     })
   end
 
-  if client.supports_method("textDocument/formatting") then
+  if client:supports_method("textDocument/formatting") then
     set_up_autoformatting()
   end
 
