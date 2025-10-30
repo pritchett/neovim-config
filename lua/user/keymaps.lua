@@ -19,7 +19,7 @@ vim.keymap.set('n', '<leader>e', function()
 end, { desc = "Browse directory" })
 vim.keymap.set('n', '<leader>E', "<CMD>execute 'e ' . expand('%:h')<CR>", { desc = "Open current of buffer" })
 
-vim.keymap.set('n', '<C-]>', "<C-]>zz", opts)
+vim.keymap.set('n', '<C-]>', "<C-]>zt", opts)
 vim.keymap.set('n', '<C-W>m', "<C-W>_<C-W>|", opts)
 
 vim.keymap.set('n', ']f', '<CMD>TSTextobjectGotoNextStart @function.outer<CR>')

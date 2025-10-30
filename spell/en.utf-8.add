@@ -5,3 +5,6 @@ familyId
 AS400
 DAPTK
 InFlight
+GADT
+SomeMerchantData
+postgresql

@@ -151,6 +151,16 @@ local sbt_terminal = function(root_dir)
     return instance
   end
 
+  local env = nil
+  local java11 =
+  "/Users/bpritchett/Library/Caches/Coursier/arc/https/cdn.azul.com/zulu/bin/zulu11.82.19-ca-jdk11.0.28-macosx_aarch64.tar.gz/zulu11.82.19-ca-jdk11.0.28-macosx_aarch64"
+  if root_dir == "/Users/bpritchett/Development/goose-island" then
+    env = {
+      ["JAVA_HOME"] = java11
+    }
+  end
+
+
   instance = Terminal:new({
     cmd = "sbt",
     hidden = true,
@@ -158,6 +168,7 @@ local sbt_terminal = function(root_dir)
     direction = "float",
     close_on_exit = true,
     dir = root_dir,
+    env = env,
     on_open = function(_)
       make_sbt_mapping(root_dir)
     end

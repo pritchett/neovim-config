@@ -124,3 +124,11 @@ vim.api.nvim_create_user_command('ClearWarningAndErrorMessages', function()
   vim.v.errmsg = ""
 end, { desc = "Clears warning and error messages" })
 
+-- xdwi"ea"a,ldwxa"ea",ldwxwi"Ea"l€kb,ldwxwi"ea",ldwswi"ea",ldwxwi"f|€ý5sgEa",ldwi f|€ý5xgea,ldwi "Ea",ldwxwi"ea",ldwxwi"Ea", dwxwi"Ea", dwxwi"ea", dwxwi"Ea",ldwxwi"Ea",wxwi"Ea",ldwxwi"Ea",wdwi"Ea",ldwxwi"Ea"lD
+-- | Visa     | 7654         | 2025-03-18T12:00:00Z | c6YLUQRjZgd88vehGLbC | wC6WB8fY | HuLfO dOM33  |        3267 | 2025-03-17T12:00:00Z | 0000              | 79037      | 2025-03-17 | N               | 5DrxvfhUhp   | daRyG1Yam | 2025-03-18          | c86fb45e-408a-4124-af2d-8548ae529f63 | 21148         | MOGL        |
+-- | Visa     | 7654         | 2025-03-18T12:00:00Z | c6YLUQRjZgd88vehGLbC | wC6WB8fY | HuLfO dOM33  |        3267 | 2025-03-17T12:00:00Z | 0000              | 79037      | 2025-03-17 | N               | 5DrxvfhUhp   | daRyG1Yam | 2025-03-18          | c86fb45e-408a-4124-af2d-8548ae529f63 | 21148         | MOGL        |
+vim.api.nvim_create_user_command("CopiedTransactionToInsertValues", function()
+  vim.api.nvim_feedkeys(
+    [[df|wi"ea",ldf|a"ea",ldwxwi"Ea",ldwxwi"ea",ldwswi"ea",ldwxwi"f|??5sgEa",ldwi f|??5xgea,ldwi "Ea",ldwxwi"ea",ldwxwi"Ea", dwxwi"Ea", dwxwi"ea", dwxwi"Ea",ldwxwi"Ea",wxwi"Ea",ldwxwi"Ea",wdwi"Ea",ldwxwi"Ea"lD]],
+    'n', true)
+end, { desc = "Transaction stuff" })

@@ -6,9 +6,12 @@ return {
   opts = {
     load = {
       ["core.defaults"] = {},  -- Loads default behaviour
+      ["core.presenter"] = { config = { zen_mode = "zen-mode" } },
       ["core.concealer"] = {}, -- Adds pretty icons to your documents
       ["core.completion"] = { config = { engine = "nvim-cmp" } },
       ["core.export"] = {},
+      ["core.summary"] = {},
+      ["core.text-objects"] = {},
       ["core.dirman"] = { -- Manages Neorg workspaces
         config = {
           default_workspace = "notes",

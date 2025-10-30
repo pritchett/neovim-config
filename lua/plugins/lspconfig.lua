@@ -17,7 +17,7 @@ return {
   config = function()
     -- USER = vim.fn.expand('$USER')
 
-    local lspconfig = require('lspconfig')
+    -- local lspconfig = require('lspconfig')
 
     -- local runtime_path = vim.split(package.path, ';')
     -- table.insert(runtime_path, "lua/?.lua")
@@ -38,7 +38,7 @@ return {
     -- )
 
     -- lspconfig.lemminx.setup({})
-    lspconfig.lua_ls.setup({})
+    -- lspconfig.lua_ls.setup({})
     -- lspconfig.lua_ls.setup {
     --   settings = {
     --     Lua = {
@@ -85,8 +85,8 @@ return {
 
     -- lspconfig.clangd.setup {}
 
-    local capabilities = vim.lsp.protocol.make_client_capabilities()
-    capabilities.textDocument.completion.completionItem.snippetSupport = true
+    -- local capabilities = vim.lsp.protocol.make_client_capabilities()
+    -- capabilities.textDocument.completion.completionItem.snippetSupport = true
     -- lspconfig.jsonls.setup {
     --   capabilities = capabilities
     -- }
@@ -96,5 +96,4 @@ return {
     -- lspconfig.vimls.setup {}
   end,
   event = "VeryLazy",
-  enable = false
 }

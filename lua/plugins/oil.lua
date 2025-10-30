@@ -9,7 +9,7 @@ return {
       timeout_ms = 1000,
       -- Set to true to autosave buffers that are updated with LSP willRenameFiles
       -- Set to "unmodified" to only save unmodified buffers
-      autosave_changes = "unmodified",
+      autosave_changes = true,
     },
     win_options = {
       signcolumn = "yes:2"

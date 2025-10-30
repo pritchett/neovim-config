@@ -32,7 +32,7 @@ opt.grepprg = "rg --vimgrep"
 opt.grepformat = "%f:%l:%c:%m"
 opt.showtabline = 0
 
-opt.diffopt = "filler,internal,closeoff,algorithm:histogram,context:5,linematch:60"
+-- opt.diffopt = "filler,internal,closeoff,algorithm:histogram,context:5,linematch:60"
 -- --Global
 o.swapfile = true
 o.dir = '/tmp'
@@ -78,3 +78,5 @@ vim.opt_global.fillchars:append({ fold = ' ', foldopen = '', foldsep = ' ', f
 wo.number = true
 
 g.catppuccin_flavour = "macchiato"
+g.db_ui_tmp_query_location = '~/tmp'
+g.neovide_input_macos_option_key_is_meta = 'only_left'

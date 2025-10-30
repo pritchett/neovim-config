@@ -63,6 +63,11 @@ return {
           function()
             local multiline = vim.v.statusmsg:find("\n")
             local length = string.len(vim.v.statusmsg)
+            if length > 0 then
+              vim.notify(vim.v.statusmsg, vim.diagnostics.severity.INFO)
+              vim.v.statusmsg = ''
+              return
+            end
             if not multiline and length < 10 then
               return require('lualine.utils.utils').stl_escape(vim.v.statusmsg)
             else
@@ -78,6 +83,12 @@ return {
         {
           function()
             local multiline = vim.v.warningmsg:find("\n")
+            local length = string.len(vim.v.warningmsg)
+            if length > 0 then
+              vim.notify(vim.v.warningmsg, vim.diagnostics.severity.WARN)
+              vim.v.warningmsg = ''
+              return
+            end
             if not multiline then
               return require('lualine.utils.utils').stl_escape(vim.v.warningmsg)
             else
@@ -90,6 +101,12 @@ return {
         {
           function()
             local multiline = vim.v.errmsg:find("\n")
+            local length = string.len(vim.v.errmsg)
+            if length > 0 then
+              vim.notify(vim.v.errmsg, vim.diagnostics.severity.ERROR)
+              vim.v.errmsg = ''
+              return
+            end
             if not multiline then
               return require('lualine.utils.utils').stl_escape(vim.v.errmsg)
             else

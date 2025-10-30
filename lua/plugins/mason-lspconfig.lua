@@ -1,6 +1,9 @@
 return {
   "williamboman/mason-lspconfig.nvim",
   dependencies = "williamboman/mason.nvim",
-  opts = {},
-  event = "VeryLazy"
+  opts = {
+    automatic_enable = false
+  },
+  event = "VeryLazy",
+  enabled = true
 }

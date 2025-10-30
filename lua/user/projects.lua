@@ -115,11 +115,19 @@ M.project_remote_start_async = function(project_name, switch, cb)
     table.insert(cmd, do_not_switch)
   end
 
-  local nvim_cmd = { "nvim", "-V1", "-c", "lua require('user.projects').project_start('" .. project_name .. "')" }
+  local nvim_cmd = { "zsh", "-c", "nvim", "-V1", "-c", "lua require('user.projects').project_start('" ..
+  project_name .. "')", "; zsh -is" }
+  local nvim_zsh_cmd = { "zsh", "-c", [[nvim -V1 -c lua require('user.projects').project_start(']] ..
+  project_name .. [['); zsh -is]] }
+  -- for _, ins in ipairs(nvim_cmd) do
+  --   table.insert(cmd, ins)
+  -- end
 
-  for _, ins in ipairs(nvim_cmd) do
-    table.insert(cmd, ins)
-  end
+  table.insert(cmd, nvim_zsh_cmd)
+  -- local interactive_zsh_shell_after_nvim_exits = { ";", "zsh", "-is" }
+  -- for _, ins in ipairs(interactive_zsh_shell_after_nvim_exits) do
+  --   table.insert(cmd, ins)
+  -- end
 
   local run_if_cb = function(project)
     if (cb) then

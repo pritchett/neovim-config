@@ -111,7 +111,7 @@ return {
       },
       window = {
         completion = cmp.config.window.bordered(),
-        documentation = cmp.config.window.bordered(),
+        -- documentation = cmp.config.window.bordered(),
       },
       preselect = cmp.PreselectMode.None, --  Fixes super annoying behavior of auto selecting what appears to be a random item in the middle of the completion list
       experimental = { ghost_text = false },

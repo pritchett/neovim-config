@@ -27,8 +27,13 @@ function M.set_keymaps(client, bufnr)
   keymap('n', '<leader>ld',
     function() vim.diagnostic.open_float({ border = "rounded" }, { focus = false, scope = "cursor" }) end,
     with_defaults({ desc = "Show Diagnostics" }))
-  keymap('n', '<leader>cs', function()
-    vim.diagnostic.setqflist({ open = false, severity = vim.diagnostic.severity.ERROR })
+  -- keymap('n', '<leader>cs', function()
+  --   vim.diagnostic.setqflist({ open = false, severity = vim.diagnostic.severity.ERROR })
+  --   vim.api.nvim_command('botright cwindow')
+  -- end, with_defaults({ desc = "Open Diagnostics" }))
+  keymap('n', 'gre', function()
+    local namespace = vim.lsp.diagnostic.get_namespace(client.id)
+    vim.diagnostic.setqflist({ namespace = namespace, open = false, severity = vim.diagnostic.severity.ERROR })
     vim.api.nvim_command('botright cwindow')
   end, with_defaults({ desc = "Open Diagnostics" }))
   -- keymap('n', '<F9>', function() vim.diagnostic.setqflist({ severity = vim.diagnostic.severity.ERROR }) end,
@@ -64,7 +69,7 @@ function M.on_attach(client, bufnr)
     end
   end
 
-  vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+  vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI", "InsertLeave" }, {
     buffer = bufnr,
     callback = refresh_code_lens,
     group = lsp_id
@@ -74,30 +79,40 @@ function M.on_attach(client, bufnr)
     vim.opt_local.statuscolumn = require('user.customizations').lsp_statuscolumn
   end)
 
-  local set_up_autoformatting = function()
+  -- local set_up_autoformatting = function()
+  --   vim.api.nvim_create_autocmd("BufWritePre", {
+  --     buffer = bufnr,
+  --     callback = function()
+  --       if vim.g.skip_autofmt then
+  --         return
+  --       end
+  --       if vim.bo.filetype == "scala" or vim.bo.filetype == "sbt" then
+  --         vim.api.nvim_create_autocmd("BufWritePost", {
+  --           buffer = bufnr,
+  --           once = true,
+  --           callback = function()
+  --             vim.lsp.buf.format({ async = true, id = client.id })
+  --             vim.fn.timer_start(1000, function(_)
+  --               vim.cmd.update()
+  --             end)
+  --           end,
+  --           group = lsp_id
+  --         })
+  --       else
+  --         vim.lsp.buf.format({ async = false, id = client.id })
+  --       end
+  --     end,
+  --     group = lsp_id
+  --   })
+  -- end
+
+  if client.supports_method("textDocument/formatting") then
+    -- set_up_autoformatting()
     vim.api.nvim_create_autocmd("BufWritePre", {
       buffer = bufnr,
       callback = function()
-        if vim.g.skip_autofmt then
-          return
-        end
-        if vim.bo.filetype == "scala" or vim.bo.filetype == "sbt" then
-          vim.api.nvim_create_autocmd("BufWritePost", {
-            buffer = bufnr,
-            once = true,
-            callback = function()
-              vim.lsp.buf.format({ async = true, id = client.id })
-              vim.fn.timer_start(1000, function(_)
-                vim.cmd.update()
-              end)
-            end,
-            group = lsp_id
-          })
-        else
-          vim.lsp.buf.format({ async = false, id = client.id })
-        end
-      end,
-      group = lsp_id
+        vim.lsp.buf.format({ async = false, id = client.id })
+      end
     })
   end
 
