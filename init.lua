@@ -53,7 +53,9 @@ vim.diagnostic.config({
   underline = true,
   update_in_insert = false,
   severity_sort = true,
-  virtual_lines = false
+  virtual_lines = {
+    current_line = true
+  }
 })
 
 -- local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
@@ -116,3 +118,15 @@ vim.filetype.add({
 vim.treesitter.language.register("bash", "kitty")
 
 vim.lsp.enable({ 'gitlab-ci-ls', 'bashls', 'yamlls', 'lua_ls' })
+-- vim.api.nvim_create_autocmd('LspProgress', {
+--   callback = function(ev)
+--     local value = ev.data.params.value
+--     if value.kind == 'begin' then
+--       vim.api.nvim_ui_send('\027]9;4;1;0\027\\')
+--     elseif value.kind == 'end' then
+--       vim.api.nvim_ui_send('\027]9;4;0\027\\')
+--     elseif value.kind == 'report' then
+--       vim.api.nvim_ui_send(string.format('\027]9;4;1;%d\027\\', value.percentage or 0))
+--     end
+--   end,
+-- })

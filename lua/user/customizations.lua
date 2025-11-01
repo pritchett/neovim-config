@@ -43,6 +43,7 @@ M.get_gitsigns_sign_column = function()
 end
 
 M.get_fold_column          = function()
+  if vim.v.virtnum < 0 then return "" end
   local fillchars = vim.opt.fillchars:get()
   local fold_line_before = vim.fn.foldlevel(vim.v.lnum - 1)
   local fold_line_curr = vim.fn.foldlevel(vim.v.lnum)

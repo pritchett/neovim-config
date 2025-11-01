@@ -120,7 +120,7 @@ function M.on_attach(client, bufnr)
     set_up_autoformatting()
   end
 
-  vim.cmd [[TSEnable highlight]]
+  -- vim.cmd [[TSEnable highlight]]
 end
 
 return M

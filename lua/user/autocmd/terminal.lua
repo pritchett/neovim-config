@@ -46,15 +46,15 @@ end
 vim.api.nvim_create_autocmd("TermOpen", {
   callback = function(args)
     vim.keymap.set('n', '<ESC>', zsh_normal_mode, { buffer = true, desc = "Change to normal mode in zsh" })
-    vim.keymap.set('n', 'a', char_esc_char('a'), { buffer = true })
-    vim.keymap.set('n', 'i', char_esc_char('i'), { buffer = true })
-    vim.keymap.set('n', 'I', char_esc_char('I'), { buffer = true })
-    vim.keymap.set('n', 'A', char_esc_char('A'), { buffer = true })
-    vim.keymap.set('n', 's', char_esc_char('s'), { buffer = true })
-    vim.keymap.set('n', 'o', char_esc_char('o'), { buffer = true })
-    vim.keymap.set('n', 'O', char_esc_char('O'), { buffer = true })
-    vim.keymap.set('n', 'gI', char_esc_char('gI'), { buffer = true })
-    vim.keymap.set('n', 'gi', char_esc_char('gi'), { buffer = true })
+    -- vim.keymap.set('n', 'a', char_esc_char('a'), { buffer = true })
+    -- vim.keymap.set('n', 'i', char_esc_char('i'), { buffer = true })
+    -- vim.keymap.set('n', 'I', char_esc_char('I'), { buffer = true })
+    -- vim.keymap.set('n', 'A', char_esc_char('A'), { buffer = true })
+    -- vim.keymap.set('n', 's', char_esc_char('s'), { buffer = true })
+    -- vim.keymap.set('n', 'o', char_esc_char('o'), { buffer = true })
+    -- vim.keymap.set('n', 'O', char_esc_char('O'), { buffer = true })
+    -- vim.keymap.set('n', 'gI', char_esc_char('gI'), { buffer = true })
+    -- vim.keymap.set('n', 'gi', char_esc_char('gi'), { buffer = true })
     vim.keymap.set('n', '<C-w>1', 'z12<CR>', { buffer = true })
     vim.keymap.set('n', '<C-w>2', 'z50<CR>', { buffer = true })
     vim.b.terminal_mode = "INSERT"
@@ -101,3 +101,18 @@ vim.api.nvim_create_autocmd("TermOpen", {
   end,
   group = gid
 })
+
+-- vim.api.nvim_create_autocmd("TermClose", {
+--   pattern = "*",
+--   callback = function()
+--     vim.cmd.stopinsert()
+--     vim.api.nvim_create_autocmd("TermEnter", {
+--       callback = function()
+--         vim.cmd.stopinsert()
+--       end,
+--       group = gid,
+--       buffer = 0
+--     })
+--   end,
+--   nested = true
+-- })

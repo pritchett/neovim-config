@@ -108,12 +108,12 @@ return {
     -- vim.keymap.set({"i", "s"}, "<C-E>", function() if ls.choice_active() then ls.change_choice(1) end end, {silent = true})
   end,
   keys = {
-    {
-      '<C-L>',
-      mode = { 'n' },
-      function() require('luasnip').expand() end,
-      silent = true
-    },
+    -- {
+    --   '<C-L>',
+    --   mode = { 'n' },
+    --   function() require('luasnip').expand() end,
+    --   silent = true
+    -- },
     {
       '<C-J>',
       mode = { "i", "s" },

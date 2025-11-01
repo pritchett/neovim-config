@@ -25,8 +25,8 @@ vim.keymap.set('n', '<C-W>m', "<C-W>_<C-W>|", opts)
 vim.keymap.set('n', ']f', '<CMD>TSTextobjectGotoNextStart @function.outer<CR>')
 vim.keymap.set('n', '[f', '<CMD>TSTextobjectGotoPreviousStart @function.outer<CR>')
 
-vim.keymap.set('n', ']a', '<CMD>TSTextobjectGotoNextStart @parameter.inner<CR>')
-vim.keymap.set('n', '[a', '<CMD>TSTextobjectGotoPreviousStart @parameter.inner<CR>')
+-- vim.keymap.set('n', ']a', '<CMD>TSTextobjectGotoNextStart @parameter.inner<CR>')
+-- vim.keymap.set('n', '[a', '<CMD>TSTextobjectGotoPreviousStart @parameter.inner<CR>')
 
 -- vim.keymap.set('t', '<C-\\>', '<C-\\><C-n>')
 vim.keymap.set('t', '<C-;>', '<C-\\><C-n>')
