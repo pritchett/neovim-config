@@ -79,6 +79,7 @@ sign("DapLogPoint", { text = "◆", texthl = "DapLogPoint", linehl = "", numhl =
 vim.fn.sign_define('DapStopped', { text = '👉', texthl = 'SignColumn', linehl = 'DebugBreakpointLine', numhl = '' })
 
 vim.cmd.packadd("cfilter")
+vim.cmd.packadd("nohlsearch")
 
 vim.keymap.set({ 'x', 'o' }, 'iu', function()
   local linenr = vim.fn.line('.')
