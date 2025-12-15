@@ -31,6 +31,12 @@ vim.keymap.set('n', '[f', '<CMD>TSTextobjectGotoPreviousStart @function.outer<CR
 -- vim.keymap.set('t', '<C-\\>', '<C-\\><C-n>')
 vim.keymap.set('t', '<C-;>', '<C-\\><C-n>')
 
+vim.keymap.set('n', '<D-G>', '<CMD>FzfLua live_grep<CR>')
+
+vim.keymap.set('n', '<leader>D', '<CMD>DBUIToggle<CR>')
+
+vim.keymap.set('n', '<D-a>', '<CMD>FzfLua args<CR>')
+
 -- Neorg
 vim.keymap.set('n', '<Leader>oc', '<CMD>Neorg capture<CR>', { silent = true })
 
