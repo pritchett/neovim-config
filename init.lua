@@ -48,14 +48,11 @@ require("user.filetype")
 -- vim.opt_local.statuscolumn = require('user.customizations').lsp_statuscolumn
 
 vim.diagnostic.config({
-  virtual_text = false,
   signs = true,
   underline = true,
   update_in_insert = false,
   severity_sort = true,
-  virtual_lines = {
-    current_line = true
-  }
+  virtual_lines = false
 })
 
 -- local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
