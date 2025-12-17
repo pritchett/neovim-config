@@ -17,6 +17,14 @@ vim.keymap.set('n', '<leader>e', function()
   --   vim.cmd.edit('.')
   -- end
 end, { desc = "Browse directory" })
+vim.keymap.set('n', '<leader>E', function()
+  local dir = vim.fn.expand('%:h')
+  if dir == "" then
+    vim.cmd.edit('.')
+  else
+    vim.cmd.edit(dir)
+  end
+end, { desc = "Open current of buffer" })
 vim.keymap.set('n', '<leader>E', "<CMD>execute 'e ' . expand('%:h')<CR>", { desc = "Open current of buffer" })
 
 vim.keymap.set('n', '<C-]>', "<C-]>zt", opts)
