@@ -1,5 +1,7 @@
 local M = {}
 
+---@param client vim.lsp.Client
+---@param bufnr integer
 function M.set_keymaps(client, bufnr)
   bufnr = bufnr or 0
   local keymap = vim.keymap.set
@@ -71,7 +73,13 @@ function M.on_attach(client, bufnr)
 
   vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI", "InsertLeave" }, {
     buffer = bufnr,
-    callback = refresh_code_lens,
+    callback = function()
+      refresh_code_lens()
+      local err, gitsigns = require('gitsigns')
+      if not err and gitsigns then
+        gitsigns.refresh()
+      end
+    end,
     group = lsp_id
   })
 
