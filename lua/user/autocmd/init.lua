@@ -9,8 +9,8 @@ vim.api.nvim_create_autocmd('FileType', {
   desc = "Install treesitter parser",
   group = vim.api.nvim_create_augroup('treesitter-install', { clear = true }),
   callback = function(args)
-    local err, ts = pcall(require, "nvim-treesitter")
-    if not err then
+    local ok, ts = pcall(require, "nvim-treesitter")
+    if ok then
       ts.install(args.match)
       local found = false
       for ft in ipairs(ts.get_installed()) do

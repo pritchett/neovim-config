@@ -114,7 +114,7 @@ function M.on_attach(client, bufnr)
   --   })
   -- end
 
-  if client.supports_method("textDocument/formatting") then
+  if client:supports_method("textDocument/formatting") then
     -- set_up_autoformatting()
     vim.api.nvim_create_autocmd("BufWritePre", {
       buffer = bufnr,
@@ -123,12 +123,6 @@ function M.on_attach(client, bufnr)
       end
     })
   end
-
-  if client:supports_method("textDocument/formatting") then
-    set_up_autoformatting()
-  end
-
-  -- vim.cmd [[TSEnable highlight]]
 end
 
 return M
