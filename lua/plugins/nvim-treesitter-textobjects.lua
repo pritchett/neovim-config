@@ -1,4 +1,5 @@
 return {
   "nvim-treesitter/nvim-treesitter-textobjects",
-  event = "VeryLazy"
+  event = "VeryLazy",
+  enabled = false
 }

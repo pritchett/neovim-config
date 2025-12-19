@@ -5,6 +5,23 @@ require("user.autocmd.terminal")
 require("user.autocmd.debug")
 require("user.autocmd.lsp")
 
+vim.api.nvim_create_autocmd('FileType', {
+  desc = "Install treesitter parser",
+  group = vim.api.nvim_create_augroup('treesitter-install', { clear = true }),
+  callback = function(args)
+    local err, ts = pcall(require, "nvim-treesitter")
+    if not err then
+      ts.install(args.match)
+      local found = false
+      for ft in ipairs(ts.get_installed()) do
+        found = found or (ft == args.match)
+      end
+      if found then
+        vim.treesitter.start()
+      end
+    end
+  end
+})
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
