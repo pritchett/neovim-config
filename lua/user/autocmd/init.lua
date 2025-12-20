@@ -11,17 +11,17 @@ vim.api.nvim_create_autocmd('FileType', {
   callback = function(args)
     local ok, ts = pcall(require, "nvim-treesitter")
     if ok then
-      ts.install(args.match)
-      local found = false
-      for ft in ipairs(ts.get_installed()) do
-        found = found or (ft == args.match)
-      end
-      if found then
-        vim.treesitter.start()
+      ts.install(args.match) -- call is async
+      for _, ft in ipairs(ts.get_installed()) do
+        if ft == args.match then
+          vim.treesitter.start()
+          return
+        end
       end
     end
   end
 })
+
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
