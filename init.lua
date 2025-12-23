@@ -115,7 +115,7 @@ vim.filetype.add({
 
 vim.treesitter.language.register("bash", "kitty")
 
-vim.lsp.enable({ 'gitlab-ci-ls', 'bashls', 'yamlls', 'lua_ls' })
+vim.lsp.enable({ 'gitlab-ci-ls', 'bashls', 'yamlls', 'lua_ls', 'purescript-language-server' })
 -- vim.api.nvim_create_autocmd('LspProgress', {
 --   callback = function(ev)
 --     local value = ev.data.params.value
