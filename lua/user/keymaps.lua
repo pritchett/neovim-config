@@ -1,8 +1,6 @@
 local opts = { noremap = true, silent = true }
 
-vim.keymap.set('n', '<leader>L', function()
-  vim.diagnostic.config({ virtual_lines = not vim.diagnostic.config().virtual_lines })
-end)
+vim.keymap.set('n', '<leader>L', '<CMD>TinyInlineDiag toggle<CR>')
 vim.keymap.set('n', 'L', 'zL')
 vim.keymap.set('n', 'H', 'zH')
 
