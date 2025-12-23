@@ -16,6 +16,28 @@ return {
     local haskell_snippets = require('haskell-snippets').all
     ls.add_snippets('haskell', haskell_snippets, { key = 'haskell' })
 
+    ls.add_snippets('purescript', {
+      s("module", {
+        t("module "), f(function(_)
+        return vim.fn.expand("%:t:r")
+      end), t(" where")
+      }),
+
+      s("dgen", {
+        t("derive instance Generic "), i(1), t(" _")
+      }),
+
+      s("genshow",
+        fmt(
+          [[
+          instance Show {} where
+            show = genericShow
+          ]], { i(1) }
+        )
+      )
+
+    })
+
     ls.add_snippets('scala', {
       s("newtype",
         fmt(
