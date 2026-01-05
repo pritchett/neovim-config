@@ -11,12 +11,12 @@ vim.api.nvim_create_autocmd('FileType', {
   callback = function(args)
     local ok, ts = pcall(require, "nvim-treesitter")
     if ok then
-      ts.install(args.match) -- call is async
-      for _, ft in ipairs(ts.get_installed()) do
-        if ft == args.match then
-          vim.treesitter.start()
-          return
-        end
+      if vim.list_contains(ts.get_installed(), args.match) then
+        vim.treesitter.start()
+      elseif vim.list_contains(ts.get_available(), args.match) then
+        vim.notify("Installing treesitter parser for " .. args.match, vim.log.levels.INFO)
+        ts.install(args.match):wait() -- TODO: get rid of :wait
+        vim.treesitter.start()
       end
     end
   end
