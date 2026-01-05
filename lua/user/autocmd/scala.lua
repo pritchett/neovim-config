@@ -178,7 +178,8 @@ local sbt_terminal = function(root_dir)
 end
 
 make_sbt_mapping = function(root_dir)
-  vim.keymap.set('n', '<localleader>s', function() sbt_terminal(root_dir):toggle() end, { buffer = true, desc = "SBT" })
+  vim.keymap.set({ 'n', 't', 'i' }, '<localleader>s', function() sbt_terminal(root_dir):toggle() end,
+    { buffer = true, desc = "SBT" })
 end
 
 vim.api.nvim_create_autocmd("FileType", {
@@ -199,6 +200,9 @@ vim.api.nvim_create_autocmd("FileType", {
       -- icons = "unicode",                   -- hmm
       testUserInterface = "Test Explorer", -- lets see
       showImplicitArguments = true,
+      inlayHints = {
+        hintsXRayMode = { enable = true }
+      },
       showInferredType = true,
       scalafixRulesDependencies = {
         'com.github.liancheng::organize-imports:0.6.0',
