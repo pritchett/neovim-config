@@ -70,9 +70,7 @@ return {
             gitgutter = false,
             gitsigns = true,
             leap = false,
-            telescope = {
-              enabled = true
-            },
+            
             dadbod_ui = true,
             nvimtree = {
               show_root = false,
