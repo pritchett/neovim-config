@@ -2,7 +2,7 @@ return {
   "windwp/nvim-autopairs",
   event = "InsertEnter",
   opts = {
-    disable_filetype = { "TelescopePrompt", "vim" },
+    disable_filetype = { "vim" },
     fast_wrap = {},
     -- check_ts = true,
     -- ts_config = {
