@@ -9,6 +9,13 @@ vim.keymap.set('n', '<localleader>ps', function()
 end, { buffer = true })
 vim.keymap.set('n', '<localleader>pb', '<CMD>split<CR><CMD>term npx spago build<CR>', { buffer = true })
 
+vim.keymap.set('n', '<localleader>r', '<CMD>split<BAR>wincmd J<BAR>term npx spago repl<CR>', { buffer = true })
+
 vim.cmd('inoreabbrev <buffer> derivce derive')
 vim.cmd('inoreabbrev <buffer> dervice derive')
 vim.cmd('inoreabbrev <buffer> derivec derive')
+vim.cmd('inoreabbrev <buffer> RIght Right')
+vim.cmd('inoreabbrev <buffer> EIther Either')
+vim.cmd('inoreabbrev <buffer> <_ <-')
+vim.cmd('inoreabbrev <buffer> WRiter Writer')
+vim.cmd('inoreabbrev <buffer> WRiterT WriterT')
