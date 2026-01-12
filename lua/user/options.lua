@@ -24,7 +24,7 @@ opt.softtabstop = 2
 opt.expandtab = true
 -- opt.completeopt = { "menu", "preview", "longest","noselect" }
 -- opt.completeopt = { "menuone", "longest", "noinsert", "noselect" }
-opt.completeopt = { "menuone", "fuzzy", "noselect", "nosort" }
+opt.completeopt = { "menuone", "fuzzy", "noselect", "nosort", "popup" }
 opt.inccommand = 'nosplit'
 opt.cmdheight = 0
 
@@ -58,6 +58,7 @@ o.undofile = true
 o.undodir = '/tmp'
 o.autoread = true
 o.wildmode = 'full:longest'
+o.wildoptions = "fuzzy,pum,tagfile"
 o.pumheight = 12
 o.virtualedit = 'block'
 -- o.gdefault = true -- use the 'g' flag for ":substitute"
