@@ -139,7 +139,7 @@ end
 
 local gid = vim.api.nvim_create_augroup("scala", { clear = true })
 
-sbt_instances = {}
+_G.sbt_instances = {}
 
 local make_sbt_mapping
 
