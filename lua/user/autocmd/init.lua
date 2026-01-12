@@ -25,9 +25,7 @@ vim.api.nvim_create_autocmd('FileType', {
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
-  callback = function()
-    vim.hl.on_yank()
-  end,
+  callback = vim.hl.on_yank,
 })
 
 -- local focus_group = vim.api.nvim_create_augroup('focus', { clear = true })
