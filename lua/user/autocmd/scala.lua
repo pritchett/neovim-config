@@ -52,89 +52,27 @@ local function setup_dap()
     },
   }
 
-  local dapui = require("dapui")
-  dapui.setup()
+  local dapview = require("dap-view")
 
-  dap.listeners.before.event_initialized["dapui_config"] = function(session, body)
-    if (session.config.name == "Launch debugger") then
-      local bufnr = vim.api.nvim_get_current_buf()
-      vim.cmd.tabnew()
-      local tabnr = vim.api.nvim_get_current_tabpage()
-      vim.api.nvim_set_current_buf(bufnr)
-      dapui.open()
-    else
-      dap.repl.open()
-    end
+  dap.listeners.before.event_initialized["dapview_config"] = function(session, body)
+    dapview.open()
   end
-  dap.listeners.before.event_terminated["dapui_config"] = function()
-    dapui.close()
-    -- print(vim.inspect(session))
-    -- if (session.config.name == "Launch debugger") then
-    --   dapui.close()
-    --   if (tabnr) then
-    --     vim.api.nvim_set_current_tabpage(tabnr)
-    --     vim.cmd.tabclose()
-    --     tabnr = nil
-    --   end
-    -- else
-    --   print(body)
-    --   dap.repl.open()
-    -- end
-  end
-  dap.listeners.after.event_terminated["dapui_config"] = function()
-    dapui.close()
-    -- print(vim.inspect(session))
-    -- if (session.config.name == "Launch debugger") then
-    --   dapui.close()
-    --   if (tabnr) then
-    --     vim.api.nvim_set_current_tabpage(tabnr)
-    --     vim.cmd.tabclose()
-    --     tabnr = nil
-    --   end
-    -- else
-    --   print(body)
-    --   dap.repl.open()
-    -- end
-  end
-  dap.listeners.before.event_exited["dapui_config"] = function(session, body)
-    dapui.close()
-    -- print(vim.inspect(session))
-    -- if (session.config.name == "Launch debugger") then
-    --   dapui.close()
-    --   if (tabnr) then
-    --     vim.api.nvim_set_current_tabpage(tabnr)
-    --     vim.cmd.tabclose()
-    --     tabnr = nil
-    --   end
-    -- else
-    --   print(body)
-    --   dap.repl.open()
-    -- end
-  end
-  dap.listeners.after.event_exited["dapui_config"] = function(session, body)
-    dapui.close()
-    -- print(vim.inspect(session))
-    -- if (session.config.name == "Launch debugger") then
-    --   dapui.close()
-    --   if (tabnr) then
-    --     vim.api.nvim_set_current_tabpage(tabnr)
-    --     vim.cmd.tabclose()
-    --     tabnr = nil
-    --   end
-    -- else
-    --   print(body)
-    --   dap.repl.open()
-    -- end
-  end
-  dap.listeners.before.event_cancel["dapui_config"] = function(sesh, body)
-    dapui.close()
-  end
-  dap.listeners.before.event_stopped["dapui_config"] = function(sesh, body)
-  end
-  dap.listeners.after.event_output["dapui_config"] = function(sesh, body)
-  end
-  dap.listeners.after.event_progress_update["dapui_config"] = function(sesh, body)
-  end
+  -- dap.listeners.before.event_terminated["dapui_config"] = function()
+  -- end
+  -- dap.listeners.after.event_terminated["dapui_config"] = function()
+  -- end
+  -- dap.listeners.before.event_exited["dapui_config"] = function(session, body)
+  -- end
+  -- dap.listeners.after.event_exited["dapui_config"] = function(session, body)
+  -- end
+  -- dap.listeners.before.event_cancel["dapui_config"] = function(sesh, body)
+  -- end
+  -- dap.listeners.before.event_stopped["dapui_config"] = function(sesh, body)
+  -- end
+  -- dap.listeners.after.event_output["dapui_config"] = function(sesh, body)
+  -- end
+  -- dap.listeners.after.event_progress_update["dapui_config"] = function(sesh, body)
+  -- end
 end
 
 local gid = vim.api.nvim_create_augroup("scala", { clear = true })
