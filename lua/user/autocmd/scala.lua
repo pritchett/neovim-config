@@ -123,7 +123,11 @@ end
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "scala", "sbt", "java" },
   callback = function()
-    local metals = require('metals')
+    local ok, metals = pcall(require, 'metals')
+    if not ok then
+      vim.notify("Could not load metals")
+      return
+    end
     local metals_config = metals.bare_config()
     metals_config.init_options.statusBarProvider = "off"
     metals_config.tvp = {
