@@ -45,6 +45,7 @@ require("user.keymaps")
 require("user.autocmd")
 require("user.commands")
 require("user.filetype")
+require("filetype")
 -- vim.opt_local.statuscolumn = require('user.customizations').lsp_statuscolumn
 
 vim.diagnostic.config({
@@ -97,25 +98,25 @@ vim.keymap.set({ 'x', 'o' }, 'iu', function()
 end, { desc = "Inner UUID" })
 
 
-vim.filetype.add({
-  extension = { rasi = "rasi", rofi = "rasi", wofi = "rasi" },
-  filename = {
-    ["vifmrc"] = "vim",
-    [".gitlab-ci.yml"] = "yaml.gitlab"
-  },
-  pattern = {
-    [".*/waybar/config"] = "jsonc",
-    [".*/mako/config"] = "dosini",
-    [".*/kitty/.+%.conf"] = "kitty",
-    [".*/hypr/.+%.conf"] = "hyprlang",
-    ["%.env%.[%w_.-]+"] = "sh",
-  },
-})
+-- vim.filetype.add({
+--   extension = { rasi = "rasi", rofi = "rasi", wofi = "rasi" },
+--   filename = {
+--     ["vifmrc"] = "vim",
+--     [".gitlab-ci.yml"] = "yaml.gitlab"
+--   },
+--   pattern = {
+--     [".*/waybar/config"] = "jsonc",
+--     [".*/mako/config"] = "dosini",
+--     [".*/kitty/.+%.conf"] = "kitty",
+--     [".*/hypr/.+%.conf"] = "hyprlang",
+--     ["%.env%.[%w_.-]+"] = "sh",
+--   },
+-- })
 
 
 vim.treesitter.language.register("bash", "kitty")
 
-vim.lsp.enable({ 'gitlab-ci-ls', 'bashls', 'yamlls', 'lua_ls', 'purescript-language-server' })
+vim.lsp.enable({ 'gitlab-ci-ls', 'bashls', 'yamlls', 'lua_ls', 'purescript-language-server', 'fennel-ls' })
 -- vim.api.nvim_create_autocmd('LspProgress', {
 --   callback = function(ev)
 --     local value = ev.data.params.value
