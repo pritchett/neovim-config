@@ -2,7 +2,7 @@ return {
   "nvim-lualine/lualine.nvim",
   dependencies = { "kyazdani42/nvim-web-devicons" },
   opts = {
-    extensions = { "quickfix", "fugitive", "nvim-dap-ui", "lazy", "mason", "oil", "fzf", "toggleterm" },
+    extensions = { "quickfix", "lazy", "mason", "oil", "fzf", "toggleterm" },
     options = {
       disabled_filetypes = {
         "netrw",
@@ -26,7 +26,10 @@ return {
         -- "vim",
         -- "dbui"
         winbar = {
-          "dbui"
+          "kulala_ui",
+          "dbui",
+          "dap-view",
+          "dap-repl"
         }
       },
       ignore_focus = { "neo-tree" },
