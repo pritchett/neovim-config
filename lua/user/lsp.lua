@@ -33,6 +33,8 @@ local lsp_id = vim.api.nvim_create_augroup("LSP", {})
 function M.on_attach(client, bufnr)
   bufnr = bufnr or 0
 
+  vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
+
   M.set_keymaps(client, bufnr)
 
   local refresh_code_lens = function()
@@ -57,14 +59,14 @@ function M.on_attach(client, bufnr)
     vim.opt_local.statuscolumn = require('user.customizations').lsp_statuscolumn
   end)
 
-  if client:supports_method("textDocument/formatting") then
-    vim.api.nvim_create_autocmd("BufWritePre", {
-      buffer = bufnr,
-      callback = function()
-        vim.lsp.buf.format({ async = false, id = client.id })
-      end
-    })
-  end
+  -- if client:supports_method("textDocument/formatting") then
+  --   vim.api.nvim_create_autocmd("BufWritePre", {
+  --     buffer = bufnr,
+  --     callback = function()
+  --       vim.lsp.buf.format({ async = false, id = client.id })
+  --     end
+  --   })
+  -- end
 end
 
 return M
