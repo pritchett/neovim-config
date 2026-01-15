@@ -4,6 +4,8 @@ require("user.autocmd.scala")
 require("user.autocmd.terminal")
 require("user.autocmd.debug")
 require("user.autocmd.lsp")
+require("user.autocmd.fennel")
+require("user.autocmd.lua")
 
 vim.api.nvim_create_autocmd('FileType', {
   desc = "Install treesitter parser",

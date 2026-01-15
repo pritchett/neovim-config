@@ -2,9 +2,12 @@
   "Wrapper around creating augroups"
   (vim.api.nvim_create_augroup group args))
 
-(vim.api.nvim_create_autocmd :BufWritePost
-                             {:desc "Format fennel files"
-                              :pattern :*.fnl
-                              :group (augroup :fennel {:clear true})
-                              :callback (fn [_] (vim.cmd "!fnlfmt --fix %")
-                                          (vim.cmd.edit))})
+(let [fennel-group (augroup :fennel {:clear true})]
+  (vim.api.nvim_create_autocmd :BufWritePost
+                               {:desc "Format fennel files"
+                                :pattern :*.fnl
+                                :group fennel-group
+                                :callback (fn [_]
+                                            (vim.cmd "silent !fnlfmt --fix %")
+                                            (vim.cmd.edit)
+                                            nil)}))
