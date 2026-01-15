@@ -16,8 +16,8 @@ function M.set_keymaps(client, bufnr)
     vim.api.nvim_command('botright cwindow')
   end, with_defaults({ desc = "Open Diagnostics" }))
   if client.server_capabilities.selectionRangeProvider then
-    keymap('n', '<leader>v', require('lsp-selection-range').trigger, with_defaults({ desc = "LSP Selection" }))
-    keymap('v', '<leader>v', require('lsp-selection-range').expand, with_defaults({ desc = "Expand selection" }))
+    -- keymap('n', '<leader>v', require('lsp-selection-range').trigger, with_defaults({ desc = "LSP Selection" }))
+    keymap('v', 'v', require('lsp-selection-range').expand, with_defaults({ desc = "Expand selection" }))
   end
 
   keymap('n', '<leader>h',
@@ -47,8 +47,8 @@ function M.on_attach(client, bufnr)
     buffer = bufnr,
     callback = function()
       refresh_code_lens()
-      local err, gitsigns = require('gitsigns')
-      if not err and gitsigns then
+      local ok, gitsigns = pcall(require, 'gitsigns')
+      if not ok and gitsigns then
         gitsigns.refresh()
       end
     end,

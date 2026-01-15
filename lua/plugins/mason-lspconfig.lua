@@ -5,5 +5,4 @@ return {
     automatic_enable = true
   },
   event = "VeryLazy",
-  enabled = true
 }

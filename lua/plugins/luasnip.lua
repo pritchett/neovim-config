@@ -41,6 +41,7 @@ return {
       )
 
     })
+
     local function get_package_name(_)
       local filename = vim.fn.expand('%:h')
       local fn1, _ = filename:gsub("^.*src/main/scala/", "")
@@ -49,6 +50,89 @@ return {
       local fn4, _ = fn3:gsub("/", ".")
       return fn4
     end
+
+
+    ls.add_snippets('scala', {
+      s('opaquetype',
+        d(1, function(_, _, _)
+          local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+          local formatted = nil
+          if #lines == 1 then
+            formatted = fmt(
+              [[
+              package <>
+
+              opaque type <> = <>
+              object <> {
+                def apply(value: <>): <> = value
+                def unapply(value: <>): Some[<>] = Some(value)
+
+                extension(value: <>) {
+                  def underlying: <> = value
+                }
+              }
+
+              ]],
+              {
+                f(get_package_name),
+                d(1, function()
+                  local filename = vim.fn.expand("%:t:r")
+                  return sn(nil, { i(1, filename) })
+                end),
+                i(2),
+                r(1),
+                r(2),
+                d(3, function(args, _, _, _)
+                  return sn(nil,
+                    c(1, {
+                      i(nil, args[1]),
+                      sn(nil, { t("Either[String, "), i(1, args[1]), t("]") }),
+                      sn(nil, { t("Option["), i(1, args[1]), t("]") })
+                    }, { 1 }))
+                end, { 1 }),
+                r(1),
+                r(2),
+                r(1),
+                r(2),
+              }, { delimiters = "<>" }
+            )
+          else
+            formatted = fmt(
+              [[
+            opaque type <> = <>
+            object <> {
+              def apply(value: <>): <> = value
+              def unapply(value: <>): Some[<>] = Some(value)
+
+              extension(value: <>) {
+                def underlying: <> = value
+              }
+            }
+
+            ]],
+              {
+                i(1),
+                i(2),
+                r(1),
+                r(2),
+                d(3, function(args, _, _, _)
+                  return sn(nil,
+                    c(1, {
+                      i(nil, args[1]),
+                      sn(nil, { t("Either[String, "), i(1, args[1]), t("]") }),
+                      sn(nil, { t("Option["), i(1, args[1]), t("]") })
+                    }, { 1 }))
+                end, { 1 }),
+                r(1),
+                r(2),
+                r(1),
+                r(2),
+              }, { delimiters = "<>" }
+            )
+          end
+          return sn(nil, formatted)
+        end))
+    })
 
     ls.add_snippets('scala', {
       s("newtype",
