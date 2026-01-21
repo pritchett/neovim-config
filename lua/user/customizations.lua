@@ -30,7 +30,7 @@ M.get_gitsigns_sign_column = function()
   if vim.v.virtnum < 0 then return "" end
   local ns = vim.api.nvim_get_namespaces().gitsigns_signs_
   if not ns then
-    return ""
+   return "  "
   end
   -- There should only ever be one sign from Gitsigns here
   local gitsigns = vim.api.nvim_buf_get_extmarks(0, ns, { vim.v.lnum - 1, 0 }, { vim.v.lnum - 1, -1 }, { type = "sign" })
@@ -39,30 +39,33 @@ M.get_gitsigns_sign_column = function()
     local details = vim.api.nvim_buf_get_extmark_by_id(0, ns, sign_id, { details = true })[3]
     return details and '%#' .. details.sign_hl_group .. '#' .. details.sign_text
   end
-  return ""
+  return "  "
 end
 
-M.get_fold_column          = function()
+ M.get_fold_column          = function()
+  local withHighlight = function(text)
+    return "%#FoldColumn#" .. text
+  end
   if vim.v.virtnum < 0 then return "" end
   local fillchars = vim.opt.fillchars:get()
   local fold_line_before = vim.fn.foldlevel(vim.v.lnum - 1)
   local fold_line_curr = vim.fn.foldlevel(vim.v.lnum)
   local increased_fold = fold_line_curr > fold_line_before
-  if increased_fold and vim.fn.foldclosed(vim.v.lnum) == vim.v.lnum then
-    return fillchars.foldclose or ""
+   if increased_fold and vim.fn.foldclosed(vim.v.lnum) == vim.v.lnum then
+    return withHighlight(fillchars.foldclose) or ""
   elseif increased_fold then
-    return fillchars.foldopen or ""
+    return withHighlight(fillchars.foldopen) or ""
   elseif fold_line_curr > 0 then
-    return fillchars.foldsep or ""
+    return withHighlight(fillchars.foldsep) or ""
   end
-  return fillchars.fold or ""
+  return withHighlight(fillchars.fold) or ""
 end
 
 M.lsp_statuscolumn         = table.concat({
-  "%-02(%{%v:lua.require('user.customizations').get_signs_minus_gitsigns()%}%)",
-  "%l",
-  "%-02(%{%v:lua.require('user.customizations').get_gitsigns_sign_column()%}%)",
-  "%-02{%v:lua.require('user.customizations').get_fold_column()%}",
+  "%-1{%v:lua.require('user.customizations').get_signs_minus_gitsigns()%}",
+  "%2l",
+  "%{%v:lua.require('user.customizations').get_gitsigns_sign_column()%}",
+  "%-1{%v:lua.require('user.customizations').get_fold_column()%}",
 })
 
 return M
