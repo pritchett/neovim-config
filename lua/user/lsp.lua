@@ -48,7 +48,7 @@ function M.on_attach(client, bufnr)
     callback = function()
       refresh_code_lens()
       local ok, gitsigns = pcall(require, 'gitsigns')
-      if not ok and gitsigns then
+      if ok and gitsigns then
         gitsigns.refresh()
       end
     end,
