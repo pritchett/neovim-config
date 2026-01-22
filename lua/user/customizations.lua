@@ -65,7 +65,7 @@ M.lsp_statuscolumn         = table.concat({
   "%-1{%v:lua.require('user.customizations').get_signs_minus_gitsigns()%}",
   "%2l",
   "%{%v:lua.require('user.customizations').get_gitsigns_sign_column()%}",
-  "%-1{%v:lua.require('user.customizations').get_fold_column()%}",
+  "%-1{%v:lua.require('user.customizations').get_fold_column()%} ",
 })
 
 return M
