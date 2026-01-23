@@ -6,5 +6,5 @@ return {
       vim.keymap.set("n", "<leader>L", require("lsp_lines").toggle)
    end,
    event = "LspAttach",
-   enabled = false,
+   enabled = true,
 }

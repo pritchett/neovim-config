@@ -80,44 +80,47 @@ local gid = vim.api.nvim_create_augroup("scala", { clear = true })
 _G.sbt_instances = {}
 
 local make_sbt_mapping
+local sbt_terminal
 
-local Terminal = require("toggleterm.terminal").Terminal
+local toggleterm_loaded, toggleterm = pcall(require, "toggleterm.terminal")
+if toggleterm_loaded then
+   local Terminal = toggleterm.Terminal
+   sbt_terminal = function(root_dir)
+      local instance = sbt_instances[root_dir]
+      if instance then
+         return instance
+      end
 
-local sbt_terminal = function(root_dir)
-   local instance = sbt_instances[root_dir]
-   if instance then
+      local env = nil
+      local java11 =
+         "/Users/bpritchett/Library/Caches/Coursier/arc/https/cdn.azul.com/zulu/bin/zulu11.82.19-ca-jdk11.0.28-macosx_aarch64.tar.gz/zulu11.82.19-ca-jdk11.0.28-macosx_aarch64"
+      if root_dir == "/Users/bpritchett/Development/goose-island" then
+         env = {
+            ["JAVA_HOME"] = java11,
+         }
+      end
+
+      instance = Terminal:new({
+         cmd = "sbt",
+         hidden = true,
+         display_name = "SBT",
+         direction = "float",
+         close_on_exit = true,
+         dir = root_dir,
+         env = env,
+         on_open = function(_)
+            make_sbt_mapping(root_dir)
+         end,
+      })
+      sbt_instances[root_dir] = instance
       return instance
    end
 
-   local env = nil
-   local java11 =
-      "/Users/bpritchett/Library/Caches/Coursier/arc/https/cdn.azul.com/zulu/bin/zulu11.82.19-ca-jdk11.0.28-macosx_aarch64.tar.gz/zulu11.82.19-ca-jdk11.0.28-macosx_aarch64"
-   if root_dir == "/Users/bpritchett/Development/goose-island" then
-      env = {
-         ["JAVA_HOME"] = java11,
-      }
+   make_sbt_mapping = function(root_dir)
+      vim.keymap.set({ "n", "t", "i" }, "<localleader>s", function()
+         sbt_terminal(root_dir):toggle()
+      end, { buffer = true, desc = "SBT" })
    end
-
-   instance = Terminal:new({
-      cmd = "sbt",
-      hidden = true,
-      display_name = "SBT",
-      direction = "float",
-      close_on_exit = true,
-      dir = root_dir,
-      env = env,
-      on_open = function(_)
-         make_sbt_mapping(root_dir)
-      end,
-   })
-   sbt_instances[root_dir] = instance
-   return instance
-end
-
-make_sbt_mapping = function(root_dir)
-   vim.keymap.set({ "n", "t", "i" }, "<localleader>s", function()
-      sbt_terminal(root_dir):toggle()
-   end, { buffer = true, desc = "SBT" })
 end
 
 vim.api.nvim_create_autocmd("FileType", {
@@ -182,7 +185,9 @@ vim.api.nvim_create_autocmd("FileType", {
 
          vim.keymap.set("n", "<localleader>m", require("metals").commands, { buffer = bufnr, desc = "Metals commands" })
 
-         make_sbt_mapping(client.root_dir)
+         if toggleterm_loaded then
+            make_sbt_mapping(client.root_dir)
+         end
 
          setup_dap()
       end

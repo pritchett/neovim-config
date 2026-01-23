@@ -13,12 +13,12 @@ return {
       resize_mode = {
          hooks = {
             on_leave = function()
-               local br = require("bufresize")
-               if br == nil then
-                  vim.notify("Make sure to install bufresize", vim.log.levels.WARN)
-                  return
-               end
-               br.register()
+               -- local br = require('bufresize')
+               -- if (br == nil) then
+               --   vim.notify("Make sure to install bufresize", vim.log.levels.WARN)
+               --   return
+               -- end
+               -- br.register()
             end,
          },
       },

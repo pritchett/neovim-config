@@ -16,11 +16,11 @@ return {
       },
       formatters_by_ft = {
          fennel = { "fnlfmt" },
-         scala = { "scalafmt" },
+         scala = { "scala-cli" },
          lua = { "stylua" },
          markdown = { "injected" },
       },
-      format_on_save = {
+      format_after_save = {
          -- These options will be passed to conform.format()
          timeout_ms = 1000,
          -- lsp_format = "fallback",
