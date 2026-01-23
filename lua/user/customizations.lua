@@ -4,6 +4,17 @@ local gitsigns_namespaces  = { gitsigns = true, gitsigns_blame = true, gitsigns_
 
 M.get_signs_minus_gitsigns = function()
   if vim.v.virtnum < 0 then return "" end
+
+  --- @param sign string
+  local function pad_str(sign)
+    local screen_lines_magnatude = tostring(vim.fn.line('$')):len()
+    for _ = 1, screen_lines_magnatude - sign:len() do
+      sign = " " .. sign
+    end
+
+    return sign
+  end
+
   local line = ""
   for k, ns in pairs(vim.api.nvim_get_namespaces()) do
     if gitsigns_namespaces[k] == nil then
@@ -15,7 +26,7 @@ M.get_signs_minus_gitsigns = function()
           line = line .. '%#' .. details.sign_hl_group .. '#'
         end
         if (details and details.sign_text) then
-          line = line .. details.sign_text
+          line = line .. pad_str(details.sign_text)
         end
         if line ~= "" then
           return line
@@ -23,7 +34,7 @@ M.get_signs_minus_gitsigns = function()
       end
     end
   end
-  return line
+  return pad_str(line)
 end
 
 M.get_gitsigns_sign_column = function()
@@ -62,7 +73,7 @@ end
 end
 
 M.lsp_statuscolumn         = table.concat({
-  "%-1{%v:lua.require('user.customizations').get_signs_minus_gitsigns()%}",
+  "%-2{%v:lua.require('user.customizations').get_signs_minus_gitsigns()%}",
   "%2l",
   "%{%v:lua.require('user.customizations').get_gitsigns_sign_column()%}",
   "%-1{%v:lua.require('user.customizations').get_fold_column()%} ",

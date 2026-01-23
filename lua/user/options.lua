@@ -74,6 +74,7 @@ o.winborder = 'rounded'
 -- for nvim-metals
 -- vim.opt_global.fillchars:append({ fold = ' ', foldopen = '', foldsep = '│', foldclose = '' })
 vim.opt_global.fillchars:append({ fold = ' ', foldopen = '', foldsep = ' ', foldclose = '' })
+vim.o.foldlevelstart = 99
 
 -- -- Window
 wo.number = true
