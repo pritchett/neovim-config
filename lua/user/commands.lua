@@ -14,7 +14,20 @@ vim.api.nvim_create_user_command("Diagnotics", function()
 end, {})
 
 vim.api.nvim_create_user_command("Config", function()
-  require('fzf-lua').files({ cwd = vim.fn.stdpath('config') })
+  local config_path = vim.fn.stdpath('config')
+  local fzf = require('fzf-lua')
+  local with_set_lcd_after = function (action)
+   return function (items, opts)
+     action(items, opts)
+     vim.cmd.lcd(config_path)
+   end
+  end
+  fzf.files({
+    cwd = config_path,
+    actions = {
+      ["enter"] = with_set_lcd_after(fzf.actions.file_edit)
+    }
+  })
 end, {})
 
 vim.api.nvim_create_user_command("UrlDecode", function()
