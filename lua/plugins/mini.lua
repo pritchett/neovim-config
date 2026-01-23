@@ -1,4 +1,4 @@
 return {
-  'echasnovski/mini.ai',
-  fversion = '*'
+   "echasnovski/mini.ai",
+   fversion = "*",
 }

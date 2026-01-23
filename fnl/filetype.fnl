@@ -1,5 +1,3 @@
-(vim.filetype.add {:extension {:sbt "scala"}
-                   :filename {:vifmrc "vim"
-                              :.gitlab-ci.yml "yaml.gitlab"}}
-                   :pattern {:.*/kitty/.+%.conf  "kitty" })
-
+(vim.filetype.add {:extension {:sbt :scala}
+                   :filename {:.gitlab-ci.yml :yaml.gitlab}
+                   :pattern {".*/kitty/.+%.conf" :kitty}})

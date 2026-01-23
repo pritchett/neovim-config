@@ -1,4 +1,4 @@
 return {
-  "pritchett/neorg-capture",
-  event = "VeryLazy"
+   "pritchett/neorg-capture",
+   event = "VeryLazy",
 }

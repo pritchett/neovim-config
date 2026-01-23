@@ -7,29 +7,29 @@ require("user.autocmd.lsp")
 -- require("user.autocmd.fennel")
 require("user.autocmd.lua")
 
-vim.api.nvim_create_autocmd('FileType', {
-  desc = "Install treesitter parser",
-  group = vim.api.nvim_create_augroup('treesitter-install', { clear = true }),
-  callback = function(args)
-    local ok, ts = pcall(require, "nvim-treesitter")
-    if ok then
-      if vim.list_contains(ts.get_installed(), args.match) then
-        if (args.match ~= "sql") then
-          vim.treesitter.start()
-        end
-      elseif vim.list_contains(ts.get_available(), args.match) then
-        vim.notify("Installing treesitter parser for " .. args.match, vim.log.levels.INFO)
-        ts.install(args.match):wait() -- TODO: get rid of :wait
-        vim.treesitter.start()
+vim.api.nvim_create_autocmd("FileType", {
+   desc = "Install treesitter parser",
+   group = vim.api.nvim_create_augroup("treesitter-install", { clear = true }),
+   callback = function(args)
+      local ok, ts = pcall(require, "nvim-treesitter")
+      if ok then
+         if vim.list_contains(ts.get_installed(), args.match) then
+            if args.match ~= "sql" then
+               vim.treesitter.start()
+            end
+         elseif vim.list_contains(ts.get_available(), args.match) then
+            vim.notify("Installing treesitter parser for " .. args.match, vim.log.levels.INFO)
+            ts.install(args.match):wait() -- TODO: get rid of :wait
+            vim.treesitter.start()
+         end
       end
-    end
-  end
+   end,
 })
 
-vim.api.nvim_create_autocmd('TextYankPost', {
-  desc = 'Highlight when yanking (copying) text',
-  group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
-  callback = vim.hl.on_yank,
+vim.api.nvim_create_autocmd("TextYankPost", {
+   desc = "Highlight when yanking (copying) text",
+   group = vim.api.nvim_create_augroup("highlight-yank", { clear = true }),
+   callback = vim.hl.on_yank,
 })
 
 -- local focus_group = vim.api.nvim_create_augroup('focus', { clear = true })

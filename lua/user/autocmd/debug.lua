@@ -3,11 +3,11 @@
 local gid = vim.api.nvim_create_augroup("debug", {})
 
 vim.api.nvim_create_autocmd("FileType", {
-  pattern =  "dap-repl",
-  callback = function()
-    vim.o.number = false
-  end,
-  group = gid
+   pattern = "dap-repl",
+   callback = function()
+      vim.o.number = false
+   end,
+   group = gid,
 })
 
 -- execute [[augroup debug]]

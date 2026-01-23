@@ -1,7 +1,7 @@
 return {
-  "antosha417/nvim-lsp-file-operations",
-  dependencies = {
-    "nvim-lua/plenary.nvim",
-  },
-  event = "VeryLazy"
+   "antosha417/nvim-lsp-file-operations",
+   dependencies = {
+      "nvim-lua/plenary.nvim",
+   },
+   event = "VeryLazy",
 }

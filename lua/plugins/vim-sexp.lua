@@ -1,1 +1,1 @@
-return { "guns/vim-sexp" }
+return { "guns/vim-sexp", enabled = false }

@@ -1,4 +1,4 @@
 return {
-  "mistweaverco/kulala.nvim",
-  opts = { lsp = { formatter = true } }
+   "mistweaverco/kulala.nvim",
+   opts = { lsp = { formatter = true } },
 }

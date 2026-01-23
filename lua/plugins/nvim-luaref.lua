@@ -1,4 +1,4 @@
 return {
-  "milisims/nvim-luaref",
-  event = "VeryLazy"
+   "milisims/nvim-luaref",
+   event = "VeryLazy",
 }

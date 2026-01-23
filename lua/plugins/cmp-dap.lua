@@ -1,4 +1,4 @@
 return {
-  "rcarriga/cmp-dap",
-  event = "VeryLazy"
+   "rcarriga/cmp-dap",
+   event = "VeryLazy",
 }

@@ -1,4 +1,4 @@
 return {
-  "camilledejoye/nvim-lsp-selection-range",
-  event = "VeryLazy"
+   "camilledejoye/nvim-lsp-selection-range",
+   event = "VeryLazy",
 }

@@ -1,5 +1,5 @@
 return {
-  'j-hui/fidget.nvim',
-  opts = {},
-  event = "VeryLazy"
+   "j-hui/fidget.nvim",
+   opts = {},
+   event = "VeryLazy",
 }

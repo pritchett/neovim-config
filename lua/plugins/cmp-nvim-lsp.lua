@@ -1,4 +1,4 @@
 return {
-  "hrsh7th/cmp-nvim-lsp",
-  event = "VeryLazy"
+   "hrsh7th/cmp-nvim-lsp",
+   event = "VeryLazy",
 }

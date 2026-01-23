@@ -1,3 +1,3 @@
 vim.filetype.add({
-  extension = { sbt = "scala" }
+   extension = { sbt = "scala" },
 })

@@ -1,4 +1,4 @@
 return {
-  "neovimhaskell/nvim-hs.vim",
-  lazy = true
+   "neovimhaskell/nvim-hs.vim",
+   lazy = true,
 }

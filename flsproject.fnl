@@ -1,3 +1,1 @@
-{:extra-globals :vim 
- :libraries {:nvim true}
-}
+{:extra-globals :vim :libraries {:nvim true}}

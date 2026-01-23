@@ -1,4 +1,4 @@
 return {
-  "saadparwaiz1/cmp_luasnip",
-  event = "VeryLazy"
+   "saadparwaiz1/cmp_luasnip",
+   event = "VeryLazy",
 }
