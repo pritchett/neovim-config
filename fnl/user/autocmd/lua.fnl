@@ -4,6 +4,6 @@
                                 :group fnl-group
                                 :callback (fn [data]
                                             (vim.keymap.set :n :K
-                                                            vim.lsp.buf.hover n
+                                                            vim.lsp.buf.hover
                                                             {:buffer data.buf})
                                             nil)}))
