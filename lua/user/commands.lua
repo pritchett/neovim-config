@@ -26,6 +26,9 @@ vim.api.nvim_create_user_command("Config", function()
       cwd = config_path,
       actions = {
          ["enter"] = with_set_lcd_after(fzf.actions.file_edit),
+         ["ctrl-s"] = with_set_lcd_after(fzf.actions.file_split),
+         ["ctrl-v"] = with_set_lcd_after(fzf.actions.file_vsplit),
+         ["ctrl-t"] = with_set_lcd_after(fzf.actions.file_tabedit),
       },
    })
 end, {})
