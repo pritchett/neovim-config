@@ -113,7 +113,7 @@ end, { desc = "Inner UUID" })
 
 vim.treesitter.language.register("bash", "kitty")
 
-vim.lsp.enable({ "gitlab-ci-ls", "bashls", "yamlls", "lua_ls", "purescript-language-server", "fennel-ls" })
+vim.lsp.enable({ "gitlab-ci-ls", "bashls", "yamlls", "lua_ls", "purescript-language-server", "fennel_ls" })
 -- vim.api.nvim_create_autocmd('LspProgress', {
 --   callback = function(ev)
 --     local value = ev.data.params.value
