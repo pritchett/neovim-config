@@ -28,31 +28,43 @@
 (local state (client.new-state #(do
                                   {:repl nil})))
 
+(fn log-append [msg]
+  (let [wrapped-msg (if (= (type msg) :table)
+                        (icollect [_ m (ipairs msg)]
+                          (.. M.comment-prefix m))
+                        [(.. M.comment-prefix msg)])]
+    (log.append wrapped-msg)))
+
+(fn repl-send [msg cb opts]
+  (let [repl (state :repl)]
+    (when repl
+      (repl.send msg cb opts))))
+
+(fn reset []
+  (log.dbg "Resetting the REPL")
+  (repl-send ":reset\n" (fn [msgs]
+                          (let [all-msgs (icollect [_ msg (ipairs msgs)]
+                                           (. msg :out))]
+                            (log-append all-msgs)))
+             {:batch? true}))
+
 (fn M.on-load []
   (log.dbg "Loading scala"))
 
 (fn M.start []
   (log.dbg (.. "scala.stdio.start: prompt_pattern='" (cfg [:prompt_pattern])
                "', cmd='" (cfg [:command]) "'"))
-
-  (fn log-append [msg]
-    (let [wrapped-msg (if (= (type msg) :table)
-                          (accumulate [msg {} _ m (pairs msg)]
-                            (.. M.comment-prefix m))
-                          [(.. M.comment-prefix msg)])]
-      (log.append wrapped-msg)))
-
   (if (state :repl)
       (log-append "REPL already running")
       (core.assoc (state) :repl
                   (stdio.start {:prompt-pattern (cfg [:prompt_pattern])
                                 :cmd (cfg [:command])
                                 :on-success (fn []
-                                              (log.dbg "REPL started successfully"))
+                                              (log.dbg "REPL started successfully")
+                                              (log-append "Scala repl is connected"))
                                 :on-error (fn [err]
                                             (log.dbg err)
-                                            (log.append [(.. M.comment-prefix
-                                                             err)]))
+                                            (log-append err))
                                 :on-exit (fn [code signal]
                                            (log.dbg :on-exit)
                                            (let [repl (state :repl)]
@@ -78,7 +90,9 @@
   (mapping.buf :ScalaStart (cfg [:mapping :start]) #(M.start)
                {:desc "Start the REPL"})
   (mapping.buf :ScalaStop (cfg [:mapping :stop]) #(M.stop)
-               {:desc "Stop the REPL"}))
+               {:desc "Stop the REPL"})
+  (mapping.buf :ScalaReset (cfg [:mapping :reset]) #(reset)
+               {:desc "Reset the REPL"}))
 
 (fn M.eval-str [opts]
   nil)
