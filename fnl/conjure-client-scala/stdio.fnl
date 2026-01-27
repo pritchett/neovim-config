@@ -34,8 +34,16 @@
 (fn M.start []
   (log.dbg (.. "scala.stdio.start: prompt_pattern='" (cfg [:prompt_pattern])
                "', cmd='" (cfg [:command]) "'"))
+
+  (fn log-append [msg]
+    (let [wrapped-msg (if (= (type msg) :table)
+                          (accumulate [msg {} _ m (pairs msg)]
+                            (.. M.comment-prefix m))
+                          [(.. M.comment-prefix msg)])]
+      (log.append wrapped-msg)))
+
   (if (state :repl)
-      (log.append ["repl already running"])
+      (log-append "REPL already running")
       (core.assoc (state) :repl
                   (stdio.start {:prompt-pattern (cfg [:prompt_pattern])
                                 :cmd (cfg [:command])
@@ -52,11 +60,16 @@
                                                (repl.destroy)
                                                (core.assoc (state) :repl nil))))
                                 :on-stray-output (fn [msg]
-                                                   (log.append [(.. M.comment-prefix
-                                                                    msg)]))}))))
+                                                   (log.dbg (.. "scala.stdio.start on-stray-output='"
+                                                                msg "'"))
+                                                   (log-append msg))}))))
 
 (fn M.stop []
-  (log.dbg "REPL stop"))
+  (log.dbg "REPL stop")
+  (let [repl (state :repl)]
+    (when repl
+      (repl.destroy)
+      (core.assoc (state) :repl nil))))
 
 ; (fn M.unbatch []
 ;   (vim.print :unbatch))
