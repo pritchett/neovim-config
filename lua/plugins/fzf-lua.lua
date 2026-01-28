@@ -41,20 +41,13 @@ return {
          mode = { "n", "v" },
          function()
             local fzf = require("fzf-lua")
-            local bufnr = vim.fn.bufnr()
             fzf.commands({
                sort_lastused = true,
                actions = {
                   ["default"] = {
                      fn = function(cmd)
                         vim.schedule(function()
-                           if cmd[1] == "FzfLua" then
-                              vim.api.nvim_buf_call(bufnr, function()
-                                 vim.cmd(table.concat(cmd))
-                              end)
-                           else
-                              vim.cmd(table.concat(cmd))
-                           end
+                           vim.cmd(table.concat(cmd))
                         end)
                      end,
                   },
