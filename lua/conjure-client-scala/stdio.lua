@@ -136,7 +136,10 @@ M["eval-file"] = function(opts)
   return nil
 end
 M["on-exit"] = function()
-  return nil
+  local function _19_()
+    return M.stop()
+  end
+  return _19_
 end
 M["form-node?"] = function(opts)
   return false
@@ -156,7 +159,7 @@ local function get_sbt_classpath(dir)
   local stderr = vim.uv.new_pipe(false)
   local sbt_output = {}
   local on_exit
-  local function _19_(_, _0)
+  local function _20_(_, _0)
     local regex = "%[info%] %* Attributed%(([^%)]*)%)"
     local sbt_output_string
     do
@@ -176,16 +179,16 @@ local function get_sbt_classpath(dir)
     end
     return string.gsub(path, ":$", "")
   end
-  on_exit = _19_
+  on_exit = _20_
   local concat_output
-  local function _20_(_, data)
+  local function _21_(_, data)
     if data then
       return table.insert(sbt_output, data)
     else
       return nil
     end
   end
-  concat_output = _20_
+  concat_output = _21_
   local handle, pid_or_error = vim.uv.spawn("sbt", {stdio = {stdin, stdout, stderr}, cwd = dir, args = {"show fullClasspath"}, text = true}, on_exit)
   if handle then
     return stdout:read_start(concat_output)

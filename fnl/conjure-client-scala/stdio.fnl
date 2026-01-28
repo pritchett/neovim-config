@@ -101,7 +101,7 @@
   nil)
 
 (fn M.on-exit []
-  nil)
+  #(M.stop))
 
 (fn M.form-node? [opts] false)
 
