@@ -28,6 +28,10 @@
 (local state (client.new-state #(do
                                   {:repl nil})))
 
+(fn wrap-call [fun]
+  (let [wrapped (vim.schedule_wrap fun)]
+    (wrapped)))
+
 (fn log-append [msg]
   (let [wrapped-msg (if (= (type msg) :table)
                         (icollect [_ m (ipairs msg)]
@@ -41,49 +45,120 @@
       (repl.send msg cb opts))))
 
 (fn reset []
-  (log.dbg "Resetting the REPL")
+  (wrap-call #(log.dbg "Resetting the REPL"))
   (repl-send ":reset\n" (fn [msgs]
                           (let [all-msgs (icollect [_ msg (ipairs msgs)]
                                            (. msg :out))]
                             (log-append all-msgs)))
              {:batch? true}))
 
+(fn buildsbt-exist? [dir]
+  (fs.findfile :build.sbt dir))
+
 (fn M.on-load []
-  (log.dbg "Loading scala"))
+  (wrap-call #(log.dbg "Loading scala")))
+
+(fn dbg-log-on-exit-with-context [context code signal]
+  (wrap-call #(log.dbg (.. "on-exit in " context ". code " code ", signal "
+                           signal))))
+
+(fn with-sbt-classpath [dir cb]
+  "Gets the classpath for the sbt project in *dir*"
+  (fn extract-and-cb [sbt-output]
+    (let [regex "%[info%] %* Attributed%(([^%)]*)%)"
+          sbt-output-string (accumulate [output "" _ line (ipairs sbt-output)]
+                              (.. output line))
+          path (accumulate [classpath "" jar (string.gmatch sbt-output-string
+                                                            regex)]
+                 (.. classpath jar ":"))]
+      (let [classpath (string.gsub path ":$" "")]
+        (cb classpath))))
+
+  (let [stdin nil
+        stdout (vim.uv.new_pipe false)
+        stderr (vim.uv.new_pipe false)
+        sbt-output []
+        on-error #(log.dbg "Received error: " (or $1 "err is nil")
+                           (or $2 "data is nil"))
+        ; (vim.schedule_wrap #(log.dbg (.. "Received error: "
+        ;                                           (or $1 "err was nil")
+        ;                                           (or $2 " data also nil"))))
+        on-exit #(do
+                   (dbg-log-on-exit-with-context :with-sbt-classpath $1 $2)
+                   (extract-and-cb sbt-output $1 $2))
+        concat-output (fn [err data]
+                        (when err
+                          (wrap-call #(log.dbg (.. "ERROR: " err))))
+                        (when data
+                          (wrap-call #(log.dbg "getting data"))
+                          (table.insert sbt-output data)))
+        (handle pid-or-error) (vim.uv.spawn :sbt
+                                            {:stdio [stdin stdout stderr]
+                                             :cwd dir
+                                             :args ["show fullClasspath"]
+                                             :text true}
+                                            on-exit)]
+    (when handle
+      (log.dbg (.. "REPL start with pid " pid-or-error))
+      (stderr:read_start on-error)
+      (stdout:read_start concat-output))))
 
 (fn M.start []
   (log.dbg (.. "scala.stdio.start: prompt_pattern='" (cfg [:prompt_pattern])
                "', cmd='" (cfg [:command]) "'"))
+
+  (fn start [args]
+    (fn on-exit [code signal]
+      (dbg-log-on-exit-with-context "M.start start" code signal)
+      (let [repl (state :repl)]
+        (when repl
+          (repl.destroy)
+          (core.assoc (state) :repl nil))))
+
+    (fn on-success []
+      (wrap-call (do
+                   (log.dbg "REPL started successfully")
+                   (log-append "Scala repl is connected"))))
+
+    (fn on-error [err]
+      (wrap-call (do
+                   (log.dbg err)
+                   (log-append err))))
+
+    (fn on-stray-output [msg]
+      (wrap-call #(do
+                    (log.dbg (.. "scala.stdio.start on-stray-output='" msg "'"))
+                    (log-append msg))))
+
+    (core.assoc (state) :repl
+                (stdio.start {:prompt-pattern (cfg [:prompt_pattern])
+                              :cmd (cfg [:command])
+                              : args
+                              : on-success
+                              : on-error
+                              : on-exit
+                              : on-stray-output})))
+
   (if (state :repl)
-      (log-append "REPL already running")
-      (core.assoc (state) :repl
-                  (stdio.start {:prompt-pattern (cfg [:prompt_pattern])
-                                :cmd (cfg [:command])
-                                :on-success (fn []
-                                              (log.dbg "REPL started successfully")
-                                              (log-append "Scala repl is connected"))
-                                :on-error (fn [err]
-                                            (log.dbg err)
-                                            (log-append err))
-                                :on-exit (fn [code signal]
-                                           (log.dbg :on-exit)
-                                           (let [repl (state :repl)]
-                                             (when repl
-                                               (repl.destroy)
-                                               (core.assoc (state) :repl nil))))
-                                :on-stray-output (fn [msg]
-                                                   (log.dbg (.. "scala.stdio.start on-stray-output='"
-                                                                msg "'"))
-                                                   (log-append msg))}))))
+      (log-append "REPL is already connected")
+      (let [cwd (vim.fn.getcwd)]
+        (log.dbg (.. "CWD: " cwd))
+        (if (and (cfg [:load_repl_in_sbt_context]) (buildsbt-exist? cwd))
+            (do
+              (log.dbg "starting repl with sbt classpath")
+              (with-sbt-classpath cwd
+                #(start [:--extra-jars $1])))
+            (start)))))
 
 (fn M.stop []
-  (log.dbg "REPL stop")
+  (wrap-call (log.dbg "REPL stop"))
   (let [repl (state :repl)]
     (when repl
       (repl.destroy)
       (core.assoc (state) :repl nil))))
 
 ; (fn M.unbatch []
+
 ;   (vim.print :unbatch))
 
 (fn M.on-filetype []
@@ -103,57 +178,33 @@
 (fn M.on-exit []
   #(M.stop))
 
+; (with-sbt-classpath :/Users/brian/Development/scala-coding-challenge/
+
+;   (fn [classpath] (vim.print classpath)))
+
 (fn M.form-node? [opts] false)
 
 (fn M.format-msg [opts] false)
-
 (fn M.interrupt [opts] false)
 
 ; (vim.notify (vim.inspect (config.get-in [:mapping])))
 ; (local cfg (config.get-in-fn [:client :scala :stdio]))
-
 ; (local state (client.new-state #(do
 ;                                   {:repl nil})))
 ; (fn cmd-to-str-arr [args cb]
 ;   (let [stdin (vim.uv.new_pipe false)
 ;         stdout (vim.uv.new_pipe false)
 ;         stderr (vim.uv.new_pipe false)
+
 ;         output []
+
 ;         on-exit (fn [_ _] (cb output))
 
 ;         (handle pid-or-error) (vim.uv.spawn (table.merge args) on-exit)]
 
 ;     )
 
-(fn buildsbt-exist? [dir]
-  (fs.findfile :build.sbt :/Users/brian/Development/scala-coding-challenge/))
-
-(fn get-sbt-classpath [dir]
-  "Gets the classpath for the sbt project in *dir*"
-  (let [stdin (vim.uv.new_pipe false)
-        stdout (vim.uv.new_pipe false)
-        stderr (vim.uv.new_pipe false)
-        sbt-output []
-        on-exit (fn [_ _]
-                  (let [regex "%[info%] %* Attributed%(([^%)]*)%)"
-                        sbt-output-string (accumulate [output "" _ line (ipairs sbt-output)]
-                                            (.. output line))
-                        path (accumulate [classpath "" jar (string.gmatch sbt-output-string
-                                                                          regex)]
-                               (.. classpath jar ":"))]
-                    (string.gsub path ":$" "")))
-        concat-output (fn [_ data]
-                        (when data
-                          (table.insert sbt-output data)))
-        (handle pid-or-error) (vim.uv.spawn :sbt
-                                            {:stdio [stdin stdout stderr]
-                                             :cwd dir
-                                             :args ["show fullClasspath"]
-                                             :text true}
-                                            on-exit)]
-    (when handle
-      (stdout:read_start concat-output))))
-
+; (vim.notify :HI)
 ; (get-sbt-classpath :/Users/brian/Development/scala-coding-challenge/)
 
 M
