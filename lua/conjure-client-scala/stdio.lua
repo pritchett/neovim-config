@@ -92,8 +92,8 @@ M["on-load"] = function()
   end
   return wrap_call(_11_)
 end
-local function with_sbt_classpath(dir, co)
-  local function extract_and_co(sbt_output)
+local function with_sbt_classpath(dir, cb)
+  local function extract(sbt_output)
     local regex = "%[info%] %* Attributed%(([^%)]*)%)"
     local sbt_output_string
     do
@@ -112,7 +112,7 @@ local function with_sbt_classpath(dir, co)
       path = classpath
     end
     local classpath = string.gsub(path, ":$", "")
-    return coroutine.resume(co, classpath)
+    return cb(classpath)
   end
   local stdin = nil
   local stdout = vim.uv.new_pipe(false)
@@ -129,10 +129,10 @@ local function with_sbt_classpath(dir, co)
   end
   on_error = vim.schedule_wrap(_12_)
   local on_exit
-  local function _14_(_241, _242)
-    return extract_and_co(sbt_output, _241, _242)
+  local function _14_()
+    return extract(sbt_output)
   end
-  on_exit = _14_
+  on_exit = client["schedule-wrap"](_14_)
   local concat_output
   local function _15_(err, data)
     if err then
@@ -206,7 +206,7 @@ M.start = function()
       local function _24_(_241)
         return start({"--extra-jars", _241})
       end
-      return with_sbt_classpath(cwd, coroutine.create(_24_))
+      return with_sbt_classpath(cwd, _24_)
     else
       return start()
     end

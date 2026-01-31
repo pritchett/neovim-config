@@ -58,9 +58,9 @@
 (fn M.on-load []
   (wrap-call #(log.dbg "Loading scala")))
 
-(fn with-sbt-classpath [dir co]
+(fn with-sbt-classpath [dir cb]
   "Gets the classpath for the sbt project in *dir*"
-  (fn extract-and-co [sbt-output]
+  (fn extract [sbt-output]
     (let [regex "%[info%] %* Attributed%(([^%)]*)%)"
           sbt-output-string (accumulate [output "" _ line (ipairs sbt-output)]
                               (.. output line))
@@ -68,7 +68,7 @@
                                                             regex)]
                  (.. classpath jar ":"))]
       (let [classpath (string.gsub path ":$" "")]
-        (coroutine.resume co classpath))))
+        (cb classpath))))
 
   (let [stdin nil
         stdout (vim.uv.new_pipe false)
@@ -80,7 +80,7 @@
                                           (log.dbg (.. "Error: "
                                                        (vim.inspect data)))
                                           (log-append data))))
-        on-exit #(extract-and-co sbt-output $1 $2)
+        on-exit (client.schedule-wrap #(extract sbt-output))
         concat-output (fn [err data]
                         (when err
                           (wrap-call #(log.dbg (.. "ERROR: " err))))
@@ -138,7 +138,7 @@
             (do
               (log.dbg "starting repl with sbt classpath")
               (with-sbt-classpath cwd
-                (coroutine.create #(start [:--extra-jars $1]))))
+                #(start [:--extra-jars $1])))
             (start)))))
 
 (fn M.stop []
