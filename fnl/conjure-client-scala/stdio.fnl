@@ -120,8 +120,8 @@
       (log.dbg (.. "scala.stdio.start on-stray-output='" msg.out "'"))
       (each [out (string.gmatch msg.out "([^\n]+)")] (log-append out)))
 
-    (core.assoc (state) :repl
-                (wrap-call #(do
+    (wrap-call #(core.assoc (state) :repl
+                            (do
                               (log.dbg "Starting REPL")
                               (stdio.start {:prompt-pattern (cfg [:prompt_pattern])
                                             :cmd (cfg [:command])
@@ -145,6 +145,7 @@
   (log.dbg "REPL stop")
   (let [repl (state :repl)]
     (when repl
+      (log.dbg "Destroying repl")
       (repl.destroy)
       (core.assoc (state) :repl nil))))
 

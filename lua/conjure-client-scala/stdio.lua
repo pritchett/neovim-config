@@ -189,10 +189,13 @@ M.start = function()
       return nil
     end
     local function _22_()
-      log.dbg("Starting REPL")
-      return stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), args = args, ["on-success"] = on_success, ["on-error"] = on_error, ["on-exit"] = on_exit, ["on-stray-output"] = on_stray_output})
+      local function _23_()
+        log.dbg("Starting REPL")
+        return stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), args = args, ["on-success"] = on_success, ["on-error"] = on_error, ["on-exit"] = on_exit, ["on-stray-output"] = on_stray_output})
+      end
+      return core.assoc(state(), "repl", _23_())
     end
-    return core.assoc(state(), "repl", wrap_call(_22_))
+    return wrap_call(_22_)
   end
   if state("repl") then
     return log_append("REPL is already connected")
@@ -200,10 +203,10 @@ M.start = function()
     local cwd = vim.fn.getcwd()
     if (cfg({"load_repl_in_sbt_context"}) and buildsbt_exist_3f(cwd)) then
       log.dbg("starting repl with sbt classpath")
-      local function _23_(_241)
+      local function _24_(_241)
         return start({"--extra-jars", _241})
       end
-      return with_sbt_classpath(cwd, coroutine.create(_23_))
+      return with_sbt_classpath(cwd, coroutine.create(_24_))
     else
       return start()
     end
@@ -213,6 +216,7 @@ M.stop = function()
   log.dbg("REPL stop")
   local repl = state("repl")
   if repl then
+    log.dbg("Destroying repl")
     repl.destroy()
     return core.assoc(state(), "repl", nil)
   else
@@ -220,18 +224,18 @@ M.stop = function()
   end
 end
 M["on-filetype"] = function()
-  local function _27_()
+  local function _28_()
     return M.start()
   end
-  mapping.buf("ScalaStart", cfg({"mapping", "start"}), _27_, {desc = "Start the REPL"})
-  local function _28_()
+  mapping.buf("ScalaStart", cfg({"mapping", "start"}), _28_, {desc = "Start the REPL"})
+  local function _29_()
     return M.stop()
   end
-  mapping.buf("ScalaStop", cfg({"mapping", "stop"}), _28_, {desc = "Stop the REPL"})
-  local function _29_()
+  mapping.buf("ScalaStop", cfg({"mapping", "stop"}), _29_, {desc = "Stop the REPL"})
+  local function _30_()
     return reset()
   end
-  return mapping.buf("ScalaReset", cfg({"mapping", "reset"}), _29_, {desc = "Reset the REPL"})
+  return mapping.buf("ScalaReset", cfg({"mapping", "reset"}), _30_, {desc = "Reset the REPL"})
 end
 M["eval-str"] = function(opts)
   return nil
@@ -240,10 +244,10 @@ M["eval-file"] = function(opts)
   return nil
 end
 M["on-exit"] = function()
-  local function _30_()
+  local function _31_()
     return M.stop()
   end
-  return _30_
+  return _31_
 end
 M["form-node?"] = function(opts)
   return false
