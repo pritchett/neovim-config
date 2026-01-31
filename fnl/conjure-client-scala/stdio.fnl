@@ -25,19 +25,19 @@
                                                     :reset :cr}}}}}))
 
 (local cfg (config.get-in-fn [:client :scala :stdio]))
-(local state (client.new-state #(do
-                                  {:repl nil})))
+(local state (client.new-state #{:repl nil}))
 
 (fn wrap-call [fun]
   (let [wrapped (vim.schedule_wrap fun)]
     (wrapped)))
 
 (fn log-append [msg]
-  (let [wrapped-msg (if (= (type msg) :table)
-                        (icollect [_ m (ipairs msg)]
-                          (.. M.comment-prefix m))
-                        [(.. M.comment-prefix msg)])]
-    (log.append wrapped-msg)))
+  (when msg
+    (let [wrapped-msg (if (= (type msg) :table)
+                          (icollect [_ m (ipairs msg)]
+                            (.. M.comment-prefix m))
+                          [(.. M.comment-prefix msg)])]
+      (log.append wrapped-msg))))
 
 (fn repl-send [msg cb opts]
   (let [repl (state :repl)]
@@ -58,13 +58,9 @@
 (fn M.on-load []
   (wrap-call #(log.dbg "Loading scala")))
 
-(fn dbg-log-on-exit-with-context [context code signal]
-  (wrap-call #(log.dbg (.. "on-exit in " context ". code " code ", signal "
-                           signal))))
-
-(fn with-sbt-classpath [dir cb]
+(fn with-sbt-classpath [dir co]
   "Gets the classpath for the sbt project in *dir*"
-  (fn extract-and-cb [sbt-output]
+  (fn extract-and-co [sbt-output]
     (let [regex "%[info%] %* Attributed%(([^%)]*)%)"
           sbt-output-string (accumulate [output "" _ line (ipairs sbt-output)]
                               (.. output line))
@@ -72,25 +68,24 @@
                                                             regex)]
                  (.. classpath jar ":"))]
       (let [classpath (string.gsub path ":$" "")]
-        (cb classpath))))
+        (coroutine.resume co classpath))))
 
   (let [stdin nil
         stdout (vim.uv.new_pipe false)
         stderr (vim.uv.new_pipe false)
-        sbt-output []
-        on-error #(log.dbg "Received error: " (or $1 "err is nil")
-                           (or $2 "data is nil"))
-        ; (vim.schedule_wrap #(log.dbg (.. "Received error: "
-        ;                                           (or $1 "err was nil")
-        ;                                           (or $2 " data also nil"))))
-        on-exit #(do
-                   (dbg-log-on-exit-with-context :with-sbt-classpath $1 $2)
-                   (extract-and-cb sbt-output $1 $2))
+        sbt-output {}
+        on-error (vim.schedule_wrap (fn [err data]
+                                      (assert (not err) err)
+                                      (if data
+                                          (log.dbg (.. "Error: "
+                                                       (vim.inspect data)))
+                                          (log-append data))))
+        on-exit #(extract-and-co sbt-output $1 $2)
         concat-output (fn [err data]
                         (when err
                           (wrap-call #(log.dbg (.. "ERROR: " err))))
                         (when data
-                          (wrap-call #(log.dbg "getting data"))
+                          (wrap-call #(log.dbg (.. "getting data: " data)))
                           (table.insert sbt-output data)))
         (handle pid-or-error) (vim.uv.spawn :sbt
                                             {:stdio [stdin stdout stderr]
@@ -99,7 +94,7 @@
                                              :text true}
                                             on-exit)]
     (when handle
-      (log.dbg (.. "REPL start with pid " pid-or-error))
+      (log.dbg (.. "Retrieving classpath from sbt with pid " pid-or-error))
       (stderr:read_start on-error)
       (stdout:read_start concat-output))))
 
@@ -109,49 +104,45 @@
 
   (fn start [args]
     (fn on-exit [code signal]
-      (dbg-log-on-exit-with-context "M.start start" code signal)
       (let [repl (state :repl)]
         (when repl
           (repl.destroy)
           (core.assoc (state) :repl nil))))
 
     (fn on-success []
-      (wrap-call (do
-                   (log.dbg "REPL started successfully")
-                   (log-append "Scala repl is connected"))))
+      (log.dbg "REPL started successfully"))
 
     (fn on-error [err]
-      (wrap-call (do
-                   (log.dbg err)
-                   (log-append err))))
+      (log.dbg err)
+      (log-append err))
 
     (fn on-stray-output [msg]
-      (wrap-call #(do
-                    (log.dbg (.. "scala.stdio.start on-stray-output='" msg "'"))
-                    (log-append msg))))
+      (log.dbg (.. "scala.stdio.start on-stray-output='" msg.out "'"))
+      (each [out (string.gmatch msg.out "([^\n]+)")] (log-append out)))
 
     (core.assoc (state) :repl
-                (stdio.start {:prompt-pattern (cfg [:prompt_pattern])
-                              :cmd (cfg [:command])
-                              : args
-                              : on-success
-                              : on-error
-                              : on-exit
-                              : on-stray-output})))
+                (wrap-call #(do
+                              (log.dbg "Starting REPL")
+                              (stdio.start {:prompt-pattern (cfg [:prompt_pattern])
+                                            :cmd (cfg [:command])
+                                            : args
+                                            : on-success
+                                            : on-error
+                                            : on-exit
+                                            : on-stray-output})))))
 
   (if (state :repl)
       (log-append "REPL is already connected")
       (let [cwd (vim.fn.getcwd)]
-        (log.dbg (.. "CWD: " cwd))
         (if (and (cfg [:load_repl_in_sbt_context]) (buildsbt-exist? cwd))
             (do
               (log.dbg "starting repl with sbt classpath")
               (with-sbt-classpath cwd
-                #(start [:--extra-jars $1])))
+                (coroutine.create #(start [:--extra-jars $1]))))
             (start)))))
 
 (fn M.stop []
-  (wrap-call (log.dbg "REPL stop"))
+  (log.dbg "REPL stop")
   (let [repl (state :repl)]
     (when repl
       (repl.destroy)
