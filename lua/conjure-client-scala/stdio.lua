@@ -24,10 +24,6 @@ local function _3_()
   return {repl = nil}
 end
 state = client["new-state"](_3_)
-local function wrap_call(fun)
-  local wrapped = vim.schedule_wrap(fun)
-  return wrapped()
-end
 local function log_append(msg)
   if msg then
     local wrapped_msg
@@ -60,11 +56,7 @@ local function repl_send(msg, cb, opts)
   end
 end
 local function reset()
-  local function _8_()
-    return log.dbg("Resetting the REPL")
-  end
-  wrap_call(_8_)
-  local function _9_(msgs)
+  local function _8_(msgs)
     local all_msgs
     do
       local tbl_26_ = {}
@@ -81,16 +73,13 @@ local function reset()
     end
     return log_append(all_msgs)
   end
-  return repl_send(":reset\n", _9_, {["batch?"] = true})
+  return repl_send(":reset\n", _8_, {["batch?"] = true})
 end
 local function buildsbt_exist_3f(dir)
   return fs.findfile("build.sbt", dir)
 end
 M["on-load"] = function()
-  local function _11_()
-    return log.dbg("Loading scala")
-  end
-  return wrap_call(_11_)
+  return log.dbg("Loading scala")
 end
 local function with_sbt_classpath(dir, cb)
   local function extract(sbt_output)
@@ -119,45 +108,42 @@ local function with_sbt_classpath(dir, cb)
   local stderr = vim.uv.new_pipe(false)
   local sbt_output = {}
   local on_error
-  local function _12_(err, data)
-    assert(not err, err)
-    if data then
-      return log.dbg(("Error: " .. vim.inspect(data)))
-    else
-      return log_append(data)
+  local function _10_()
+    local function _11_(err, data)
+      assert(not err, err)
+      if data then
+        return log.dbg(("Error: " .. vim.inspect(data)))
+      else
+        return log_append(data)
+      end
     end
+    return _11_
   end
-  on_error = vim.schedule_wrap(_12_)
+  on_error = _10_
   local on_exit
-  local function _14_()
+  local function _13_()
     return extract(sbt_output)
   end
-  on_exit = client["schedule-wrap"](_14_)
+  on_exit = client["schedule-wrap"](_13_)
   local concat_output
-  local function _15_(err, data)
+  local function _14_(err, data)
     if err then
-      local function _16_()
-        return log.dbg(("ERROR: " .. err))
-      end
-      wrap_call(_16_)
+      log.dbg(("ERROR: " .. err))
     else
     end
     if data then
-      local function _18_()
-        return log.dbg(("getting data: " .. data))
-      end
-      wrap_call(_18_)
+      log.dbg(("getting data: " .. data))
       return table.insert(sbt_output, data)
     else
       return nil
     end
   end
-  concat_output = _15_
+  concat_output = _14_
   local handle, pid_or_error = vim.uv.spawn("sbt", {stdio = {stdin, stdout, stderr}, cwd = dir, args = {"show fullClasspath"}, text = true}, on_exit)
   if handle then
     log.dbg(("Retrieving classpath from sbt with pid " .. pid_or_error))
-    stderr:read_start(on_error)
-    return stdout:read_start(concat_output)
+    stderr:read_start(client["schedule-wrap"](on_error))
+    return stdout:read_start(client["schedule-wrap"](concat_output))
   else
     return nil
   end
@@ -188,14 +174,14 @@ M.start = function()
       end
       return nil
     end
-    local function _22_()
-      local function _23_()
+    local function _19_()
+      local function _20_()
         log.dbg("Starting REPL")
         return stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), args = args, ["on-success"] = on_success, ["on-error"] = on_error, ["on-exit"] = on_exit, ["on-stray-output"] = on_stray_output})
       end
-      return core.assoc(state(), "repl", _23_())
+      return core.assoc(state(), "repl", _20_())
     end
-    return wrap_call(_22_)
+    return client.schedule(_19_)
   end
   if state("repl") then
     return log_append("REPL is already connected")
@@ -203,10 +189,10 @@ M.start = function()
     local cwd = vim.fn.getcwd()
     if (cfg({"load_repl_in_sbt_context"}) and buildsbt_exist_3f(cwd)) then
       log.dbg("starting repl with sbt classpath")
-      local function _24_(_241)
+      local function _21_(_241)
         return start({"--extra-jars", _241})
       end
-      return with_sbt_classpath(cwd, _24_)
+      return with_sbt_classpath(cwd, _21_)
     else
       return start()
     end
@@ -224,18 +210,18 @@ M.stop = function()
   end
 end
 M["on-filetype"] = function()
-  local function _28_()
+  local function _25_()
     return M.start()
   end
-  mapping.buf("ScalaStart", cfg({"mapping", "start"}), _28_, {desc = "Start the REPL"})
-  local function _29_()
+  mapping.buf("ScalaStart", cfg({"mapping", "start"}), _25_, {desc = "Start the REPL"})
+  local function _26_()
     return M.stop()
   end
-  mapping.buf("ScalaStop", cfg({"mapping", "stop"}), _29_, {desc = "Stop the REPL"})
-  local function _30_()
+  mapping.buf("ScalaStop", cfg({"mapping", "stop"}), _26_, {desc = "Stop the REPL"})
+  local function _27_()
     return reset()
   end
-  return mapping.buf("ScalaReset", cfg({"mapping", "reset"}), _30_, {desc = "Reset the REPL"})
+  return mapping.buf("ScalaReset", cfg({"mapping", "reset"}), _27_, {desc = "Reset the REPL"})
 end
 M["eval-str"] = function(opts)
   return nil
@@ -244,10 +230,10 @@ M["eval-file"] = function(opts)
   return nil
 end
 M["on-exit"] = function()
-  local function _31_()
+  local function _28_()
     return M.stop()
   end
-  return _31_
+  return _28_
 end
 M["form-node?"] = function(opts)
   return false

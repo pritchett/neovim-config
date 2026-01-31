@@ -27,10 +27,6 @@
 (local cfg (config.get-in-fn [:client :scala :stdio]))
 (local state (client.new-state #{:repl nil}))
 
-(fn wrap-call [fun]
-  (let [wrapped (vim.schedule_wrap fun)]
-    (wrapped)))
-
 (fn log-append [msg]
   (when msg
     (let [wrapped-msg (if (= (type msg) :table)
@@ -45,7 +41,6 @@
       (repl.send msg cb opts))))
 
 (fn reset []
-  (wrap-call #(log.dbg "Resetting the REPL"))
   (repl-send ":reset\n" (fn [msgs]
                           (let [all-msgs (icollect [_ msg (ipairs msgs)]
                                            (. msg :out))]
@@ -56,7 +51,7 @@
   (fs.findfile :build.sbt dir))
 
 (fn M.on-load []
-  (wrap-call #(log.dbg "Loading scala")))
+  (log.dbg "Loading scala"))
 
 (fn with-sbt-classpath [dir cb]
   "Gets the classpath for the sbt project in *dir*"
@@ -74,18 +69,17 @@
         stdout (vim.uv.new_pipe false)
         stderr (vim.uv.new_pipe false)
         sbt-output {}
-        on-error (vim.schedule_wrap (fn [err data]
-                                      (assert (not err) err)
-                                      (if data
-                                          (log.dbg (.. "Error: "
-                                                       (vim.inspect data)))
-                                          (log-append data))))
+        on-error #(fn [err data]
+                    (assert (not err) err)
+                    (if data
+                        (log.dbg (.. "Error: " (vim.inspect data)))
+                        (log-append data)))
         on-exit (client.schedule-wrap #(extract sbt-output))
         concat-output (fn [err data]
                         (when err
-                          (wrap-call #(log.dbg (.. "ERROR: " err))))
+                          (log.dbg (.. "ERROR: " err)))
                         (when data
-                          (wrap-call #(log.dbg (.. "getting data: " data)))
+                          (log.dbg (.. "getting data: " data))
                           (table.insert sbt-output data)))
         (handle pid-or-error) (vim.uv.spawn :sbt
                                             {:stdio [stdin stdout stderr]
@@ -95,8 +89,8 @@
                                             on-exit)]
     (when handle
       (log.dbg (.. "Retrieving classpath from sbt with pid " pid-or-error))
-      (stderr:read_start on-error)
-      (stdout:read_start concat-output))))
+      (stderr:read_start (client.schedule-wrap on-error))
+      (stdout:read_start (client.schedule-wrap concat-output)))))
 
 (fn M.start []
   (log.dbg (.. "scala.stdio.start: prompt_pattern='" (cfg [:prompt_pattern])
@@ -120,16 +114,16 @@
       (log.dbg (.. "scala.stdio.start on-stray-output='" msg.out "'"))
       (each [out (string.gmatch msg.out "([^\n]+)")] (log-append out)))
 
-    (wrap-call #(core.assoc (state) :repl
-                            (do
-                              (log.dbg "Starting REPL")
-                              (stdio.start {:prompt-pattern (cfg [:prompt_pattern])
-                                            :cmd (cfg [:command])
-                                            : args
-                                            : on-success
-                                            : on-error
-                                            : on-exit
-                                            : on-stray-output})))))
+    (client.schedule #(core.assoc (state) :repl
+                                  (do
+                                    (log.dbg "Starting REPL")
+                                    (stdio.start {:prompt-pattern (cfg [:prompt_pattern])
+                                                  :cmd (cfg [:command])
+                                                  : args
+                                                  : on-success
+                                                  : on-error
+                                                  : on-exit
+                                                  : on-stray-output})))))
 
   (if (state :repl)
       (log-append "REPL is already connected")
