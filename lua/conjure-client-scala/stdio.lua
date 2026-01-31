@@ -224,16 +224,21 @@ M["on-filetype"] = function()
   return mapping.buf("ScalaReset", cfg({"mapping", "reset"}), _27_, {desc = "Reset the REPL"})
 end
 M["eval-str"] = function(opts)
-  return nil
+  log.dbg("scala.stdio.eval-str: opts='", core.str(opts), "'")
+  local function _28_(msg)
+    log_append(msg.out)
+    return opts["on-result"](msg)
+  end
+  return repl_send(opts.code, _28_, {batch = true})
 end
 M["eval-file"] = function(opts)
   return nil
 end
 M["on-exit"] = function()
-  local function _28_()
+  local function _29_()
     return M.stop()
   end
-  return _28_
+  return _29_
 end
 M["form-node?"] = function(opts)
   return false

@@ -156,7 +156,11 @@
                {:desc "Reset the REPL"}))
 
 (fn M.eval-str [opts]
-  nil)
+  (log.dbg "scala.stdio.eval-str: opts='" (core.str opts) "'")
+  (repl-send opts.code (fn [msg]
+                         (log-append msg.out)
+                         (opts.on-result msg))
+             {:batch true}))
 
 (fn M.eval-file [opts]
   nil)
