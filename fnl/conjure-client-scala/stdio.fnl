@@ -28,22 +28,32 @@
 (local state (client.new-state #{:repl nil}))
 
 (fn log-append [msg]
+  (fn starts-with-comment-prefix? [str]
+    (string.match str (.. "^" M.comment-prefix)))
+
+  (fn with-comment-prefix [str]
+    (if (starts-with-comment-prefix? str)
+        str
+        (.. M.comment-prefix str)))
+
   (when msg
-    (let [wrapped-msg (if (= (type msg) :table)
-                          (icollect [_ m (ipairs msg)]
-                            (.. M.comment-prefix m))
-                          [(.. M.comment-prefix msg)])]
+    (let [wrapped-msg (if (core.table? msg)
+                          (core.map with-comment-prefix msg)
+                          [(with-comment-prefix msg)])]
       (log.append wrapped-msg))))
 
 (fn repl-send [msg cb opts]
+  (log.dbg (.. "scala.stdio.repl-send: opts='" (core.str opts) "'"))
+  (log.dbg (.. "scala.stdio.repl-send: msg='" (core.str msg) "'"))
   (let [repl (state :repl)]
-    (when repl
-      (repl.send msg cb opts))))
+    (if repl
+        (repl.send msg cb opts)
+        (log-append "REPL is not connected."))))
 
 (fn reset []
   (repl-send ":reset\n" (fn [msgs]
                           (let [all-msgs (icollect [_ msg (ipairs msgs)]
-                                           (. msg :out))]
+                                           msg.out)]
                             (log-append all-msgs)))
              {:batch? true}))
 
@@ -51,7 +61,7 @@
   (fs.findfile :build.sbt dir))
 
 (fn M.on-load []
-  (log.dbg "Loading scala"))
+  (log.dbg :scala.stdio.on-load))
 
 (fn with-sbt-classpath [dir cb]
   "Gets the classpath for the sbt project in *dir*"
@@ -69,11 +79,11 @@
         stdout (vim.uv.new_pipe false)
         stderr (vim.uv.new_pipe false)
         sbt-output {}
-        on-error #(fn [err data]
-                    (assert (not err) err)
-                    (if data
-                        (log.dbg (.. "Error: " (vim.inspect data)))
-                        (log-append data)))
+        on-error (fn [err data]
+                   (assert (not err) err)
+                   (if data
+                       (log.dbg (.. "Error: " (vim.inspect data)))
+                       (log-append data)))
         on-exit (client.schedule-wrap #(extract sbt-output))
         concat-output (fn [err data]
                         (when err
@@ -95,19 +105,26 @@
 (fn M.start []
   (log.dbg (.. "scala.stdio.start: prompt_pattern='" (cfg [:prompt_pattern])
                "', cmd='" (cfg [:command]) "'"))
+  (log-append "Starting the REPL...")
 
   (fn start [args]
     (fn on-exit [code signal]
+      (when (and (= :number (type code)) (> code 0))
+        (log.append (.. M.comment-prefix "process exited with code "
+                        (core.str code))))
+      (when (and (= :number (type signal)) (> signal 0))
+        (log.append (.. M.comment-prefix "process exited with signal "
+                        (core.str signal))))
       (let [repl (state :repl)]
         (when repl
           (repl.destroy)
           (core.assoc (state) :repl nil))))
 
     (fn on-success []
-      (log.dbg "REPL started successfully"))
+      (log.dbg :scala.stdio.start.on-success))
 
     (fn on-error [err]
-      (log.dbg err)
+      (log.dbg (.. "scala.stdio.start.on-error: " (core.str err)))
       (log-append err))
 
     (fn on-stray-output [msg]
@@ -136,16 +153,15 @@
             (start)))))
 
 (fn M.stop []
-  (log.dbg "REPL stop")
+  (log.dbg :scala.stdio.stop)
   (let [repl (state :repl)]
     (when repl
-      (log.dbg "Destroying repl")
+      (log.dbg "scala.stdio.stop: Destroying repl")
       (repl.destroy)
       (core.assoc (state) :repl nil))))
 
-; (fn M.unbatch []
-
-;   (vim.print :unbatch))
+(fn M.unbatch [msgs]
+  (log.dbg (.. :scala.stdio.unbatch (core.str msgs))))
 
 (fn M.on-filetype []
   (mapping.buf :ScalaStart (cfg [:mapping :start]) #(M.start)
@@ -155,18 +171,26 @@
   (mapping.buf :ScalaReset (cfg [:mapping :reset]) #(reset)
                {:desc "Reset the REPL"}))
 
-(fn M.eval-str [opts]
-  (log.dbg "scala.stdio.eval-str: opts='" (core.str opts) "'")
-  (repl-send opts.code (fn [msg]
-                         (log-append msg.out)
-                         (opts.on-result msg))
-             {:batch true}))
+(fn repl-send-with-log-append [code]
+  (log.dbg (.. "scala.stdio.repl-send-with-log-append:" (core.str code)))
+  (repl-send code (fn [msg]
+                    (log.dbg "(.. scala.stdio.repl-send-with-log-append callback:"
+                             (core.str msg))
+                    (log-append msg.out))))
+
+(fn M.eval-str [opts] (repl-send-with-log-append opts.code))
 
 (fn M.eval-file [opts]
-  nil)
+  (log.dbg (.. "scala.stdio.eval-file opts='" (core.str opts) "'"))
+  (repl-send (.. ":load " opts.file-path "\n")
+             (fn [msg]
+               (log.dbg (.. "MSG: " (core.str msg)))
+               (log-append msg.out)
+               (opts.on-result msg))))
 
 (fn M.on-exit []
-  #(M.stop))
+  (log.dbg :scala.stdio.on-exit)
+  (M.stop))
 
 ; (with-sbt-classpath :/Users/brian/Development/scala-coding-challenge/
 

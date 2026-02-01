@@ -25,22 +25,22 @@ local function _3_()
 end
 state = client["new-state"](_3_)
 local function log_append(msg)
+  local function starts_with_comment_prefix_3f(str)
+    return string.match(str, ("^" .. M["comment-prefix"]))
+  end
+  local function with_comment_prefix(str)
+    if starts_with_comment_prefix_3f(str) then
+      return str
+    else
+      return (M["comment-prefix"] .. str)
+    end
+  end
   if msg then
     local wrapped_msg
-    if (type(msg) == "table") then
-      local tbl_26_ = {}
-      local i_27_ = 0
-      for _, m in ipairs(msg) do
-        local val_28_ = (M["comment-prefix"] .. m)
-        if (nil ~= val_28_) then
-          i_27_ = (i_27_ + 1)
-          tbl_26_[i_27_] = val_28_
-        else
-        end
-      end
-      wrapped_msg = tbl_26_
+    if core["table?"](msg) then
+      wrapped_msg = core.map(with_comment_prefix, msg)
     else
-      wrapped_msg = {(M["comment-prefix"] .. msg)}
+      wrapped_msg = {with_comment_prefix(msg)}
     end
     return log.append(wrapped_msg)
   else
@@ -48,11 +48,13 @@ local function log_append(msg)
   end
 end
 local function repl_send(msg, cb, opts)
+  log.dbg(("scala.stdio.repl-send: opts='" .. core.str(opts) .. "'"))
+  log.dbg(("scala.stdio.repl-send: msg='" .. core.str(msg) .. "'"))
   local repl = state("repl")
   if repl then
     return repl.send(msg, cb, opts)
   else
-    return nil
+    return log_append("REPL is not connected.")
   end
 end
 local function reset()
@@ -79,7 +81,7 @@ local function buildsbt_exist_3f(dir)
   return fs.findfile("build.sbt", dir)
 end
 M["on-load"] = function()
-  return log.dbg("Loading scala")
+  return log.dbg("scala.stdio.on-load")
 end
 local function with_sbt_classpath(dir, cb)
   local function extract(sbt_output)
@@ -108,25 +110,22 @@ local function with_sbt_classpath(dir, cb)
   local stderr = vim.uv.new_pipe(false)
   local sbt_output = {}
   local on_error
-  local function _10_()
-    local function _11_(err, data)
-      assert(not err, err)
-      if data then
-        return log.dbg(("Error: " .. vim.inspect(data)))
-      else
-        return log_append(data)
-      end
+  local function _10_(err, data)
+    assert(not err, err)
+    if data then
+      return log.dbg(("Error: " .. vim.inspect(data)))
+    else
+      return log_append(data)
     end
-    return _11_
   end
   on_error = _10_
   local on_exit
-  local function _13_()
+  local function _12_()
     return extract(sbt_output)
   end
-  on_exit = client["schedule-wrap"](_13_)
+  on_exit = client["schedule-wrap"](_12_)
   local concat_output
-  local function _14_(err, data)
+  local function _13_(err, data)
     if err then
       log.dbg(("ERROR: " .. err))
     else
@@ -138,7 +137,7 @@ local function with_sbt_classpath(dir, cb)
       return nil
     end
   end
-  concat_output = _14_
+  concat_output = _13_
   local handle, pid_or_error = vim.uv.spawn("sbt", {stdio = {stdin, stdout, stderr}, cwd = dir, args = {"show fullClasspath"}, text = true}, on_exit)
   if handle then
     log.dbg(("Retrieving classpath from sbt with pid " .. pid_or_error))
@@ -150,8 +149,17 @@ local function with_sbt_classpath(dir, cb)
 end
 M.start = function()
   log.dbg(("scala.stdio.start: prompt_pattern='" .. cfg({"prompt_pattern"}) .. "', cmd='" .. cfg({"command"}) .. "'"))
+  log_append("Starting the REPL...")
   local function start(args)
     local function on_exit(code, signal)
+      if (("number" == type(code)) and (code > 0)) then
+        log.append((M["comment-prefix"] .. "process exited with code " .. core.str(code)))
+      else
+      end
+      if (("number" == type(signal)) and (signal > 0)) then
+        log.append((M["comment-prefix"] .. "process exited with signal " .. core.str(signal)))
+      else
+      end
       local repl = state("repl")
       if repl then
         repl.destroy()
@@ -161,10 +169,10 @@ M.start = function()
       end
     end
     local function on_success()
-      return log.dbg("REPL started successfully")
+      return log.dbg("scala.stdio.start.on-success")
     end
     local function on_error(err)
-      log.dbg(err)
+      log.dbg(("scala.stdio.start.on-error: " .. core.str(err)))
       return log_append(err)
     end
     local function on_stray_output(msg)
@@ -174,14 +182,14 @@ M.start = function()
       end
       return nil
     end
-    local function _19_()
-      local function _20_()
+    local function _20_()
+      local function _21_()
         log.dbg("Starting REPL")
         return stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), args = args, ["on-success"] = on_success, ["on-error"] = on_error, ["on-exit"] = on_exit, ["on-stray-output"] = on_stray_output})
       end
-      return core.assoc(state(), "repl", _20_())
+      return core.assoc(state(), "repl", _21_())
     end
-    return client.schedule(_19_)
+    return client.schedule(_20_)
   end
   if state("repl") then
     return log_append("REPL is already connected")
@@ -189,56 +197,66 @@ M.start = function()
     local cwd = vim.fn.getcwd()
     if (cfg({"load_repl_in_sbt_context"}) and buildsbt_exist_3f(cwd)) then
       log.dbg("starting repl with sbt classpath")
-      local function _21_(_241)
+      local function _22_(_241)
         return start({"--extra-jars", _241})
       end
-      return with_sbt_classpath(cwd, _21_)
+      return with_sbt_classpath(cwd, _22_)
     else
       return start()
     end
   end
 end
 M.stop = function()
-  log.dbg("REPL stop")
+  log.dbg("scala.stdio.stop")
   local repl = state("repl")
   if repl then
-    log.dbg("Destroying repl")
+    log.dbg("scala.stdio.stop: Destroying repl")
     repl.destroy()
     return core.assoc(state(), "repl", nil)
   else
     return nil
   end
 end
+M.unbatch = function(msgs)
+  return log.dbg(("scala.stdio.unbatch" .. core.str(msgs)))
+end
 M["on-filetype"] = function()
-  local function _25_()
+  local function _26_()
     return M.start()
   end
-  mapping.buf("ScalaStart", cfg({"mapping", "start"}), _25_, {desc = "Start the REPL"})
-  local function _26_()
+  mapping.buf("ScalaStart", cfg({"mapping", "start"}), _26_, {desc = "Start the REPL"})
+  local function _27_()
     return M.stop()
   end
-  mapping.buf("ScalaStop", cfg({"mapping", "stop"}), _26_, {desc = "Stop the REPL"})
-  local function _27_()
+  mapping.buf("ScalaStop", cfg({"mapping", "stop"}), _27_, {desc = "Stop the REPL"})
+  local function _28_()
     return reset()
   end
-  return mapping.buf("ScalaReset", cfg({"mapping", "reset"}), _27_, {desc = "Reset the REPL"})
+  return mapping.buf("ScalaReset", cfg({"mapping", "reset"}), _28_, {desc = "Reset the REPL"})
+end
+local function repl_send_with_log_append(code)
+  log.dbg(("scala.stdio.repl-send-with-log-append:" .. core.str(code)))
+  local function _29_(msg)
+    log.dbg("(.. scala.stdio.repl-send-with-log-append callback:", core.str(msg))
+    return log_append(msg.out)
+  end
+  return repl_send(code, _29_)
 end
 M["eval-str"] = function(opts)
-  log.dbg("scala.stdio.eval-str: opts='", core.str(opts), "'")
-  local function _28_(msg)
+  return repl_send_with_log_append(opts.code)
+end
+M["eval-file"] = function(opts)
+  log.dbg(("scala.stdio.eval-file opts='" .. core.str(opts) .. "'"))
+  local function _30_(msg)
+    log.dbg(("MSG: " .. core.str(msg)))
     log_append(msg.out)
     return opts["on-result"](msg)
   end
-  return repl_send(opts.code, _28_, {batch = true})
-end
-M["eval-file"] = function(opts)
-  return nil
+  return repl_send((":load " .. opts["file-path"] .. "\n"), _30_)
 end
 M["on-exit"] = function()
-  local function _29_()
-    return M.stop()
-  end
-  return _29_
+  log.dbg("scala.stdio.on-exit")
+  return M.stop()
 end
 M["form-node?"] = function(opts)
   return false
