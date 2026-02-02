@@ -176,6 +176,7 @@
 
 (fn M.stop []
   (log.dbg :scala.stdio.stop)
+  (log-append "Stopping the REPL...")
   (with-repl (fn [repl]
                (repl-send-with-log-append ":exit")
                (log.dbg "scala.stdio.stop: Destroying repl")

@@ -216,6 +216,7 @@ M.start = function()
 end
 M.stop = function()
   log.dbg("scala.stdio.stop")
+  log_append("Stopping the REPL...")
   local function _26_(repl)
     repl_send_with_log_append(":exit")
     log.dbg("scala.stdio.stop: Destroying repl")
