@@ -5,6 +5,7 @@ local define = _local_1_.define
 local M = define("conjure.client.scala.stdio")
 local config = autoload("conjure.config")
 local core = autoload("conjure.nfnl.core")
+local str = autoload("conjure.nfnl.string")
 local fs = autoload("conjure.nfnl.fs")
 local stdio = autoload("conjure.remote.stdio")
 local mapping = autoload("conjure.mapping")
@@ -13,9 +14,9 @@ local client = autoload("conjure.client")
 M["buf-suffix"] = ".scala"
 M["comment-prefix"] = "// "
 M["context-pattern"] = "package (.*)$"
-config.merge({client = {scala = {stdio = {command = "scala-cli repl", prompt_pattern = "scala>", load_repl_in_sbt_context = true, arguments = {}}}}})
+config.merge({client = {scala = {stdio = {command = "scala-cli", prompt_pattern = "scala>", load_repl_in_sbt_context = true, arguments = {}}}}})
 if config["get-in"]({"mapping", "enable_defaults"}) then
-  config.merge({client = {scala = {stdio = {mapping = {start = "cs", stop = "cS", reset = "cr"}}}}})
+  config.merge({client = {scala = {stdio = {mapping = {start = "cs", stop = "cS", reset = "cr", interrupt = "ei"}}}}})
 else
 end
 local cfg = config["get-in-fn"]({"client", "scala", "stdio"})
@@ -24,15 +25,18 @@ local function _3_()
   return {repl = nil}
 end
 state = client["new-state"](_3_)
+local function prep_code(code)
+  return (code .. "\n")
+end
 local function log_append(msg)
-  local function starts_with_comment_prefix_3f(str)
-    return string.match(str, ("^" .. M["comment-prefix"]))
+  local function starts_with_comment_prefix_3f(str0)
+    return string.match(str0, ("^" .. M["comment-prefix"]))
   end
-  local function with_comment_prefix(str)
-    if starts_with_comment_prefix_3f(str) then
-      return str
+  local function with_comment_prefix(str0)
+    if starts_with_comment_prefix_3f(str0) then
+      return str0
     else
-      return (M["comment-prefix"] .. str)
+      return (M["comment-prefix"] .. str0)
     end
   end
   if msg then
@@ -47,35 +51,35 @@ local function log_append(msg)
     return nil
   end
 end
-local function repl_send(msg, cb, opts)
-  log.dbg(("scala.stdio.repl-send: opts='" .. core.str(opts) .. "'"))
-  log.dbg(("scala.stdio.repl-send: msg='" .. core.str(msg) .. "'"))
+local function with_repl(cb)
   local repl = state("repl")
   if repl then
-    return repl.send(msg, cb, opts)
+    return cb(repl)
   else
     return log_append("REPL is not connected.")
   end
 end
-local function reset()
-  local function _8_(msgs)
-    local all_msgs
-    do
-      local tbl_26_ = {}
-      local i_27_ = 0
-      for _, msg in ipairs(msgs) do
-        local val_28_ = msg.out
-        if (nil ~= val_28_) then
-          i_27_ = (i_27_ + 1)
-          tbl_26_[i_27_] = val_28_
-        else
-        end
-      end
-      all_msgs = tbl_26_
-    end
-    return log_append(all_msgs)
+local function repl_send(msg, cb, opts)
+  log.dbg(("scala.stdio.repl-send: opts='" .. core.str(opts) .. "'"))
+  log.dbg(("scala.stdio.repl-send: msg='" .. core.str(msg) .. "'"))
+  local function _8_(repl)
+    return repl.send(msg, cb, opts)
   end
-  return repl_send(":reset\n", _8_, {["batch?"] = true})
+  return with_repl(_8_)
+end
+local function split_on_newline(string)
+  return str.split(string, "\n")
+end
+local function repl_send_with_log_append(code)
+  log.dbg(("scala.stdio.repl-send-with-log-append:" .. core.str(code)))
+  local function _9_(msgs)
+    log.dbg(("scala.stdio.repl-send-with-log-append callback:" .. core.str(msgs)))
+    return log_append(M["format-msg"](msgs))
+  end
+  return repl_send(prep_code(code), _9_)
+end
+local function reset()
+  return repl_send_with_log_append(":reset")
 end
 local function buildsbt_exist_3f(dir)
   return fs.findfile("build.sbt", dir)
@@ -151,22 +155,21 @@ M.start = function()
   log.dbg(("scala.stdio.start: prompt_pattern='" .. cfg({"prompt_pattern"}) .. "', cmd='" .. cfg({"command"}) .. "'"))
   log_append("Starting the REPL...")
   local function start(args)
+    log.dbg(("scala.stdio.start.start: args='" .. core.str(args) .. "'"))
     local function on_exit(code, signal)
       if (("number" == type(code)) and (code > 0)) then
-        log.append((M["comment-prefix"] .. "process exited with code " .. core.str(code)))
+        log_append((M["comment-prefix"] .. "process exited with code " .. core.str(code)))
       else
       end
       if (("number" == type(signal)) and (signal > 0)) then
-        log.append((M["comment-prefix"] .. "process exited with signal " .. core.str(signal)))
+        log_append((M["comment-prefix"] .. "process exited with signal " .. core.str(signal)))
       else
       end
-      local repl = state("repl")
-      if repl then
-        repl.destroy()
-        return core.assoc(state(), "repl", nil)
-      else
-        return nil
+      local function _19_(repl)
+        return repl.destroy()
       end
+      with_repl(_19_)
+      return core.assoc(state(), "repl", nil)
     end
     local function on_success()
       return log.dbg("scala.stdio.start.on-success")
@@ -177,15 +180,20 @@ M.start = function()
     end
     local function on_stray_output(msg)
       log.dbg(("scala.stdio.start on-stray-output='" .. msg.out .. "'"))
-      for out in string.gmatch(msg.out, "([^\n]+)") do
-        log_append(out)
-      end
-      return nil
+      return log_append(M["format-msg"](msg))
     end
     local function _20_()
       local function _21_()
-        log.dbg("Starting REPL")
-        return stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = cfg({"command"}), args = args, ["on-success"] = on_success, ["on-error"] = on_error, ["on-exit"] = on_exit, ["on-stray-output"] = on_stray_output})
+        log.dbg("scala.stdio.start: Starting REPL")
+        local _22_
+        do
+          local full_command = (args or {})
+          table.insert(full_command, "-color")
+          table.insert(full_command, "never")
+          table.insert(full_command, 1, cfg({"command"}))
+          _22_ = full_command
+        end
+        return stdio.start({["prompt-pattern"] = cfg({"prompt_pattern"}), cmd = _22_, ["on-success"] = on_success, ["on-error"] = on_error, ["on-exit"] = on_exit, ["on-stray-output"] = on_stray_output})
       end
       return core.assoc(state(), "repl", _21_())
     end
@@ -196,11 +204,11 @@ M.start = function()
   else
     local cwd = vim.fn.getcwd()
     if (cfg({"load_repl_in_sbt_context"}) and buildsbt_exist_3f(cwd)) then
-      log.dbg("starting repl with sbt classpath")
-      local function _22_(_241)
+      log.dbg("scala.stdio.start: starting repl with sbt classpath")
+      local function _23_(_241)
         return start({"--extra-jars", _241})
       end
-      return with_sbt_classpath(cwd, _22_)
+      return with_sbt_classpath(cwd, _23_)
     else
       return start()
     end
@@ -208,63 +216,77 @@ M.start = function()
 end
 M.stop = function()
   log.dbg("scala.stdio.stop")
-  local repl = state("repl")
-  if repl then
+  local function _26_(repl)
+    repl_send_with_log_append(":exit")
     log.dbg("scala.stdio.stop: Destroying repl")
     repl.destroy()
     return core.assoc(state(), "repl", nil)
-  else
-    return nil
   end
-end
-M.unbatch = function(msgs)
-  return log.dbg(("scala.stdio.unbatch" .. core.str(msgs)))
+  return with_repl(_26_)
 end
 M["on-filetype"] = function()
-  local function _26_()
+  local function _27_()
     return M.start()
   end
-  mapping.buf("ScalaStart", cfg({"mapping", "start"}), _26_, {desc = "Start the REPL"})
-  local function _27_()
+  mapping.buf("ScalaStart", cfg({"mapping", "start"}), _27_, {desc = "Start the REPL"})
+  local function _28_()
     return M.stop()
   end
-  mapping.buf("ScalaStop", cfg({"mapping", "stop"}), _27_, {desc = "Stop the REPL"})
-  local function _28_()
+  mapping.buf("ScalaStop", cfg({"mapping", "stop"}), _28_, {desc = "Stop the REPL"})
+  local function _29_()
     return reset()
   end
-  return mapping.buf("ScalaReset", cfg({"mapping", "reset"}), _28_, {desc = "Reset the REPL"})
-end
-local function repl_send_with_log_append(code)
-  log.dbg(("scala.stdio.repl-send-with-log-append:" .. core.str(code)))
-  local function _29_(msg)
-    log.dbg("(.. scala.stdio.repl-send-with-log-append callback:", core.str(msg))
-    return log_append(msg.out)
+  mapping.buf("ScalaReset", cfg({"mapping", "reset"}), _29_, {desc = "Reset the REPL"})
+  local function _30_()
+    return M.interrupt()
   end
-  return repl_send(code, _29_)
+  return mapping.buf("ScalaInterrupt", cfg({"mapping", "interrupt"}), _30_, {desc = "Interrupt the REPL"})
 end
 M["eval-str"] = function(opts)
   return repl_send_with_log_append(opts.code)
 end
 M["eval-file"] = function(opts)
   log.dbg(("scala.stdio.eval-file opts='" .. core.str(opts) .. "'"))
-  local function _30_(msg)
-    log.dbg(("MSG: " .. core.str(msg)))
-    log_append(msg.out)
-    return opts["on-result"](msg)
+  local function _31_(_241)
+    return log_append(M["format-msg"](_241))
   end
-  return repl_send((":load " .. opts["file-path"] .. "\n"), _30_)
+  return repl_send(prep_code((":load " .. opts["file-path"])), _31_)
 end
 M["on-exit"] = function()
   log.dbg("scala.stdio.on-exit")
   return M.stop()
 end
-M["form-node?"] = function(opts)
-  return false
+M["format-msg"] = function(msg)
+  local function _32_(_241)
+    return (_241 == " ")
+  end
+  return core.remove(_32_, split_on_newline(core.get(msg, "out")))
 end
-M["format-msg"] = function(opts)
-  return false
+M["form-node?"] = function(node)
+  log.dbg("--------------------")
+  log.dbg(("scala.stdio.form-node?: node:type = " .. core.str(node:type())))
+  log.dbg(("scala.stdio.form-node?: node:parent = " .. core.str(node:parent())))
+  if ("import_declaration" == node:type()) then
+    return true
+  elseif ("function_definition" == node:type()) then
+    return true
+  elseif ("trait_definition" == node:type()) then
+    return true
+  elseif ("object_definition" == node:type()) then
+    return true
+  elseif ("val_definition" == node:type()) then
+    return true
+  elseif ("call_expression" == node:type()) then
+    return true
+  else
+    return false
+  end
 end
-M.interrupt = function(opts)
-  return false
+M.interrupt = function()
+  local function _34_(repl)
+    log_append({(M["comment-prefix"] .. "Sending interrupt signal.")}, {["break?"] = true})
+    return repl["send-signal"]("sigint")
+  end
+  return with_repl(_34_)
 end
 return M
