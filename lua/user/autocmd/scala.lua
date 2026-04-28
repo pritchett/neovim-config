@@ -155,7 +155,7 @@ vim.api.nvim_create_autocmd("FileType", {
             "org.typelevel::typelevel-scalafix:0.2.0", -- ThisBuild / scalafixDependencies += "org.typelevel" %% "typelevel-scalafix" % "0.2.0"
             -- "com.nequissimus::sort-imports:0.6.1"
          },
-         autoImportBuild = "all",
+         automaticImportBuild = "all",
          -- enableBestEffort = true
       }
 
