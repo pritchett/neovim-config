@@ -34,7 +34,7 @@ return {
             },
          },
          ignore_focus = { "neo-tree" },
-         theme = "catppuccin",
+         theme = "catppuccin-nvim",
          icons_enabled = true,
          globalstatus = true,
       },
