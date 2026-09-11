@@ -131,6 +131,19 @@ return {
             end,
          },
          lualine_y = {
+            {
+               function()
+                  local ok, kulala = pcall(require, "kulala")
+                  if ok then
+                     return kulala.get_selected_env()
+                  end
+                  return nil
+               end,
+               cond = function()
+                  local ft = vim.o.filetype
+                  return ft == "http" or ft == "rest"
+               end,
+            },
             { "lsp_status" },
             -- {
             --   function()
