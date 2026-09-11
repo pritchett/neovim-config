@@ -20,7 +20,7 @@ vim.api.nvim_create_autocmd("FileType", {
          elseif vim.list_contains(ts.get_available(), args.match) then
             vim.notify("Installing treesitter parser for " .. args.match, vim.log.levels.INFO)
             ts.install(args.match):wait() -- TODO: get rid of :wait
-            vim.treesitter.start()
+            pcall(vim.treesitter.start)
          end
       end
    end,

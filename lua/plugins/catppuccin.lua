@@ -69,7 +69,6 @@ return {
                gitgutter = false,
                gitsigns = true,
                leap = false,
-
                dadbod_ui = true,
                nvimtree = {
                   show_root = false,

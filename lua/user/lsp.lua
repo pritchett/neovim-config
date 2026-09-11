@@ -41,7 +41,7 @@ function M.on_attach(client, bufnr)
 
    local refresh_code_lens = function()
       if client.server_capabilities.code_lens or client.server_capabilities.codeLensProvider then
-         pcall(vim.lsp.codelens.refresh)
+         pcall(vim.lsp.codelens.enable, true)
       end
    end
 
