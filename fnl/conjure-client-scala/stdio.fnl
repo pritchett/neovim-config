@@ -95,7 +95,7 @@
         on-error (fn [err data]
                    (assert (not err) err)
                    (if data
-                       (log.dbg (.. "Error: " (vim.inspect data)))
+                       (log.dbg (.. "Error: " (core.str data)))
                        (log-append data)))
         on-exit (client.schedule-wrap #(extract sbt-output))
         concat-output (fn [err data]

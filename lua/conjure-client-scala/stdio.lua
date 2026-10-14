@@ -117,7 +117,7 @@ local function with_sbt_classpath(dir, cb)
   local function _10_(err, data)
     assert(not err, err)
     if data then
-      return log.dbg(("Error: " .. vim.inspect(data)))
+      return log.dbg(("Error: " .. core.str(data)))
     else
       return log_append(data)
     end
